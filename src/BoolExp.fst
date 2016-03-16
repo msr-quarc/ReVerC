@@ -23,7 +23,7 @@ type BoolExp =
 val prettyPrintBexp : BoolExp -> string
 let rec prettyPrintBexp bexp = match bexp with
   | BFalse -> "false"
-  | BVar i -> IO.string_of_int i
+  | BVar i -> Prims.string_of_int i
   | BNot x -> String.strcat "~" (prettyPrintBexp x)
   | BAnd (x, y) -> String.strcat "("
                 (String.strcat (prettyPrintBexp x)
@@ -50,7 +50,7 @@ let vars exp = fun i -> occursInBexp i exp
 val getVars_acc : list int -> exp:BoolExp -> Tot (list int) (decreases exp)
 let rec getVars_acc acc exp = match exp with
   | BFalse   -> []
-  | BVar n   -> if List.memT n acc then acc else n::acc
+  | BVar n   -> if FStar.List.memT n acc then acc else n::acc
   | BAnd (x, y) -> getVars_acc (getVars_acc acc x) y
   | BXor (x, y) -> getVars_acc (getVars_acc acc x) y
   | BNot exp -> getVars_acc acc exp
@@ -61,7 +61,7 @@ let getVars exp = getVars_acc [] exp
 // Consistency of getVars -- finish this if needed later
 (*
 val getVars_acc_eq_vars : l:list int -> exp:BoolExp ->
-  Lemma (forall i. vars exp i <==> List.mem i (getVars_acc l exp)) (decreases exp)
+  Lemma (forall i. vars exp i <==> FStar.List.mem i (getVars_acc l exp)) (decreases exp)
 let rec getVars_acc_eq_vars l exp = match exp with
   | BVar n   -> ()
   | BAnd (x, y)
@@ -69,18 +69,21 @@ let rec getVars_acc_eq_vars l exp = match exp with
   | BNot x   -> getVars_acc_eq_vars l x
 
 val getVars_eq_vars : exp:BoolExp ->
-  Lemma (forall i. vars exp i <==> List.mem i (getVars exp))
+  Lemma (forall i. vars exp i <==> FStar.List.mem i (getVars exp))
 let rec getVars_eq_vars exp = getVars_acc_eq_vars [] exp
 *)
 
 // Maximums, counting -- Replace this with a version defined directly on BoolExp
+val max : int -> int -> Tot int
+let max x y = if x > y then x else y
+
 val listMax : (list int) -> Tot int
 let rec listMax lst = match lst with
   | [] -> 0
   | x::xs -> max x (listMax xs)
 
 val varCount : BoolExp -> Tot int
-let varCount exp = List.lengthT (getVars exp)
+let varCount exp = FStar.List.lengthT (getVars exp)
 
 val varMax : BoolExp -> Tot int
 let varMax exp = listMax (getVars exp)
@@ -227,8 +230,8 @@ val compileBexpClean_oop : AncHeap -> BoolExp -> Tot compilerResult
 let compileBexpClean ah targ exp =
   let (ah', res, anc, circ) = compileBexp ah targ exp in
   let cleanup = uncompute circ res in
-  let ah'' = List.fold_leftT insert ah' anc in
-    (ah'', res, [], circ@(List.rev cleanup))
+  let ah'' = FStar.List.fold_leftT insert ah' anc in
+    (ah'', res, [], circ@(FStar.List.rev cleanup))
 let compileBexpClean_oop ah exp = match exp with
   | BVar v -> (ah, v, [], [])
   | _ ->
@@ -245,8 +248,8 @@ let rec compileBexpPebbled ah targ exp = match exp with
     let (ah', xres, xanc, xgate) = compileBexpPebbled_oop ah x in
     let (ah'', yres, yanc, ygate) = compileBexpPebbled_oop ah' y in
     let cleanup = uncompute (xgate @ ygate) targ in
-    let ah''' = List.fold_leftT insert  ah'' (xanc@yanc) in
-      (ah''', targ, [], (xgate @ ygate) @ [RTOFF (xres, yres, targ)] @ (List.rev cleanup))
+    let ah''' = FStar.List.fold_leftT insert  ah'' (xanc@yanc) in
+      (ah''', targ, [], (xgate @ ygate) @ [RTOFF (xres, yres, targ)] @ (FStar.List.rev cleanup))
   | BXor (x, y) ->
     let (ah', xres, xanc, xgate) = compileBexpPebbled ah targ x in
     let (ah'', yres, yanc, ygate) = compileBexpPebbled ah' targ y in
@@ -776,14 +779,14 @@ let rec compile_anc ah targ exp = match exp with
       compile_anc ah targ x;
       compile_decreases_heap ah targ x;
       compile_anc ah' targ y;
-      ListProperties.append_mem_forall xanc yanc
+      FStar.ListProperties.append_mem_forall xanc yanc
   | BAnd (x, y) ->
     let (ah', xres, xanc, xgate) = compileBexp_oop ah x in
     let (ah'', yres, yanc, ygate) = compileBexp_oop ah' y in
       compile_anc_oop ah x;
       compile_decreases_heap_oop ah x;
       compile_anc_oop ah' y;
-      ListProperties.append_mem_forall xanc yanc
+      FStar.ListProperties.append_mem_forall xanc yanc
 and compile_anc_oop ah exp = match exp with
   | BVar v -> ()
   | _ ->
@@ -841,9 +844,9 @@ val compile_with_cleanup : ah:AncHeap -> targ:int -> exp:BoolExp -> st:state ->
 let compile_with_cleanup ah targ exp st =
   let (ah', res, anc, circ) = compileBexp ah targ exp in
   let cleanup = uncompute circ res in
-  let ah'' = List.fold_leftT insert ah' anc in
+  let ah'' = FStar.List.fold_leftT insert ah' anc in
   let st' = evalCirc circ st in
-  let st'' = evalCirc (circ@(List.rev cleanup)) st in
+  let st'' = evalCirc (circ@(FStar.List.rev cleanup)) st in
   let heap_cond =
     let lem1 = // zeroHeap st' ah'
       compile_decreases_heap ah targ exp;
@@ -854,7 +857,7 @@ let compile_with_cleanup ah targ exp st =
     let lem1 = // zeroHeap st'' ah'
       compileBexp_wf ah targ exp;
       uncompute_uses_subset circ res;
-      zeroHeap_st_impl st' ah' (List.rev cleanup)
+      zeroHeap_st_impl st' ah' (FStar.List.rev cleanup)
     in
       compile_ctrls ah targ exp;
       uncompute_mixed_inverse circ res st;
@@ -863,7 +866,7 @@ let compile_with_cleanup ah targ exp st =
   in
   let corr_cond =
     uncompute_targ circ res;
-    eval_mod st' (List.rev cleanup)
+    eval_mod st' (FStar.List.rev cleanup)
   in
     ()
 

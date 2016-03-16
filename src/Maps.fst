@@ -11,7 +11,7 @@
 // Total maps, implemented functionally
 module Total
 open Util
-open FunctionalExtensionality
+open FStar.FunctionalExtensionality
 
 type map (a:Type) (b:Type) = a -> Tot b
 
@@ -79,8 +79,8 @@ type map (n:nat) (b:Type) = l:(list b){List.length l >= n}
 val lookup : #b:Type -> i:nat -> map (i+1) b -> Tot b (decreases i)
 let rec lookup i map =
   if i = 0
-  then match map with (x::_)  -> x
-  else match map with (_::xs) -> lookup (i-1) xs
+  then match map with | x::_  -> x
+  else match map with | _::xs -> lookup (i-1) xs
 
 val update : #b:Type -> i:nat -> b -> map i b -> Tot (map (i+1) b) (decreases i)
 let rec update i y map =

@@ -139,22 +139,22 @@ val appFront  : string -> list string -> Tot (list string)
 val appBack   : string -> list string -> Tot (list string)
 
 let rec replicate i s =
-  if i <= 0 then "" else String.strcat s (replicate (i-1) s)
+  if i <= 0 then "" else FStar.String.strcat s (replicate (i-1) s)
 let rec append' lst1 lst2 = match (lst1, lst2) with
   | ([], _)        -> lst2
   | (_, [])        -> lst1
-  | (x::[], y::ys) -> (String.strcat x y)::ys
+  | (x::[], y::ys) -> (FStar.String.strcat x y)::ys
   | (x::xs, _)     -> x::(append' xs lst2)
 let appFront s lst = match lst with
   | []    -> [s]
-  | x::xs -> (String.strcat s x)::xs
+  | x::xs -> (FStar.String.strcat s x)::xs
 let rec appBack s lst = match lst with
   | []    -> [s]
-  | x::[] -> (String.strcat x s)::[]
+  | x::[] -> (FStar.String.strcat x s)::[]
   | x::xs -> appBack s xs
 
-val hdT : l:(list 'a){List.lengthT l >= 1} -> Tot 'a
-val tlT : l:(list 'a){List.lengthT l >= 1} -> Tot (list 'a)
+val hdT : l:(list 'a){FStar.List.lengthT l >= 1} -> Tot 'a
+val tlT : l:(list 'a){FStar.List.lengthT l >= 1} -> Tot (list 'a)
 let hdT l = match l with
   | x::xs -> x
 let tlT l = match l with
@@ -164,38 +164,38 @@ val prettyPrintTy : GType -> string
 let rec prettyPrintTy ty = match ty with
   | GUnit -> "unit"
   | GBool -> "bool"
-  | GVar i -> IO.string_of_int i
-  | GArray n -> String.strcat "vec " (IO.string_of_int n)
+  | GVar i -> Prims.string_of_int i
+  | GArray n -> FStar.String.strcat "vec " (Prims.string_of_int n)
   | GFun (ty1, ty2) -> begin match ty1 with
-    | GFun _ -> String.strcat "("
-               (String.strcat (prettyPrintTy ty1)
-               (String.strcat ") -> " (prettyPrintTy ty2)))
-    | _ -> String.strcat (prettyPrintTy ty1)
-          (String.strcat " -> " (prettyPrintTy ty2))
+    | GFun _ -> FStar.String.strcat "("
+               (FStar.String.strcat (prettyPrintTy ty1)
+               (FStar.String.strcat ") -> " (prettyPrintTy ty2)))
+    | _ -> FStar.String.strcat (prettyPrintTy ty1)
+          (FStar.String.strcat " -> " (prettyPrintTy ty2))
     end
 
 val prettyPrint : GExpr -> list string
 let rec prettyPrint gexp =
-  let indent i = List.mapT (fun s -> String.strcat (replicate i " ") s) in
+  let indent i l = FStar.List.map (fun s -> FStar.String.strcat (replicate i " ") s) l in
   let brackets s = appFront "(" (appBack ")" s) in
-  let flatten s lst = String.concat s (List.map List.hd lst) in
+  let flatten s lst = FStar.String.concat s (FStar.List.map FStar.List.hd lst) in
   match gexp with
     | LET (s, t1, t2) ->
         let st1 = prettyPrint t1 in
         let st2 = prettyPrint t2 in
-          [String.strcat "let " (String.strcat s (String.strcat " = " (List.hd st1)))] @
-          (indent 2 (List.tl st1)) @ st2
+          [FStar.String.strcat "let " (FStar.String.strcat s (FStar.String.strcat " = " (FStar.List.hd st1)))] @
+          ((indent 2 (FStar.List.tl st1)) @ st2)
     | LAMBDA (s, ty, t) ->
         let st = prettyPrint t in
         let sty = prettyPrintTy ty in
-          [String.strcat "\ " (String.strcat s (String.strcat ":" (String.strcat sty (String.strcat " . " (List.hd st)))))] @
-          (indent 2 (List.tl st))
+          [FStar.String.strcat "\ " (FStar.String.strcat s (FStar.String.strcat ":" (FStar.String.strcat sty (FStar.String.strcat " . " (FStar.List.hd st)))))] @
+          (indent 2 (FStar.List.tl st))
     | APPLY (t1, t2) ->
         let st1 = prettyPrint t1 in
         let st2 = prettyPrint t2 in
-          if for_someT (fun l -> List.length l > 1) ([st1;st2])
+          if for_someT (fun l -> FStar.List.length l > 1) ([st1;st2])
           then (brackets st1) @ (indent 2 st2)
-          else [String.strcat "(" (String.strcat (List.hd st1) (String.strcat ")" (flatten " " [st2])))]
+          else [FStar.String.strcat "(" (FStar.String.strcat (FStar.List.hd st1) (FStar.String.strcat ")" (flatten " " [st2])))]
     | IFTHENELSE (t1, t2, t3) ->
         let st1 = prettyPrint t1 in
         let st2 = prettyPrint t2 in
@@ -221,32 +221,32 @@ let rec prettyPrint gexp =
         let st2 = prettyPrint t2 in
           brackets <| append' st1 (appFront " && " st2)
     | ARRAY tlst ->
-        let stlst = List.map prettyPrint tlst in
-          if for_someT (fun l -> List.length l > 1) stlst
-          then ["["] @ (List.fold_right (fun lst acc -> (appBack "," (indent 2 lst)) @ acc) stlst []) @ ["]"]
-          else [String.strcat "[" (String.strcat (flatten "," stlst) "]")]
+        let stlst = FStar.List.map prettyPrint tlst in
+          if for_someT (fun l -> FStar.List.length l > 1) stlst
+          then ["["] @ (FStar.List.fold_right (fun lst acc -> (appBack "," (indent 2 lst)) @ acc) stlst []) @ ["]"]
+          else [FStar.String.strcat "[" (FStar.String.strcat (flatten "," stlst) "]")]
     | GET_ARRAY (t, i) ->
         let st = prettyPrint t in
-          appBack (String.strcat ".[" (String.strcat (IO.string_of_int i) "]")) st
+          appBack (FStar.String.strcat ".[" (FStar.String.strcat (Prims.string_of_int i) "]")) st
     | APPEND (t1, t2) ->
         let st1 = prettyPrint t1 in
         let st2 = prettyPrint t2 in
-          if for_someT (fun l -> List.lengthT l > 1) [st1;st2]
+          if for_someT (fun l -> FStar.List.lengthT l > 1) [st1;st2]
           then ["append"] @ (indent 2 st1) @ (indent 2 st2)
-          else [String.strcat "append" (String.strcat (List.hd st1) (String.strcat " " (List.hd st2)))]
+          else [FStar.String.strcat "append" (FStar.String.strcat (FStar.List.hd st1) (FStar.String.strcat " " (FStar.List.hd st2)))]
     | ROT (i, t) ->
         let st = prettyPrint t in
-          appFront (String.strcat "rot " (IO.string_of_int i)) st
+          appFront (FStar.String.strcat "rot " (Prims.string_of_int i)) st
     | SLICE (t, i, j) ->
         let st = prettyPrint t in
-          appBack (String.strcat ".["
-                  (String.strcat (IO.string_of_int i)
-                  (String.strcat ".."
-                  (String.strcat (IO.string_of_int j) "]")))) st
+          appBack (FStar.String.strcat ".["
+                  (FStar.String.strcat (Prims.string_of_int i)
+                  (FStar.String.strcat ".."
+                  (FStar.String.strcat (Prims.string_of_int j) "]")))) st
     | ASSERT t ->
         let st = prettyPrint t in
           appFront "allege " st
-    | LOC i -> [String.strcat "loc " (IO.string_of_int i)]
+    | LOC i -> [FStar.String.strcat "loc " (Prims.string_of_int i)]
     | BEXP bexp -> [prettyPrintBexp bexp]
     | _ -> []
 
@@ -254,11 +254,11 @@ val show : GExpr -> Tot string
 let show gexp = ""
 //let show gexp =
 //  let str = prettyPrint gexp in
-//  String.concat "\n" str
+//  FStar.String.concat "\n" str
 
 let print gexp =
   let str = prettyPrint gexp in
-  List.iter IO.print_string str
+  FStar.List.iter IO.print_string str
 
 // Substitutions
 val substTy : ty:GType -> int -> GType -> Tot GType (decreases ty)
@@ -326,8 +326,8 @@ type wellTypedCtxt : ctxt -> string -> GType -> Type =
                 wellTypedCtxt xs s ty ->
                 wellTypedCtxt (x::xs) s ty
 
-type subType (ty1:GType) (ty2:GType) =
-  | Sub_refl : subType ty1 ty1
+type subType : GType -> GType -> Type =
+  | Sub_refl : #t1:GType -> subType t1 t1
   | Sub_arry : n:nat -> m:fin n -> subType (GArray n) (GArray m)
   | Sub_lam  : #t1:GType -> #t2:GType -> #s1:GType -> #s2:GType ->
                subType s1 t1 ->
@@ -536,7 +536,7 @@ let rec inferTypes top ctx gexp = match gexp with
       (top'', e1::e2::(ec1@ec2), lc1@lc2, TBool)
   | ARRAY tlst ->
     let (top', ec, lc) = inferTypes_lst top ctx tlst in
-      (top', ec, lc, TArray (ILit (List.lengthT tlst)))
+      (top', ec, lc, TArray (ILit (FStar.List.lengthT tlst)))
   | GET_ARRAY (t, i) ->
     let (top', ec1, lc1, ty1) = inferTypes top ctx t in
     let e1 = TCons (ty1, TArray (IVar top')) in
@@ -745,7 +745,7 @@ type evalR : config -> valconfig -> Type =
       inHeap st'' l' b' ->
       evalR (t1, env, st)        (LOC l, st') ->
       evalR (t2, env, st')       (LOC l', st'') ->
-      evalR (XOR (t1, t2), env, st) (LOC (List.length st''), (b <> b')::st'')
+      evalR (XOR (t1, t2), env, st) (LOC (FStar.List.length st''), (b <> b')::st'')
   | EvAnd :
       #t1:GExpr -> #t2:GExpr -> #env:env -> #st:heap ->
       #l:int -> #st':heap -> #b:bool -> #l':int -> #st'':heap -> #b':bool ->
@@ -753,10 +753,10 @@ type evalR : config -> valconfig -> Type =
       inHeap st'' l' b' ->
       evalR (t1, env, st)        (LOC l, st')   ->
       evalR (t2, env, st')       (LOC l', st'') ->
-      evalR (AND (t1, t2), env, st) (LOC (List.length st''), (b && b')::st'')
+      evalR (AND (t1, t2), env, st) (LOC (FStar.List.length st''), (b && b')::st'')
   | EvBoo :
       #b:bool -> #env:env -> #st:heap ->
-      evalR (BOOL b, env, st) (LOC (List.length st), b::st)
+      evalR (BOOL b, env, st) (LOC (FStar.List.length st), b::st)
   | EvApd :
       #t1:GExpr -> #t2:GExpr -> #env:env -> #st:heap ->
       #lst1:list GExpr -> #st':heap -> #lst2:list GExpr -> #st'':heap ->
@@ -766,13 +766,13 @@ type evalR : config -> valconfig -> Type =
   | EvRot :
       #t:GExpr -> #i:int -> #env:env -> #st:heap ->
       #lst:list GExpr -> #st':heap ->
-      b2t (i < List.length lst) ->
+      b2t (i < FStar.List.length lst) ->
       evalR (t, env, st)       (ARRAY lst, st') ->
       evalR (ROT (i, t), env, st) (ARRAY (rotate lst i), st')
   | EvSlc :
       #t:GExpr -> #i:int -> #j:int -> #env:env -> #st:heap ->
       #lst:list GExpr -> #st':heap ->
-      b2t (j < List.length lst && j >= i) ->
+      b2t (j < FStar.List.length lst && j >= i) ->
       evalR (t, env, st)           (ARRAY lst, st') ->
       evalR (SLICE (t, i, j), env, st) (ARRAY (slice lst i j), st')
   | EvArr :
@@ -789,7 +789,7 @@ type evalR : config -> valconfig -> Type =
   | EvGta :
       #t:GExpr -> #i:int -> #env:env -> #st:heap ->
       #lst:list GExpr -> #st':heap ->
-      evalR (t, env, st)       (ARRAY lst, st') -> i < List.length lst ->
+      evalR (t, env, st)       (ARRAY lst, st') -> i < FStar.List.length lst ->
       evalR (ROT t i, env, st) (ARRAY (rotate lst i), st')
   | EvStv :*)
   | EvGtv :

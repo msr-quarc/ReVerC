@@ -22,14 +22,14 @@ type Circuit =
 val prettyPrintGate : Gate -> string
 let prettyPrintGate gate = match gate with
   | RCNOT (a, b) -> String.strcat "tof "
-                   (String.strcat (IO.string_of_int a)
-                   (String.strcat " " (IO.string_of_int b)))
+                   (String.strcat (Prims.string_of_int a)
+                   (String.strcat " " (Prims.string_of_int b)))
   | RTOFF (a, b, c) -> String.strcat "tof "
-                      (String.strcat (IO.string_of_int a)
+                      (String.strcat (Prims.string_of_int a)
                       (String.strcat " "
-                      (String.strcat (IO.string_of_int b)
-                      (String.strcat " " (IO.string_of_int c)))))
-  | RNOT a -> String.strcat "tof " (IO.string_of_int a)
+                      (String.strcat (Prims.string_of_int b)
+                      (String.strcat " " (Prims.string_of_int c)))))
+  | RNOT a -> String.strcat "tof " (Prims.string_of_int a)
 
 val prettyPrintCircuit : list Gate -> list string
 let prettyPrintCircuit = List.map prettyPrintGate

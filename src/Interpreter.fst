@@ -671,18 +671,18 @@ type circ_equiv (st:boolState) (cs:circState) (init:state) =
   (forall i. not (mem (lookup cs.subs i) cs.ah)) /\
   (forall i. boolEval st init i = circEval cs init i)
 
-val eval_bexp_swap : st:boolState -> cs:circState -> bexp:BoolExp -> bexp':BoolExp -> init:state ->
+val eval_bexp_swap2 : st:boolState -> cs:circState -> bexp:BoolExp -> bexp':BoolExp -> init:state ->
   Lemma (requires (circ_equiv st cs init /\
                    bexp' = substVar bexp cs.subs /\
                    disjoint (elts cs.ah) (vars bexp')))
         (ensures  (evalBexp bexp (snd st) = evalBexp bexp' (evalCirc cs.gates init)))
-let rec eval_bexp_swap st cs bexp bexp' init = match (bexp, bexp') with
+let rec eval_bexp_swap2 st cs bexp bexp' init = match (bexp, bexp') with
   | (BFalse, _) -> ()
   | (BVar i, _) -> ()
-  | (BNot x, BNot x') -> eval_bexp_swap st cs x x' init
+  | (BNot x, BNot x') -> eval_bexp_swap2 st cs x x' init
   | (BAnd (x, y), BAnd (x', y')) | (BXor (x, y), (BXor (x', y'))) ->
-    eval_bexp_swap st cs x x' init;
-    eval_bexp_swap st cs y y' init
+    eval_bexp_swap2 st cs x x' init;
+    eval_bexp_swap2 st cs y y' init
 
 val eval_commutes_subst_circ : st:boolState -> cs:circState -> bexp:BoolExp ->
   bexp':BoolExp -> init:state -> targ:int -> targ':int ->
@@ -698,7 +698,7 @@ val eval_commutes_subst_circ : st:boolState -> cs:circState -> bexp:BoolExp ->
 let eval_commutes_subst_circ st cs bexp bexp' init targ targ' =
   let init' = evalCirc cs.gates init in
     compile_bexp_correct cs.ah targ' bexp' init';
-    eval_bexp_swap st cs bexp bexp' init
+    eval_bexp_swap2 st cs bexp bexp' init
 
 val eval_commutes_subst_circ_oop : st:boolState -> cs:circState ->
   bexp:BoolExp -> bexp':BoolExp -> init:state ->
@@ -712,7 +712,7 @@ val eval_commutes_subst_circ_oop : st:boolState -> cs:circState ->
 let eval_commutes_subst_circ_oop st cs bexp bexp' init =
   let init' = evalCirc cs.gates init in
     compile_bexp_correct_oop cs.ah bexp' init';
-    eval_bexp_swap st cs bexp bexp' init
+    eval_bexp_swap2 st cs bexp bexp' init
 
 val circ_equiv_alloc : st:boolState -> cs:circState -> init:state -> bexp:BoolExp ->
   Lemma (requires (circ_equiv st cs init))

@@ -25,7 +25,7 @@ let intersection a b = fun c -> a c && b c
 let complement s     = fun x -> not (s x)
 let ins a b          = union (singleton a) b
 
-open FunctionalExtensionality
+open FStar.FunctionalExtensionality
 type Equal (#a:Type) (s1:set a) (s2:set a) = FEq s1 s2
 val lemma_equal_intro: #a:Type -> s1:set a -> s2:set a -> Lemma
     (requires  (forall x. mem x s1 = mem x s2))

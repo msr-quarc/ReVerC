@@ -7,7 +7,7 @@ module PairHeap
               means the root is less than the root of each subheap. It is later
               proven that this property implies the heap property. *)
 
-open List
+open FStar.List
 open Util
 
 // Pairing heaps with no duplicate elements
