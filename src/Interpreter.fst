@@ -292,7 +292,7 @@ val boolAlloc  : boolState -> BoolExp -> Tot (int * boolState)
 val boolAssign : boolState -> int -> BoolExp -> Tot boolState
 val boolEval   : boolState -> state -> int -> Tot bool
 
-let boolInit = (0, const false)
+let boolInit = (0, const_map false)
 let boolAlloc (top, st) bexp =
   (top, (top + 1, update st top (evalBexp bexp st)))
 let boolAssign (top, st) l bexp =
@@ -332,7 +332,7 @@ val bexpAlloc  : BExpState -> BoolExp -> Tot (int * BExpState)
 val bexpAssign : BExpState -> int -> BoolExp -> Tot BExpState
 val bexpEval   : BExpState -> state -> int -> Tot bool
 
-let bexpInit = (0, const BFalse)
+let bexpInit = (0, const_map BFalse)
 let bexpAlloc (top, st) bexp =
   (top, (top + 1, update st top (substBexp bexp st)))
 let bexpAssign (top, st) l bexp =
@@ -453,7 +453,7 @@ val circAlloc  : circState -> BoolExp -> Tot (int * circState)
 val circAssign : circState -> int -> BoolExp -> Tot circState
 val circEval   : circState -> state -> int -> Tot bool
 
-let circInit = {top = 0; ah = emptyHeap; gates = []; subs = const 0}
+let circInit = {top = 0; ah = emptyHeap; gates = []; subs = const_map 0}
 let circAlloc cs bexp =
   let (ah', res, ancs, circ') = compileBexp_oop cs.ah (substVar bexp cs.subs) in
   let top' = cs.top + 1 in

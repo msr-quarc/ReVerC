@@ -19,7 +19,7 @@ end else begin
 end); domain = (fun ( x  :  'Akey ) -> ((x = k) || (m.domain x)))})
 
 
-let const = (fun ( v  :  'Avalue ) -> {mappings = (fun ( _8_26  :  'Akey ) -> v); domain = (fun ( _8_28  :  'Akey ) -> true)})
+let const = (fun ( v  :  'Avalue ) -> {mappings = (fun ( _6_26  :  'Akey ) -> v); domain = (fun ( _6_28  :  'Akey ) -> true)})
 
 
 let concat = (fun ( m1  :  ('Akey, 'Avalue) t ) ( m2  :  ('Akey, 'Avalue) t ) -> {mappings = (fun ( x  :  'Akey ) -> if (m2.domain x) then begin

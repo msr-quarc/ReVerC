@@ -59,26 +59,26 @@ let rec wfCirc circ = match circ with
   | x::xs -> wfGate x && wfCirc xs
 
 // Qubits used by a circuit
-val use : int -> list Gate -> Tot bool
-let rec use i lst = match lst with
+val used : int -> list Gate -> Tot bool
+let rec used i lst = match lst with
   | [] -> false
-  | (RCNOT (a, b))::xs    -> a = i || b = i || use i xs
-  | (RTOFF (a, b, c))::xs -> a = i || b = i || c = i || use i xs
-  | (RNOT a)::xs          -> a = i || use i xs
+  | (RCNOT (a, b))::xs    -> a = i || b = i || used i xs
+  | (RTOFF (a, b, c))::xs -> a = i || b = i || c = i || used i xs
+  | (RNOT a)::xs          -> a = i || used i xs
 
 val uses : list Gate -> Tot (set int)
-let uses lst = fun i -> use i lst
+let uses lst = fun i -> used i lst
 
 // Qubits modified by a circuit
-val mod : int -> list Gate -> Tot bool
-let rec mod i gates = match gates with
+val modded : int -> list Gate -> Tot bool
+let rec modded i gates = match gates with
   | [] -> false
   | (RCNOT (_, t))::xs
   | (RTOFF (_, _, t))::xs
-  | (RNOT t)::xs -> i = t || mod i xs
+  | (RNOT t)::xs -> i = t || modded i xs
 
 val mods : list Gate -> Tot (set int)
-let mods gates = fun i -> mod i gates
+let mods gates = fun i -> modded i gates
 
 // Qubits used as controls
 val ctrl : int -> list Gate -> Tot bool
@@ -95,13 +95,13 @@ let ctrls gates = fun i -> ctrl i gates
 val uncompute : list Gate -> int -> Tot (list Gate)
 let rec uncompute circ targ = match circ with
   | [] -> []
-  | x::xs -> if (use targ [x]) then uncompute xs targ else x::(uncompute xs targ)
+  | x::xs -> if (used targ [x]) then uncompute xs targ else x::(uncompute xs targ)
 
 // ---------------------------------------------------------- Circuit properties
 
 // Lemmas about modified bits
 val ref_imp_use : gates:(list Gate) ->
-  Lemma (forall i. mod i gates \/ ctrl i gates <==> use i gates)
+  Lemma (forall i. modded i gates \/ ctrl i gates <==> used i gates)
 let rec ref_imp_use gates = match gates with
   | [] -> ()
   | x::xs -> ref_imp_use xs
@@ -136,8 +136,8 @@ let rec evalCirc_append l1 l2 st = match l1 with
 
 val use_append : i:int -> x:(list Gate) -> y:(list Gate) ->
   Lemma (requires true)
-        (ensures  (use i (x@y) <==> use i x \/ use i y))
-  [SMTPat (use i (x@y))]
+        (ensures  (used i (x@y) <==> used i x \/ used i y))
+  [SMTPat (used i (x@y))]
 let rec use_append i x y = match x with
   | [] -> ()
   | x::xs -> use_append i xs y
@@ -151,8 +151,8 @@ let rec uses_append x y =
 
 val mod_append : i:int -> l1:(list Gate) -> l2:(list Gate) ->
   Lemma (requires true)
-        (ensures  (mod i (l1@l2) <==> mod i l1 \/ mod i l2))
-  [SMTPat (mod i (l1@l2))]
+        (ensures  (modded i (l1@l2) <==> modded i l1 \/ modded i l2))
+  [SMTPat (modded i (l1@l2))]
 let rec mod_append i l1 l2 = match l1 with
   | [] -> ()
   | x::xs -> mod_append i xs l2
@@ -267,7 +267,7 @@ let bennett comp copy st =
     rev_inverse comp st
 
 val uncompute_targ : circ:list Gate -> targ:int ->
-  Lemma (not (mod targ (uncompute circ targ)))
+  Lemma (not (modded targ (uncompute circ targ)))
 let rec uncompute_targ circ targ = match circ with
   | [] -> ()
   | x::xs -> uncompute_targ xs targ
@@ -302,7 +302,7 @@ val uncompute_agree : circ:list Gate -> targ:int -> st:state ->
 let rec uncompute_agree circ targ st = match circ with
   | [] -> ()
   | x::xs ->
-    if (use targ [x])
+    if (used targ [x])
     then
       (evalCirc_state_swap xs (applyGate st x) st (complement (singleton targ));
        uncompute_agree xs targ st;

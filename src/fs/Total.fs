@@ -32,7 +32,7 @@ end)
 let compose = (fun ( m  :  ('Aa, 'Ab) map ) ( m'  :  ('Ab, 'Ac) map ) ( i  :  'Aa ) -> (m' (m i)))
 
 
-let const = (fun ( v  :  'Ab ) ( _12_45  :  'Aa ) -> v)
+let const_map = (fun ( v  :  'Ab ) ( _13_45  :  'Aa ) -> v)
 
 
 type state =

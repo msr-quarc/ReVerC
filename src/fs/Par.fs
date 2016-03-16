@@ -8,7 +8,7 @@ type ('Akey, 'Avalue) map =
 
 let rec dom = (fun ( mp  :  ('k, 'v) map ) -> (match (mp) with
 | [] -> begin
-(fun ( _12_128  :  'k ) -> false)
+(fun ( _17_7  :  'k ) -> false)
 end
 | x::xs -> begin
 (fun ( y  :  'k ) -> (((Prims.fst x) = y) || (dom xs y)))
@@ -17,7 +17,7 @@ end))
 
 let rec cod = (fun ( mp  :  ('k, 'v) map ) -> (match (mp) with
 | [] -> begin
-(fun ( _12_138  :  'v ) -> false)
+(fun ( _17_17  :  'v ) -> false)
 end
 | x::xs -> begin
 (fun ( y  :  'v ) -> (((Prims.snd x) = y) || (cod xs y)))

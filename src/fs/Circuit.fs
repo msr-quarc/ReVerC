@@ -36,20 +36,20 @@ end))
 
 
 let ___RCNOT____0 = (fun ( projectee  :  l__Gate ) -> (match (projectee) with
-| RCNOT (_15_3) -> begin
-_15_3
+| RCNOT (_14_3) -> begin
+_14_3
 end))
 
 
 let ___RTOFF____0 = (fun ( projectee  :  l__Gate ) -> (match (projectee) with
-| RTOFF (_15_6) -> begin
-_15_6
+| RTOFF (_14_6) -> begin
+_14_6
 end))
 
 
 let ___RNOT____0 = (fun ( projectee  :  l__Gate ) -> (match (projectee) with
-| RNOT (_15_9) -> begin
-_15_9
+| RNOT (_14_9) -> begin
+_14_9
 end))
 
 
@@ -117,34 +117,34 @@ end
 end))
 
 
-let rec use : Prims.int  ->  l__Gate Prims.list  ->  Prims.bool = (fun ( i  :  Prims.int ) ( lst  :  l__Gate Prims.list ) -> (match (lst) with
+let rec used : Prims.int  ->  l__Gate Prims.list  ->  Prims.bool = (fun ( i  :  Prims.int ) ( lst  :  l__Gate Prims.list ) -> (match (lst) with
 | [] -> begin
 false
 end
 | RCNOT (a, b)::xs -> begin
-(((a = i) || (b = i)) || (use i xs))
+(((a = i) || (b = i)) || (used i xs))
 end
 | RTOFF (a, b, c)::xs -> begin
-((((a = i) || (b = i)) || (c = i)) || (use i xs))
+((((a = i) || (b = i)) || (c = i)) || (used i xs))
 end
 | RNOT (a)::xs -> begin
-((a = i) || (use i xs))
+((a = i) || (used i xs))
 end))
 
 
-let uses : l__Gate Prims.list  ->  Prims.int Util.set = (fun ( lst  :  l__Gate Prims.list ) ( i  :  Prims.int ) -> (use i lst))
+let uses : l__Gate Prims.list  ->  Prims.int Util.set = (fun ( lst  :  l__Gate Prims.list ) ( i  :  Prims.int ) -> (used i lst))
 
 
-let rec mod : Prims.int  ->  l__Gate Prims.list  ->  Prims.bool = (fun ( i  :  Prims.int ) ( gates  :  l__Gate Prims.list ) -> (match (gates) with
+let rec modded : Prims.int  ->  l__Gate Prims.list  ->  Prims.bool = (fun ( i  :  Prims.int ) ( gates  :  l__Gate Prims.list ) -> (match (gates) with
 | [] -> begin
 false
 end
 | (RCNOT (_, t)::xs) | (RTOFF (_, _, t)::xs) | (RNOT (t)::xs) -> begin
-((i = t) || (mod i xs))
+((i = t) || (modded i xs))
 end))
 
 
-let mods : l__Gate Prims.list  ->  Prims.int Util.set = (fun ( gates  :  l__Gate Prims.list ) ( i  :  Prims.int ) -> (mod i gates))
+let mods : l__Gate Prims.list  ->  Prims.int Util.set = (fun ( gates  :  l__Gate Prims.list ) ( i  :  Prims.int ) -> (modded i gates))
 
 
 let rec ctrl : Prims.int  ->  l__Gate Prims.list  ->  Prims.bool = (fun ( i  :  Prims.int ) ( lst  :  l__Gate Prims.list ) -> (match (lst) with
@@ -170,7 +170,7 @@ let rec uncompute : l__Gate Prims.list  ->  Prims.int  ->  l__Gate Prims.list = 
 []
 end
 | x::xs -> begin
-if (use targ ((x)::[])) then begin
+if (used targ ((x)::[])) then begin
 (uncompute xs targ)
 end else begin
 (x)::(uncompute xs targ)

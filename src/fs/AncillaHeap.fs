@@ -13,7 +13,7 @@ type l__AncHeap =
 l__AncHeapRecord
 
 
-let emptyHeap : l__AncHeap = {hp = PairHeap.Empty; max = 0}
+let emptyHeap : l__AncHeap = {hp = PairHeap.Empty; max = (Prims.parse_int "0")}
 
 
 let above : Prims.int  ->  l__AncHeap = (fun ( n  :  Prims.int ) -> {hp = PairHeap.Empty; max = n})
@@ -30,7 +30,7 @@ let insert : l__AncHeap  ->  Prims.int  ->  l__AncHeap = (fun ( ah  :  l__AncHea
 let newMax = if (i < ah.max) then begin
 ah.max
 end else begin
-(i + 1)
+(i + (Prims.parse_int "1"))
 end
 in {hp = (PairHeap.insert ah.hp i); max = newMax}))
 
@@ -39,37 +39,37 @@ let popMin : l__AncHeap  ->  (l__AncHeap * Prims.int) = (fun ( ah  :  l__AncHeap
 | PairHeap.Empty -> begin
 ((
 
-let _14_16 = ah
-in {hp = _14_16.hp; max = (ah.max + 1)}), ah.max)
+let _16_16 = ah
+in {hp = _16_16.hp; max = (ah.max + (Prims.parse_int "1"))}), ah.max)
 end
 | PairHeap.Heap (r, l) -> begin
 (
 
 let hp' = (
 
-let _14_22 = ()
+let _16_22 = ()
 in (
 
-let _14_24 = ()
+let _16_24 = ()
 in (PairHeap.deleteMin ah.hp)))
 in ((
 
-let _14_27 = ah
-in {hp = hp'; max = _14_27.max}), (PairHeap.getMin ah.hp)))
+let _16_27 = ah
+in {hp = hp'; max = _16_27.max}), (PairHeap.getMin ah.hp)))
 end))
 
 
 let rec getn_acc : l__AncHeap  ->  Prims.int Prims.list  ->  Prims.nat  ->  (l__AncHeap * Prims.int Prims.list) = (fun ( ah  :  l__AncHeap ) ( acc  :  Prims.int Prims.list ) ( n  :  Prims.nat ) -> (match (n) with
-| 0 -> begin
+| _38_32 when (_38_32 = (Prims.parse_int "0")) -> begin
 (ah, acc)
 end
 | n -> begin
 (
 
-let _14_36 = (popMin ah)
-in (match (_14_36) with
+let _16_36 = (popMin ah)
+in (match (_16_36) with
 | (newah, v) -> begin
-(getn_acc newah ((v)::acc) (n - 1))
+(getn_acc newah ((v)::acc) (n - (Prims.parse_int "1")))
 end))
 end))
 

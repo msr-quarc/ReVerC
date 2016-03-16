@@ -31,8 +31,8 @@ let update map x y = fun z -> if z = x then y else map z
 val compose : #a:Type -> #b:Type -> #c:Type -> map a b -> map b c -> Tot (map a c)
 let compose m m' = fun i -> m' (m i)
 
-val const : #a:Type -> #b:Type -> b -> Tot (map a b)
-let const v = fun _ -> v
+val const_map : #a:Type -> #b:Type -> b -> Tot (map a b)
+let const_map v = fun _ -> v
 
 type state = map int bool
 

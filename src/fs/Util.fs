@@ -13,7 +13,7 @@ type 'Aa set =
 let mem = (fun ( i  :  'Aa ) ( s  :  'Aa set ) -> (s i))
 
 
-let empty = (fun ( _11_13  :  'Aa ) -> false)
+let empty = (fun ( _12_13  :  'Aa ) -> false)
 
 
 let singleton = (fun ( a  :  'Aa ) ( b  :  'Aa ) -> (b = a))
@@ -83,14 +83,14 @@ end))
 
 
 let ___Val____0 = (fun ( projectee  :  'a result ) -> (match (projectee) with
-| Val (_11_90) -> begin
-_11_90
+| Val (_12_90) -> begin
+_12_90
 end))
 
 
 let ___Err____0 = (fun ( projectee  :  'a result ) -> (match (projectee) with
-| Err (_11_93) -> begin
-_11_93
+| Err (_12_93) -> begin
+_12_93
 end))
 
 
@@ -132,10 +132,10 @@ let mems = (fun ( l  :  'Aa Prims.list ) ( i  :  'Aa ) -> (FStar.List.mem i l))
 
 let rec nthT = (fun ( l  :  'a Prims.list ) ( i  :  Prims.int ) -> (match (l) with
 | x::xs -> begin
-if (i = 0) then begin
+if (i = (Prims.parse_int "0")) then begin
 x
 end else begin
-(nthT xs (i - 1))
+(nthT xs (i - (Prims.parse_int "1")))
 end
 end))
 
@@ -153,49 +153,49 @@ end
 end))
 
 
-let rec take = (fun ( l  :  'a Prims.list ) ( i  :  Prims.int ) -> if (i <= 0) then begin
+let rec take = (fun ( l  :  'a Prims.list ) ( i  :  Prims.int ) -> if (i <= (Prims.parse_int "0")) then begin
 []
 end else begin
 (match (l) with
 | x::xs -> begin
-(x)::(take xs (i - 1))
+(x)::(take xs (i - (Prims.parse_int "1")))
 end)
 end)
 
 
-let rec remove = (fun ( l  :  'a Prims.list ) ( i  :  Prims.nat ) -> if (i = 0) then begin
+let rec remove = (fun ( l  :  'a Prims.list ) ( i  :  Prims.nat ) -> if (i = (Prims.parse_int "0")) then begin
 l
 end else begin
 (match (l) with
-| _11_164::xs -> begin
-(remove xs (i - 1))
+| _12_164::xs -> begin
+(remove xs (i - (Prims.parse_int "1")))
 end)
 end)
 
 
-let rec rotate_rec = (fun ( acc  :  'a Prims.list ) ( l  :  'a Prims.list ) ( i  :  Prims.nat ) -> if (i = 0) then begin
+let rec rotate_rec = (fun ( acc  :  'a Prims.list ) ( l  :  'a Prims.list ) ( i  :  Prims.nat ) -> if (i = (Prims.parse_int "0")) then begin
 (FStar.List.append acc (FStar.List.rev l))
 end else begin
 (match (l) with
 | x::xs -> begin
-(rotate_rec ((x)::acc) xs (i - 1))
+(rotate_rec ((x)::acc) xs (i - (Prims.parse_int "1")))
 end)
 end)
 
 
 let rotate = (fun ( l  :  'a Prims.list ) ( i  :  Prims.nat ) -> (
 
-let _11_183 = ()
+let _12_183 = ()
 in (rotate_rec [] (FStar.List.rev l) i)))
 
 
-let slice = (fun ( l  :  'a Prims.list ) ( i  :  Prims.nat ) ( j  :  Prims.nat ) -> (take (remove l i) ((j - i) + 1)))
+let slice = (fun ( l  :  'a Prims.list ) ( i  :  Prims.nat ) ( j  :  Prims.nat ) -> (take (remove l i) ((j - i) + (Prims.parse_int "1"))))
 
 
-let rec of_int : Prims.nat  ->  Prims.int  ->  Prims.bool Prims.list = (fun ( i  :  Prims.nat ) ( j  :  Prims.int ) -> if (j <= 0) then begin
+let rec of_int : Prims.nat  ->  Prims.int  ->  Prims.bool Prims.list = (fun ( i  :  Prims.nat ) ( j  :  Prims.int ) -> if (j <= (Prims.parse_int "0")) then begin
 []
 end else begin
-(((i % 2) = 1))::(of_int (i / 2) (j - 1))
+(((i % (Prims.parse_int "2")) = (Prims.parse_int "1")))::(of_int (i / (Prims.parse_int "2")) (j - (Prims.parse_int "1")))
 end)
 
 

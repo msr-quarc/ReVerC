@@ -6,7 +6,7 @@ let isEmpty = (fun ( l  :  'a Prims.list ) -> (match (l) with
 | [] -> begin
 true
 end
-| _6_18 -> begin
+| _9_18 -> begin
 false
 end))
 
@@ -14,20 +14,20 @@ end))
 let isEmptyT = isEmpty
 
 
-let hd = (fun ( _6_1  :  'a Prims.list ) -> (match (_6_1) with
+let hd = (fun ( _9_1  :  'a Prims.list ) -> (match (_9_1) with
 | hd::tl -> begin
 hd
 end
-| _6_25 -> begin
+| _9_25 -> begin
 (FStar.All.failwith "head of empty list")
 end))
 
 
-let tail = (fun ( _6_2  :  'A_6_1232 Prims.list ) -> (match (_6_2) with
+let tail = (fun ( _9_2  :  'A_9_1232 Prims.list ) -> (match (_9_2) with
 | hd::tl -> begin
 tl
 end
-| _6_31 -> begin
+| _9_31 -> begin
 (FStar.All.failwith "tail of empty list")
 end))
 
@@ -35,27 +35,27 @@ end))
 let tl = tail
 
 
-let rec length = (fun ( _6_3  :  'a Prims.list ) -> (match (_6_3) with
+let rec length = (fun ( _9_3  :  'a Prims.list ) -> (match (_9_3) with
 | [] -> begin
-0
+(Prims.parse_int "0")
 end
-| _6_37::tl -> begin
-(1 + (length tl))
+| _9_37::tl -> begin
+((Prims.parse_int "1") + (length tl))
 end))
 
 
 let lengthT = length
 
 
-let rec nth = (fun ( l  :  'a Prims.list ) ( n  :  Prims.int ) -> if (n < 0) then begin
+let rec nth = (fun ( l  :  'a Prims.list ) ( n  :  Prims.int ) -> if (n < (Prims.parse_int "0")) then begin
 (FStar.All.failwith "nth takes a non-negative integer as input")
 end else begin
-if (n = 0) then begin
+if (n = (Prims.parse_int "0")) then begin
 (match (l) with
 | [] -> begin
 (FStar.All.failwith "not enough elements")
 end
-| hd::_6_44 -> begin
+| hd::_9_44 -> begin
 hd
 end)
 end else begin
@@ -63,8 +63,8 @@ end else begin
 | [] -> begin
 (FStar.All.failwith "not enough elements")
 end
-| _6_50::tl -> begin
-(nth tl (n - 1))
+| _9_50::tl -> begin
+(nth tl (n - (Prims.parse_int "1")))
 end)
 end
 end)
@@ -75,21 +75,21 @@ let rec total_nth = (fun ( l  :  'a Prims.list ) ( n  :  Prims.nat ) -> (match (
 None
 end
 | hd::tl -> begin
-if (n = 0) then begin
+if (n = (Prims.parse_int "0")) then begin
 Some (hd)
 end else begin
-(total_nth tl (n - 1))
+(total_nth tl (n - (Prims.parse_int "1")))
 end
 end))
 
 
-let rec count = (fun ( x  :  'a ) ( _6_4  :  'a Prims.list ) -> (match (_6_4) with
+let rec count = (fun ( x  :  'a ) ( _9_4  :  'a Prims.list ) -> (match (_9_4) with
 | [] -> begin
-0
+(Prims.parse_int "0")
 end
 | hd::tl -> begin
 if (x = hd) then begin
-(1 + (count x tl))
+((Prims.parse_int "1") + (count x tl))
 end else begin
 (count x tl)
 end
@@ -154,24 +154,24 @@ end
 | a::tl -> begin
 (
 
-let _6_95 = (f a)
+let _9_95 = (f a)
 in (iter f tl))
 end))
 
 
-let rec iteri_aux = (fun ( i  :  Prims.int ) ( f  :  Prims.int  ->  'A_6_6759  ->  Prims.unit ) ( x  :  'A_6_6759 Prims.list ) -> (match (x) with
+let rec iteri_aux = (fun ( i  :  Prims.int ) ( f  :  Prims.int  ->  'A_9_6759  ->  Prims.unit ) ( x  :  'A_9_6759 Prims.list ) -> (match (x) with
 | [] -> begin
 ()
 end
 | a::tl -> begin
 (
 
-let _6_104 = (f i a)
-in (iteri_aux (i + 1) f tl))
+let _9_104 = (f i a)
+in (iteri_aux (i + (Prims.parse_int "1")) f tl))
 end))
 
 
-let iteri = (fun ( f  :  Prims.int  ->  'a  ->  Prims.unit ) ( x  :  'a Prims.list ) -> (iteri_aux 0 f x))
+let iteri = (fun ( f  :  Prims.int  ->  'a  ->  Prims.unit ) ( x  :  'a Prims.list ) -> (iteri_aux (Prims.parse_int "0") f x))
 
 
 let rec iterT = (fun ( f  :  'a  ->  Prims.unit ) ( x  :  'a Prims.list ) -> ())
@@ -200,7 +200,7 @@ let rec mapi_init = (fun ( f  :  Prims.int  ->  'a  ->  'b ) ( l  :  'a Prims.li
 []
 end
 | hd::tl -> begin
-((f i hd))::(mapi_init f tl (i + 1))
+((f i hd))::(mapi_init f tl (i + (Prims.parse_int "1")))
 end))
 
 
@@ -209,17 +209,17 @@ let rec mapi_initT = (fun ( f  :  Prims.int  ->  'a  ->  'b ) ( l  :  'a Prims.l
 []
 end
 | hd::tl -> begin
-((f i hd))::(mapi_initT f tl (i + 1))
+((f i hd))::(mapi_initT f tl (i + (Prims.parse_int "1")))
 end))
 
 
-let mapi = (fun ( f  :  Prims.int  ->  'a  ->  'b ) ( l  :  'a Prims.list ) -> (mapi_init f l 0))
+let mapi = (fun ( f  :  Prims.int  ->  'a  ->  'b ) ( l  :  'a Prims.list ) -> (mapi_init f l (Prims.parse_int "0")))
 
 
-let mapiT = (fun ( f  :  Prims.int  ->  'a  ->  'b ) ( l  :  'a Prims.list ) -> (mapi_initT f l 0))
+let mapiT = (fun ( f  :  Prims.int  ->  'a  ->  'b ) ( l  :  'a Prims.list ) -> (mapi_initT f l (Prims.parse_int "0")))
 
 
-let rec concatMap = (fun ( f  :  'a  ->  'b Prims.list ) ( _6_5  :  'a Prims.list ) -> (match (_6_5) with
+let rec concatMap = (fun ( f  :  'a  ->  'b Prims.list ) ( _9_5  :  'a Prims.list ) -> (match (_9_5) with
 | [] -> begin
 []
 end
@@ -234,7 +234,7 @@ in (append fa ftl)))
 end))
 
 
-let rec concatMapT = (fun ( f  :  'a  ->  'b Prims.list ) ( _6_6  :  'a Prims.list ) -> (match (_6_6) with
+let rec concatMapT = (fun ( f  :  'a  ->  'b Prims.list ) ( _9_6  :  'a Prims.list ) -> (match (_9_6) with
 | [] -> begin
 []
 end
@@ -256,7 +256,7 @@ end
 | (hd1::tl1, hd2::tl2) -> begin
 ((f hd1 hd2))::(map2 f tl1 tl2)
 end
-| (_6_199, _6_201) -> begin
+| (_9_199, _9_201) -> begin
 (FStar.All.failwith "The lists do not have the same length")
 end))
 
@@ -268,7 +268,7 @@ end
 | (hd1::tl1, hd2::tl2, hd3::tl3) -> begin
 ((f hd1 hd2 hd3))::(map3 f tl1 tl2 tl3)
 end
-| (_6_226, _6_228, _6_230) -> begin
+| (_9_226, _9_228, _9_230) -> begin
 (FStar.All.failwith "The lists do not have the same length")
 end))
 
@@ -298,7 +298,7 @@ end
 | (hd1::tl1, hd2::tl2) -> begin
 (fold_left2 f (f a hd1 hd2) tl1 tl2)
 end
-| (_6_269, _6_271) -> begin
+| (_9_269, _9_271) -> begin
 (FStar.All.failwith "The lists do not have the same length")
 end))
 
@@ -321,7 +321,7 @@ end
 end))
 
 
-let rec mem = (fun ( x  :  'a ) ( _6_7  :  'a Prims.list ) -> (match (_6_7) with
+let rec mem = (fun ( x  :  'a ) ( _9_7  :  'a Prims.list ) -> (match (_9_7) with
 | [] -> begin
 false
 end
@@ -372,7 +372,7 @@ end))
 let findT = find
 
 
-let rec filter = (fun ( f  :  'a  ->  Prims.bool ) ( _6_8  :  'a Prims.list ) -> (match (_6_8) with
+let rec filter = (fun ( f  :  'a  ->  Prims.bool ) ( _9_8  :  'a Prims.list ) -> (match (_9_8) with
 | [] -> begin
 []
 end
@@ -385,7 +385,7 @@ end
 end))
 
 
-let rec filterT = (fun ( f  :  'a  ->  Prims.bool ) ( _6_9  :  'a Prims.list ) -> (match (_6_9) with
+let rec filterT = (fun ( f  :  'a  ->  Prims.bool ) ( _9_9  :  'a Prims.list ) -> (match (_9_9) with
 | [] -> begin
 []
 end
@@ -435,7 +435,7 @@ end else begin
 false
 end
 end
-| (_6_366, _6_368) -> begin
+| (_9_366, _9_368) -> begin
 (FStar.All.failwith "The lists do not have the same length")
 end))
 
@@ -544,15 +544,15 @@ end)
 end))
 
 
-let rec partition = (fun ( f  :  'a  ->  Prims.bool ) ( _6_10  :  'a Prims.list ) -> (match (_6_10) with
+let rec partition = (fun ( f  :  'a  ->  Prims.bool ) ( _9_10  :  'a Prims.list ) -> (match (_9_10) with
 | [] -> begin
 ([], [])
 end
 | hd::tl -> begin
 (
 
-let _6_453 = (partition f tl)
-in (match (_6_453) with
+let _9_453 = (partition f tl)
+in (match (_9_453) with
 | (l1, l2) -> begin
 if (f hd) then begin
 ((hd)::l1, l2)
@@ -563,15 +563,15 @@ end))
 end))
 
 
-let rec partitionT = (fun ( f  :  'a  ->  Prims.bool ) ( _6_11  :  'a Prims.list ) -> (match (_6_11) with
+let rec partitionT = (fun ( f  :  'a  ->  Prims.bool ) ( _9_11  :  'a Prims.list ) -> (match (_9_11) with
 | [] -> begin
 ([], [])
 end
 | hd::tl -> begin
 (
 
-let _6_464 = (partitionT f tl)
-in (match (_6_464) with
+let _9_464 = (partitionT f tl)
+in (match (_9_464) with
 | (l1, l2) -> begin
 if (f hd) then begin
 ((hd)::l1, l2)
@@ -605,8 +605,8 @@ end
 | (hd1, hd2)::tl -> begin
 (
 
-let _6_486 = (split tl)
-in (match (_6_486) with
+let _9_486 = (split tl)
+in (match (_9_486) with
 | (tl1, tl2) -> begin
 ((hd1)::tl1, (hd2)::tl2)
 end))
@@ -629,8 +629,8 @@ end
 | (hd1, hd2, hd3)::tl -> begin
 (
 
-let _6_501 = (unzip3 tl)
-in (match (_6_501) with
+let _9_501 = (unzip3 tl)
+in (match (_9_501) with
 | (tl1, tl2, tl3) -> begin
 ((hd1)::tl1, (hd2)::tl2, (hd3)::tl3)
 end))
@@ -647,7 +647,7 @@ end
 | (hd1::tl1, hd2::tl2) -> begin
 ((hd1, hd2))::(zip tl1 tl2)
 end
-| (_6_517, _6_519) -> begin
+| (_9_517, _9_519) -> begin
 (FStar.All.failwith "The lists do not have the same length")
 end))
 
@@ -659,20 +659,20 @@ end
 | (hd1::tl1, hd2::tl2, hd3::tl3) -> begin
 ((hd1, hd2, hd3))::(zip3 tl1 tl2 tl3)
 end
-| (_6_542, _6_544, _6_546) -> begin
+| (_9_542, _9_544, _9_546) -> begin
 (FStar.All.failwith "The lists do not have the same length")
 end))
 
 
-let rec sortWith = (fun ( f  :  'a  ->  'a  ->  Prims.int ) ( _6_12  :  'a Prims.list ) -> (match (_6_12) with
+let rec sortWith = (fun ( f  :  'a  ->  'a  ->  Prims.int ) ( _9_12  :  'a Prims.list ) -> (match (_9_12) with
 | [] -> begin
 []
 end
 | pivot::tl -> begin
 (
 
-let _6_558 = (partition (fun ( x  :  'a ) -> ((f pivot x) > 0)) tl)
-in (match (_6_558) with
+let _9_558 = (partition (fun ( x  :  'a ) -> ((f pivot x) > (Prims.parse_int "0"))) tl)
+in (match (_9_558) with
 | (hi, lo) -> begin
 (append (sortWith f lo) ((pivot)::(sortWith f hi)))
 end))
@@ -682,22 +682,22 @@ end))
 let rec partition_length = (fun ( f  :  'a  ->  Prims.bool ) ( l  :  'a Prims.list ) -> ())
 
 
-let bool_of_compare = (fun ( f  :  'a  ->  'a  ->  Prims.int ) ( x  :  'a ) ( y  :  'a ) -> ((f x y) >= 0))
+let bool_of_compare = (fun ( f  :  'a  ->  'a  ->  Prims.int ) ( x  :  'a ) ( y  :  'a ) -> ((f x y) >= (Prims.parse_int "0")))
 
 
-let rec sortWithT = (fun ( f  :  'a  ->  'a  ->  Prims.int ) ( _6_13  :  'a Prims.list ) -> (match (_6_13) with
+let rec sortWithT = (fun ( f  :  'a  ->  'a  ->  Prims.int ) ( _9_13  :  'a Prims.list ) -> (match (_9_13) with
 | [] -> begin
 []
 end
 | pivot::tl -> begin
 (
 
-let _6_582 = (partitionT (bool_of_compare f pivot) tl)
-in (match (_6_582) with
+let _9_582 = (partitionT (bool_of_compare f pivot) tl)
+in (match (_9_582) with
 | (hi, lo) -> begin
 (
 
-let _6_583 = ()
+let _9_583 = ()
 in (append (sortWithT f lo) ((pivot)::(sortWithT f hi))))
 end))
 end))

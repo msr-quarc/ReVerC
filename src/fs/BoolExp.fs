@@ -56,26 +56,26 @@ end))
 
 
 let ___BVar____0 = (fun ( projectee  :  l__BoolExp ) -> (match (projectee) with
-| BVar (_16_3) -> begin
-_16_3
+| BVar (_19_3) -> begin
+_19_3
 end))
 
 
 let ___BNot____0 = (fun ( projectee  :  l__BoolExp ) -> (match (projectee) with
-| BNot (_16_6) -> begin
-_16_6
+| BNot (_19_6) -> begin
+_19_6
 end))
 
 
 let ___BAnd____0 = (fun ( projectee  :  l__BoolExp ) -> (match (projectee) with
-| BAnd (_16_9) -> begin
-_16_9
+| BAnd (_19_9) -> begin
+_19_9
 end))
 
 
 let ___BXor____0 = (fun ( projectee  :  l__BoolExp ) -> (match (projectee) with
-| BXor (_16_12) -> begin
-_16_12
+| BXor (_19_12) -> begin
+_19_12
 end))
 
 
@@ -152,7 +152,7 @@ end)
 
 let rec listMax : Prims.int Prims.list  ->  Prims.int = (fun ( lst  :  Prims.int Prims.list ) -> (match (lst) with
 | [] -> begin
-0
+(Prims.parse_int "0")
 end
 | x::xs -> begin
 (max x (listMax xs))
@@ -252,7 +252,7 @@ in (match ((x', y')) with
 | ((BFalse, _)) | ((_, BFalse)) -> begin
 BFalse
 end
-| _16_150 -> begin
+| _19_150 -> begin
 BAnd ((x', y'))
 end)))
 end
@@ -267,7 +267,7 @@ in (match ((x', y')) with
 | ((BFalse, z)) | ((z, BFalse)) -> begin
 z
 end
-| _16_163 -> begin
+| _19_163 -> begin
 BXor ((x', y'))
 end)))
 end
@@ -279,7 +279,7 @@ in (match (x') with
 | BNot (y) -> begin
 y
 end
-| _16_170 -> begin
+| _19_170 -> begin
 BNot (x')
 end))
 end))
@@ -417,13 +417,13 @@ end
 | BAnd (x, y) -> begin
 (
 
-let _16_279 = (compileBexp_oop ah x)
-in (match (_16_279) with
+let _19_279 = (compileBexp_oop ah x)
+in (match (_19_279) with
 | (ah', xres, xanc, xgate) -> begin
 (
 
-let _16_284 = (compileBexp_oop ah' y)
-in (match (_16_284) with
+let _19_284 = (compileBexp_oop ah' y)
+in (match (_19_284) with
 | (ah'', yres, yanc, ygate) -> begin
 (ah'', targ, (FStar.List.append xanc yanc), (FStar.List.append (FStar.List.append xgate ygate) ((Circuit.RTOFF ((xres, yres, targ)))::[])))
 end))
@@ -432,13 +432,13 @@ end
 | BXor (x, y) -> begin
 (
 
-let _16_293 = (compileBexp ah targ x)
-in (match (_16_293) with
+let _19_293 = (compileBexp ah targ x)
+in (match (_19_293) with
 | (ah', xres, xanc, xgate) -> begin
 (
 
-let _16_298 = (compileBexp ah' targ y)
-in (match (_16_298) with
+let _19_298 = (compileBexp ah' targ y)
+in (match (_19_298) with
 | (ah'', yres, yanc, ygate) -> begin
 (ah'', targ, (FStar.List.append xanc yanc), (FStar.List.append xgate ygate))
 end))
@@ -447,8 +447,8 @@ end
 | BNot (exp) -> begin
 (
 
-let _16_305 = (compileBexp ah targ exp)
-in (match (_16_305) with
+let _19_305 = (compileBexp ah targ exp)
+in (match (_19_305) with
 | (ah', xres, xanc, xgate) -> begin
 (ah', targ, xanc, (FStar.List.append xgate ((Circuit.RNOT (xres))::[])))
 end))
@@ -457,16 +457,16 @@ and compileBexp_oop : AncillaHeap.l__AncHeap  ->  l__BoolExp  ->  compilerResult
 | BVar (v) -> begin
 (ah, v, [], [])
 end
-| _16_311 -> begin
+| _19_311 -> begin
 (
 
-let _16_314 = (AncillaHeap.popMin ah)
-in (match (_16_314) with
+let _19_314 = (AncillaHeap.popMin ah)
+in (match (_19_314) with
 | (ah', targ) -> begin
 (
 
-let _16_319 = (compileBexp ah' targ exp)
-in (match (_16_319) with
+let _19_319 = (compileBexp ah' targ exp)
+in (match (_19_319) with
 | (ah'', res, anc, gate) -> begin
 (ah'', res, (targ)::anc, gate)
 end))
@@ -476,8 +476,8 @@ end))
 
 let compileBexpClean : AncillaHeap.l__AncHeap  ->  Prims.int  ->  l__BoolExp  ->  compilerResult = (fun ( ah  :  AncillaHeap.l__AncHeap ) ( targ  :  Prims.int ) ( exp  :  l__BoolExp ) -> (
 
-let _16_327 = (compileBexp ah targ exp)
-in (match (_16_327) with
+let _19_327 = (compileBexp ah targ exp)
+in (match (_19_327) with
 | (ah', res, anc, circ) -> begin
 (
 
@@ -493,16 +493,16 @@ let compileBexpClean_oop : AncillaHeap.l__AncHeap  ->  l__BoolExp  ->  compilerR
 | BVar (v) -> begin
 (ah, v, [], [])
 end
-| _16_335 -> begin
+| _19_335 -> begin
 (
 
-let _16_338 = (AncillaHeap.popMin ah)
-in (match (_16_338) with
+let _19_338 = (AncillaHeap.popMin ah)
+in (match (_19_338) with
 | (ah', targ) -> begin
 (
 
-let _16_343 = (compileBexpClean ah' targ exp)
-in (match (_16_343) with
+let _19_343 = (compileBexpClean ah' targ exp)
+in (match (_19_343) with
 | (ah'', res, anc, gate) -> begin
 (ah'', res, (targ)::anc, gate)
 end))
@@ -520,13 +520,13 @@ end
 | BAnd (x, y) -> begin
 (
 
-let _16_360 = (compileBexpPebbled_oop ah x)
-in (match (_16_360) with
+let _19_360 = (compileBexpPebbled_oop ah x)
+in (match (_19_360) with
 | (ah', xres, xanc, xgate) -> begin
 (
 
-let _16_365 = (compileBexpPebbled_oop ah' y)
-in (match (_16_365) with
+let _19_365 = (compileBexpPebbled_oop ah' y)
+in (match (_19_365) with
 | (ah'', yres, yanc, ygate) -> begin
 (
 
@@ -541,13 +541,13 @@ end
 | BXor (x, y) -> begin
 (
 
-let _16_376 = (compileBexpPebbled ah targ x)
-in (match (_16_376) with
+let _19_376 = (compileBexpPebbled ah targ x)
+in (match (_19_376) with
 | (ah', xres, xanc, xgate) -> begin
 (
 
-let _16_381 = (compileBexpPebbled ah' targ y)
-in (match (_16_381) with
+let _19_381 = (compileBexpPebbled ah' targ y)
+in (match (_19_381) with
 | (ah'', yres, yanc, ygate) -> begin
 (ah'', targ, (FStar.List.append xanc yanc), (FStar.List.append xgate ygate))
 end))
@@ -556,8 +556,8 @@ end
 | BNot (exp) -> begin
 (
 
-let _16_388 = (compileBexpPebbled ah targ exp)
-in (match (_16_388) with
+let _19_388 = (compileBexpPebbled ah targ exp)
+in (match (_19_388) with
 | (ah', xres, xanc, xgate) -> begin
 (ah', targ, xanc, (FStar.List.append xgate ((Circuit.RNOT (xres))::[])))
 end))
@@ -566,16 +566,16 @@ and compileBexpPebbled_oop : AncillaHeap.l__AncHeap  ->  l__BoolExp  ->  compile
 | BVar (v) -> begin
 (ah, v, [], [])
 end
-| _16_394 -> begin
+| _19_394 -> begin
 (
 
-let _16_397 = (AncillaHeap.popMin ah)
-in (match (_16_397) with
+let _19_397 = (AncillaHeap.popMin ah)
+in (match (_19_397) with
 | (ah', targ) -> begin
 (
 
-let _16_402 = (compileBexpPebbled ah' targ exp)
-in (match (_16_402) with
+let _19_402 = (compileBexpPebbled ah' targ exp)
+in (match (_19_402) with
 | (ah'', res, anc, gate) -> begin
 (ah'', res, (targ)::anc, gate)
 end))
@@ -583,34 +583,34 @@ end))
 end))
 
 
-let first = (fun ( _16_410  :  ('A_16_82024 * 'A_16_82023 * 'A_16_82022 * 'A_16_82021) ) -> (match (_16_410) with
-| (x, _16_405, _16_407, _16_409) -> begin
+let first = (fun ( _19_410  :  ('A_19_82024 * 'A_19_82023 * 'A_19_82022 * 'A_19_82021) ) -> (match (_19_410) with
+| (x, _19_405, _19_407, _19_409) -> begin
 x
 end))
 
 
-let second = (fun ( _16_418  :  ('A_16_82160 * 'A_16_82159 * 'A_16_82158 * 'A_16_82157) ) -> (match (_16_418) with
-| (_16_412, x, _16_415, _16_417) -> begin
+let second = (fun ( _19_418  :  ('A_19_82160 * 'A_19_82159 * 'A_19_82158 * 'A_19_82157) ) -> (match (_19_418) with
+| (_19_412, x, _19_415, _19_417) -> begin
 x
 end))
 
 
-let third = (fun ( _16_426  :  ('A_16_82296 * 'A_16_82295 * 'A_16_82294 * 'A_16_82293) ) -> (match (_16_426) with
-| (_16_420, _16_422, x, _16_425) -> begin
+let third = (fun ( _19_426  :  ('A_19_82296 * 'A_19_82295 * 'A_19_82294 * 'A_19_82293) ) -> (match (_19_426) with
+| (_19_420, _19_422, x, _19_425) -> begin
 x
 end))
 
 
-let last = (fun ( _16_434  :  ('A_16_82432 * 'A_16_82431 * 'A_16_82430 * 'A_16_82429) ) -> (match (_16_434) with
-| (_16_428, _16_430, _16_432, x) -> begin
+let last = (fun ( _19_434  :  ('A_19_82432 * 'A_19_82431 * 'A_19_82430 * 'A_19_82429) ) -> (match (_19_434) with
+| (_19_428, _19_430, _19_432, x) -> begin
 x
 end))
 
 
 let compileBexpEval : AncillaHeap.l__AncHeapRecord  ->  Prims.int  ->  l__BoolExp  ->  Total.state  ->  Prims.bool = (fun ( ah  :  AncillaHeap.l__AncHeapRecord ) ( targ  :  Prims.int ) ( exp  :  l__BoolExp ) ( st  :  Total.state ) -> (
 
-let _16_443 = (compileBexp ah targ exp)
-in (match (_16_443) with
+let _19_443 = (compileBexp ah targ exp)
+in (match (_19_443) with
 | (ah', res, anc, circ) -> begin
 (Circuit.evalCirc circ st res)
 end)))
@@ -618,8 +618,8 @@ end)))
 
 let compileBexpEval_oop : AncillaHeap.l__AncHeapRecord  ->  l__BoolExp  ->  Total.state  ->  Prims.bool = (fun ( ah  :  AncillaHeap.l__AncHeapRecord ) ( exp  :  l__BoolExp ) ( st  :  Total.state ) -> (
 
-let _16_451 = (compileBexp_oop ah exp)
-in (match (_16_451) with
+let _19_451 = (compileBexp_oop ah exp)
+in (match (_19_451) with
 | (ah', res, anc, circ) -> begin
 (Circuit.evalCirc circ st res)
 end)))
@@ -627,8 +627,8 @@ end)))
 
 let compileBexpCleanEval : AncillaHeap.l__AncHeapRecord  ->  Prims.int  ->  l__BoolExp  ->  Total.state  ->  Prims.bool = (fun ( ah  :  AncillaHeap.l__AncHeapRecord ) ( targ  :  Prims.int ) ( exp  :  l__BoolExp ) ( st  :  Total.state ) -> (
 
-let _16_460 = (compileBexpClean ah targ exp)
-in (match (_16_460) with
+let _19_460 = (compileBexpClean ah targ exp)
+in (match (_19_460) with
 | (ah', res, anc, circ) -> begin
 (Circuit.evalCirc circ st res)
 end)))
@@ -636,8 +636,8 @@ end)))
 
 let compileBexpCleanEval_oop : AncillaHeap.l__AncHeapRecord  ->  l__BoolExp  ->  Total.state  ->  Prims.bool = (fun ( ah  :  AncillaHeap.l__AncHeapRecord ) ( exp  :  l__BoolExp ) ( st  :  Total.state ) -> (
 
-let _16_468 = (compileBexpClean_oop ah exp)
-in (match (_16_468) with
+let _19_468 = (compileBexpClean_oop ah exp)
+in (match (_19_468) with
 | (ah', res, anc, circ) -> begin
 (Circuit.evalCirc circ st res)
 end)))
@@ -645,8 +645,8 @@ end)))
 
 let compileBexpCleanEvalSt : AncillaHeap.l__AncHeapRecord  ->  Prims.int  ->  l__BoolExp  ->  Total.state  ->  Total.state = (fun ( ah  :  AncillaHeap.l__AncHeapRecord ) ( targ  :  Prims.int ) ( exp  :  l__BoolExp ) ( st  :  Total.state ) -> (
 
-let _16_477 = (compileBexpClean ah targ exp)
-in (match (_16_477) with
+let _19_477 = (compileBexpClean ah targ exp)
+in (match (_19_477) with
 | (ah', res, anc, circ) -> begin
 (Circuit.evalCirc circ st)
 end)))
@@ -654,8 +654,8 @@ end)))
 
 let compileBexpCleanEvalSt_oop : AncillaHeap.l__AncHeapRecord  ->  l__BoolExp  ->  Total.state  ->  Total.state = (fun ( ah  :  AncillaHeap.l__AncHeapRecord ) ( exp  :  l__BoolExp ) ( st  :  Total.state ) -> (
 
-let _16_485 = (compileBexpClean_oop ah exp)
-in (match (_16_485) with
+let _19_485 = (compileBexpClean_oop ah exp)
+in (match (_19_485) with
 | (ah', res, anc, circ) -> begin
 (Circuit.evalCirc circ st)
 end)))

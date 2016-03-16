@@ -26,8 +26,8 @@ end))
 
 
 let ___Heap____0 = (fun ( projectee  :  'a heap ) -> (match (projectee) with
-| Heap (_13_4) -> begin
-_13_4
+| Heap (_15_4) -> begin
+_15_4
 end))
 
 
@@ -42,10 +42,10 @@ end))
 
 
 let merge : intHeap  ->  intHeap  ->  intHeap = (fun ( hp1  :  intHeap ) ( hp2  :  intHeap ) -> (match ((hp1, hp2)) with
-| (Empty, _13_16) -> begin
+| (Empty, _15_16) -> begin
 hp2
 end
-| (_13_19, Empty) -> begin
+| (_15_19, Empty) -> begin
 hp1
 end
 | (Heap (r1, h1), Heap (r2, h2)) -> begin
@@ -77,13 +77,13 @@ end))
 
 
 let deleteMin : intHeap  ->  intHeap = (fun ( hp  :  intHeap ) -> (match (hp) with
-| Heap (_13_47, lst) -> begin
+| Heap (_15_47, lst) -> begin
 (mergePairs lst)
 end))
 
 
 let getMin : intHeap  ->  Prims.int = (fun ( hp  :  intHeap ) -> (match (hp) with
-| Heap (r, _13_56) -> begin
+| Heap (r, _15_56) -> begin
 r
 end))
 
@@ -111,7 +111,7 @@ let leq_heap : Prims.int  ->  intHeap  ->  Prims.bool = (fun ( i  :  Prims.int )
 | Empty -> begin
 true
 end
-| Heap (j, _13_83) -> begin
+| Heap (j, _15_83) -> begin
 (i < j)
 end))
 
@@ -150,7 +150,7 @@ end))
 let merge_heap : intHeap  ->  intHeap  ->  Prims.unit = (fun ( hp1  :  intHeap ) ( hp2  :  intHeap ) -> ())
 
 
-let insert_heap : intHeap  ->  Prims.int  ->  Prims.unit = (fun ( _13_166  :  intHeap ) ( _13_168  :  Prims.int ) -> ())
+let insert_heap : intHeap  ->  Prims.int  ->  Prims.unit = (fun ( _15_166  :  intHeap ) ( _15_168  :  Prims.int ) -> ())
 
 
 let rec mergePairs_heap : intHeap Prims.list  ->  Prims.unit = (fun ( lst  :  intHeap Prims.list ) -> ())
