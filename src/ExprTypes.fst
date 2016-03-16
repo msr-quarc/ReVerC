@@ -13,7 +13,7 @@
 
 open Util
 open BoolExp
-open Dependence
+//open Dependence
 
 type GType =
   | GUnit
