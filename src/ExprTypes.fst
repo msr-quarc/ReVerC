@@ -500,9 +500,9 @@ let rec inferTypes top ctx gexp = match gexp with
   | APPLY (t1, t2) ->
     let (top', ec1, lc1, ty1) = inferTypes top ctx t1 in
     let (top'', ec2, lc2, ty2) = inferTypes top' ctx t2 in
-    let e1 = TCons (ty1, TArrow (TVar top'', TVar (top''+1))) in
-    let e2 = TCons (ty2, TVar top'') in
-      (top''+2, e1::e2::(ec1@ec2), lc1@lc2, TVar (top''+1))
+    let e = TCons (ty1, TArrow (TVar top'', TVar (top''+1))) in
+    let c = TCons (ty2, TVar top'') in
+      (top''+2, e::(ec1@ec2), c::(lc1@lc2), TVar (top''+1))
   | IFTHENELSE (t1, t2, t3) ->
     let (top', ec1, lc1, ty1) = inferTypes top ctx t1 in
     let (top'', ec2, lc2, ty2) = inferTypes top' ctx t2 in
@@ -595,72 +595,95 @@ let rec substIExpInTExp i iexp x = match x with
 
 let rec iSubst i iexp cons = match cons with
   | [] -> []
-  | (ICons c)::xs -> (ICons (substIExp i iexp (fst c), substIExp i iexp (snd c)))::(iSubst i iexp xs)
-  | x::xs -> x::(iSubst i iexp xs)
+  | (ICons (c1, c2))::xs -> (ICons (substIExp i iexp c1, substIExp i iexp c2))::(iSubst i iexp xs)
+  | (TCons (c1, c2))::xs -> (TCons (substIExpInTExp i iexp c1, substIExpInTExp i iexp c2))::(iSubst i iexp xs)
 
 let rec tSubst i texp cons = match cons with
   | [] -> []
   | (TCons c)::xs -> (TCons (substTExp i texp (fst c), substTExp i texp (snd c)))::(tSubst i texp xs)
   | x::xs -> x::(tSubst i texp xs)
 
-val mergeLower : int -> int -> list Cons -> IExp
-let rec mergeLower i j bnds = match bnds with
-  | [] -> ILit i
-  | (ICons (ILit i', i2))::xs ->
-    begin match i2 with
-      | IVar j' -> if j = j' then mergeLower (max i i') j xs else mergeLower i j xs
-      | _ -> mergeLower i j xs
-    end
-  | _ -> failwith "impossible"
+let rec mergeLower iexp j bnds = match bnds with
+  | [] -> Some iexp
+  | (ICons (iexp', IVar h))::xs -> 
+    if h = j then 
+      begin match (normalize iexp, normalize iexp') with
+        | (ILit x, ILit y) -> mergeLower (ILit (max x y)) j xs
+        | (IVar x, IVar y) -> if x = y then mergeLower (IVar x) j xs else None
+        | _ -> None
+      end
+    else 
+      mergeLower iexp j xs
+  | _::xs -> mergeLower iexp j xs
 
-let rec checkBounds check subs = match check with
+let rec unify_bnds top bnds subs = 
+  match bnds with
   | [] -> Some subs
-  | (ICons (ILit i, i2))::xs ->
-    begin match (normalize i2) with
-      | ILit j -> if i < j then checkBounds xs subs else None
+  | (ICons (i1, i2))::xs ->
+    begin match (normalize i1, normalize i2) with
+      | (iexp, IVar j) ->
+        begin match (mergeLower iexp j xs) with
+          | Some sub -> unify_bnds top (iSubst j sub xs) (iSubst j sub subs)
+          | None -> unify_bnds top (xs @ [ICons (iexp, IVar j)]) subs
+        end
+      | (ILit x, ILit y) -> if x <= y then unify_bnds top xs subs else None
+      | (iexp, iexp') -> unify_bnds top (xs @ [ICons (iexp, iexp')]) subs
+    end
+  | (TCons (t1, t2))::xs ->
+    begin match (t1, t2) with
+      | (TVar i, TUnit) | (TUnit, TVar i) -> unify_bnds top (tSubst i TUnit xs) (tSubst i TUnit subs)
+      | (TVar i, TBool) | (TBool, TVar i) -> unify_bnds top (tSubst i TBool xs) (tSubst i TBool subs)
+      | (TVar i, TArray iexp) -> 
+          let sub = TArray (IVar top) in
+            unify_bnds (top+1) 
+                       (tSubst i sub ((ICons (iexp, IVar top))::xs)) 
+                       ((TCons (TVar i, sub))::(tSubst i sub subs))
+      | (TArray iexp, TVar i) -> 
+          let sub = TArray (IVar top) in
+            unify_bnds (top+1) 
+                       (tSubst i sub ((ICons (IVar top, iexp))::xs)) 
+                       ((TCons (TVar i, sub))::(tSubst i sub subs))
+      | (TVar i, TArrow (t1, t2)) -> 
+          let sub = TArrow (TVar top, TVar (top+1)) in
+            unify_bnds (top+2) 
+                       (tSubst i sub ((TCons (t1, TVar top))::(TCons (TVar (top+1), t2))::xs)) 
+                       ((TCons (TVar i, sub))::(tSubst i sub subs))
+      | (TArrow (t1, t2), TVar i) -> 
+          let sub = TArrow (TVar top, TVar (top+1)) in
+            unify_bnds (top+2) 
+                       (tSubst i sub ((TCons (TVar top, t1))::(TCons (t2, TVar (top+1)))::xs)) 
+                       ((TCons (TVar i, sub))::(tSubst i sub subs))
+      | (TVar i, TVar j) -> unify_bnds top (xs @ [TCons (t1, t2)]) subs
+      | (TUnit, TUnit) -> unify_bnds top xs subs
+      | (TBool, TBool) -> unify_bnds top xs subs
+      | (TArray iexp, TArray iexp') -> unify_bnds top ((ICons (iexp', iexp))::xs) subs
+      | (TArrow (t1, t2), TArrow (s1, s2)) -> unify_bnds top ((TCons (s1, t1))::(TCons (t2, s2))::xs) subs
       | _ -> None
     end
-  | _ -> failwith "impossible"
 
-let rec unify_bnds bnds check subs = match bnds with
-  | [] -> checkBounds check subs
-  | (ICons (ILit i, i2))::xs ->
-    begin match i2 with
-      | IVar j ->
-        let sub = mergeLower i j xs in
-          unify_bnds (iSubst j sub xs) (iSubst j sub check) (iSubst j sub subs)
-      | _ -> unify_bnds xs ((ICons (ILit i, i2))::check) subs
-    end
-  | _ -> failwith "impossible"
-
-let rec unify_eq eqs bnds subs = match eqs with
-  | [] -> unify_bnds bnds [] subs
+let rec unify_eq top eqs bnds subs = match eqs with
+  | [] -> unify_bnds top bnds subs
   | (ICons (i1, i2))::xs ->
     begin match (normalize i1, normalize i2) with
       | (IVar i, iexp)
-      | (iexp, IVar i) ->
-        unify_eq (iSubst i iexp xs) (iSubst i iexp bnds) (iSubst i iexp subs)
-      | (ILit i, ILit j) ->
-        if i = j then unify_eq xs bnds subs else None
+      | (iexp, IVar i) -> unify_eq top (iSubst i iexp xs) (iSubst i iexp bnds) (iSubst i iexp subs)
+      | (ILit i, ILit j) -> if i = j then unify_eq top xs bnds subs else None
       | (IPlus (IVar i, y), iexp) | (iexp, IPlus (IVar i, y)) ->
         let sub = IPlus (IMinus y, iexp) in
-          unify_eq (iSubst i sub eqs) (iSubst i sub bnds) (iSubst i sub subs)
+          unify_eq top (iSubst i sub eqs) (iSubst i sub bnds) (iSubst i sub subs)
       | (IPlus (IMinus (IVar i), y), iexp) | (iexp, IPlus (IMinus (IVar i), y)) ->
         let sub = IPlus (y, iexp) in
-          unify_eq (iSubst i sub eqs) (iSubst i sub bnds) (iSubst i sub subs)
+          unify_eq top (iSubst i sub eqs) (iSubst i sub bnds) (iSubst i sub subs)
       | _ -> None
     end
   | (TCons (t1, t2))::xs ->
     begin match (t1, t2) with
       | (TVar i, ty)
-      | (ty, TVar i) ->
-        unify_eq (tSubst i ty xs) (tSubst i ty bnds) ((TCons (TVar i, ty))::subs)
-      | (TUnit, TUnit) -> unify_eq xs bnds subs
-      | (TBool, TBool) -> unify_eq xs bnds subs
-      | (TArray iexp, TArray iexp') ->
-        unify_eq ((ICons (iexp, iexp'))::xs) bnds subs
-      | (TArrow (t1, t2), TArrow (s1, s2)) ->
-        unify_eq ((TCons (t1, s1))::(TCons (t2, s2))::xs) bnds subs
+      | (ty, TVar i) -> unify_eq top (tSubst i ty xs) (tSubst i ty bnds) ((TCons (TVar i, ty))::(tSubst i ty subs))
+      | (TUnit, TUnit) -> unify_eq top xs bnds subs
+      | (TBool, TBool) -> unify_eq top xs bnds subs
+      | (TArray iexp, TArray iexp') -> unify_eq top ((ICons (iexp, iexp'))::xs) bnds subs
+      | (TArrow (t1, t2), TArrow (s1, s2)) -> unify_eq top ((TCons (t1, s1))::(TCons (t2, s2))::xs) bnds subs
       | _ -> None
     end
 
@@ -670,9 +693,8 @@ let rec applySubs subs tm = match subs with
   | _ -> failwith "impossible"
 
 let annotate tm =
-  let top = varMaxTm tm in
-  let (_, eqs, bnds, typ) = inferTypes (top+1) [] tm in
-  let res = unify_eq eqs bnds [] in
+  let (top, eqs, bnds, typ) = inferTypes 0 [] tm in
+  let res = unify_eq top eqs bnds [] in
     match res with
       | None -> Err "Could not infer types"
       | Some subs -> Val (applySubs subs tm)
