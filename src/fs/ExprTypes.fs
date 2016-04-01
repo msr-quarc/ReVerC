@@ -10,50 +10,6 @@ type l__GType =
 | GVar of Prims.int
 
 
-let is_GUnit = (fun ( _discr_  :  l__GType ) -> (match (_discr_) with
-| GUnit (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_GBool = (fun ( _discr_  :  l__GType ) -> (match (_discr_) with
-| GBool (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_GArray = (fun ( _discr_  :  l__GType ) -> (match (_discr_) with
-| GArray (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_GFun = (fun ( _discr_  :  l__GType ) -> (match (_discr_) with
-| GFun (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_GVar = (fun ( _discr_  :  l__GType ) -> (match (_discr_) with
-| GVar (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
 
 let ___GArray____0 = (fun ( projectee  :  l__GType ) -> (match (projectee) with
 | GArray (_20_3) -> begin
@@ -94,176 +50,6 @@ type l__GExpr =
 | LOC of Prims.int
 | BEXP of BoolExp.l__BoolExp
 
-
-let is_LET = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
-| LET (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_LAMBDA = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
-| LAMBDA (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_APPLY = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
-| APPLY (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_IFTHENELSE = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
-| IFTHENELSE (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_SEQUENCE = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
-| SEQUENCE (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_ASSIGN = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
-| ASSIGN (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_VAR = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
-| VAR (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_UNIT = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
-| UNIT (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_BOOL = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
-| BOOL (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_XOR = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
-| XOR (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_AND = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
-| AND (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_ARRAY = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
-| ARRAY (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_GET_ARRAY = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
-| GET_ARRAY (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_APPEND = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
-| APPEND (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_ROT = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
-| ROT (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_SLICE = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
-| SLICE (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_ASSERT = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
-| ASSERT (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_LOC = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
-| LOC (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_BEXP = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
-| BEXP (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
 
 
 let ___LET____0 = (fun ( projectee  :  l__GExpr ) -> (match (projectee) with
@@ -976,78 +762,12 @@ end
 end))
 
 
-let rec subtype : l__GType  ->  l__GType  ->  Prims.bool = (fun ( t1  :  l__GType ) ( t2  :  l__GType ) -> if (t1 = t2) then begin
-true
-end else begin
-(match ((t1, t2)) with
-| (GArray (i), GArray (j)) -> begin
-(j <= i)
-end
-| (GFun (t1, t2), GFun (s1, s2)) -> begin
-((suptype t1 s1) && (subtype t2 s2))
-end
-| _20_1529 -> begin
-false
-end)
-end)
-and suptype : l__GType  ->  l__GType  ->  Prims.bool = (fun ( t1  :  l__GType ) ( t2  :  l__GType ) -> if (t1 = t2) then begin
-true
-end else begin
-(match ((t1, t2)) with
-| (GArray (i), GArray (j)) -> begin
-(j >= i)
-end
-| (GFun (t1, t2), GFun (s1, s2)) -> begin
-((subtype t1 s1) && (suptype t2 s2))
-end
-| _20_1547 -> begin
-false
-end)
-end)
-
-
-
 type l__IExp =
 | ILit of Prims.int
 | IVar of Prims.int
 | IPlus of (l__IExp * l__IExp)
 | IMinus of l__IExp
 
-
-let is_ILit = (fun ( _discr_  :  l__IExp ) -> (match (_discr_) with
-| ILit (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_IVar = (fun ( _discr_  :  l__IExp ) -> (match (_discr_) with
-| IVar (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_IPlus = (fun ( _discr_  :  l__IExp ) -> (match (_discr_) with
-| IPlus (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_IMinus = (fun ( _discr_  :  l__IExp ) -> (match (_discr_) with
-| IMinus (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
 
 
 let ___ILit____0 = (fun ( projectee  :  l__IExp ) -> (match (projectee) with
@@ -1081,50 +801,6 @@ type l__TyExp =
 | TArray of l__IExp
 | TArrow of (l__TyExp * l__TyExp)
 
-
-let is_TUnit = (fun ( _discr_  :  l__TyExp ) -> (match (_discr_) with
-| TUnit (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_TBool = (fun ( _discr_  :  l__TyExp ) -> (match (_discr_) with
-| TBool (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_TVar = (fun ( _discr_  :  l__TyExp ) -> (match (_discr_) with
-| TVar (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_TArray = (fun ( _discr_  :  l__TyExp ) -> (match (_discr_) with
-| TArray (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_TArrow = (fun ( _discr_  :  l__TyExp ) -> (match (_discr_) with
-| TArrow (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
 
 
 let ___TVar____0 = (fun ( projectee  :  l__TyExp ) -> (match (projectee) with
@@ -1231,23 +907,6 @@ type l__Cons =
 | TCons of (l__TyExp * l__TyExp)
 
 
-let is_ICons = (fun ( _discr_  :  l__Cons ) -> (match (_discr_) with
-| ICons (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_TCons = (fun ( _discr_  :  l__Cons ) -> (match (_discr_) with
-| TCons (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
 
 let ___ICons____0 = (fun ( projectee  :  l__Cons ) -> (match (projectee) with
 | ICons (_20_1684) -> begin
@@ -1303,11 +962,11 @@ in (match (_20_1731) with
 | (top'', ec2, lc2, ty2) -> begin
 (
 
-let e1 = TCons ((ty1, TArrow ((TVar (top''), TVar ((top'' + (Prims.parse_int "1")))))))
+let e = TCons ((ty1, TArrow ((TVar (top''), TVar ((top'' + (Prims.parse_int "1")))))))
 in (
 
-let e2 = TCons ((ty2, TVar (top'')))
-in ((top'' + (Prims.parse_int "2")), (e1)::(e2)::(FStar.List.append ec1 ec2), (FStar.List.append lc1 lc2), TVar ((top'' + (Prims.parse_int "1"))))))
+let c = TCons ((ty2, TVar (top'')))
+in ((top'' + (Prims.parse_int "2")), (e)::(FStar.List.append ec1 ec2), (c)::(FStar.List.append lc1 lc2), TVar ((top'' + (Prims.parse_int "1"))))))
 end))
 end))
 end
@@ -1596,11 +1255,11 @@ let rec iSubst : Prims.int  ->  l__IExp  ->  l__Cons Prims.list  ->  l__Cons Pri
 | [] -> begin
 []
 end
-| ICons (c)::xs -> begin
-(ICons (((substIExp i iexp (Prims.fst c)), (substIExp i iexp (Prims.snd c)))))::(iSubst i iexp xs)
+| ICons (c1, c2)::xs -> begin
+(ICons (((substIExp i iexp c1), (substIExp i iexp c2))))::(iSubst i iexp xs)
 end
-| x::xs -> begin
-(x)::(iSubst i iexp xs)
+| TCons (c1, c2)::xs -> begin
+(TCons (((substIExpInTExp i iexp c1), (substIExpInTExp i iexp c2))))::(iSubst i iexp xs)
 end))
 
 
@@ -1616,83 +1275,126 @@ end
 end))
 
 
-let rec mergeLower : Prims.int  ->  Prims.int  ->  l__Cons Prims.list  ->  l__IExp = (fun ( i  :  Prims.int ) ( j  :  Prims.int ) ( bnds  :  l__Cons Prims.list ) -> (match (bnds) with
+let rec mergeLower : l__IExp  ->  Prims.int  ->  l__Cons Prims.list  ->  l__IExp Prims.option = (fun ( iexp  :  l__IExp ) ( j  :  Prims.int ) ( bnds  :  l__Cons Prims.list ) -> (match (bnds) with
 | [] -> begin
-ILit (i)
+Some (iexp)
 end
-| ICons (ILit (i'), i2)::xs -> begin
-(match (i2) with
-| IVar (j') -> begin
-if (j = j') then begin
-(mergeLower (BoolExp.max i i') j xs)
+| ICons (iexp', IVar (h))::xs -> begin
+if (h = j) then begin
+(match (((normalize iexp), (normalize iexp'))) with
+| (ILit (x), ILit (y)) -> begin
+(mergeLower (ILit ((BoolExp.max x y))) j xs)
+end
+| (IVar (x), IVar (y)) -> begin
+if (x = y) then begin
+(mergeLower (IVar (x)) j xs)
 end else begin
-(mergeLower i j xs)
+None
 end
 end
-| _20_1975 -> begin
-(mergeLower i j xs)
+| _20_1988 -> begin
+None
 end)
+end else begin
+(mergeLower iexp j xs)
 end
-| _20_1977 -> begin
-(FStar.All.failwith "impossible")
+end
+| _20_1991::xs -> begin
+(mergeLower iexp j xs)
 end))
 
 
-let rec checkBounds = (fun ( check  :  l__Cons Prims.list ) ( subs  :  'A_20_206580 ) -> (match (check) with
+let rec unify_bnds : Prims.int  ->  l__Cons Prims.list  ->  l__Cons Prims.list  ->  l__Cons Prims.list Prims.option = (fun ( top  :  Prims.int ) ( bnds  :  l__Cons Prims.list ) ( subs  :  l__Cons Prims.list ) -> (match (bnds) with
 | [] -> begin
 Some (subs)
 end
-| ICons (ILit (i), i2)::xs -> begin
-(match ((normalize i2)) with
-| ILit (j) -> begin
-if (i < j) then begin
-(checkBounds xs subs)
+| ICons (i1, i2)::xs -> begin
+(match (((normalize i1), (normalize i2))) with
+| (iexp, IVar (j)) -> begin
+(match ((mergeLower iexp j xs)) with
+| Some (sub) -> begin
+(unify_bnds top (iSubst j sub xs) (iSubst j sub subs))
+end
+| None -> begin
+(unify_bnds top (FStar.List.append xs ((ICons ((iexp, IVar (j))))::[])) subs)
+end)
+end
+| (ILit (x), ILit (y)) -> begin
+if (x <= y) then begin
+(unify_bnds top xs subs)
 end else begin
 None
 end
 end
-| _20_1991 -> begin
-None
+| (iexp, iexp') -> begin
+(unify_bnds top (FStar.List.append xs ((ICons ((iexp, iexp')))::[])) subs)
 end)
 end
-| _20_1993 -> begin
-(FStar.All.failwith "impossible")
-end))
-
-
-let rec unify_bnds : l__Cons Prims.list  ->  l__Cons Prims.list  ->  l__Cons Prims.list  ->  l__Cons Prims.list Prims.option = (fun ( bnds  :  l__Cons Prims.list ) ( check  :  l__Cons Prims.list ) ( subs  :  l__Cons Prims.list ) -> (match (bnds) with
-| [] -> begin
-(checkBounds check subs)
+| TCons (t1, t2)::xs -> begin
+(match ((t1, t2)) with
+| ((TVar (i), TUnit)) | ((TUnit, TVar (i))) -> begin
+(unify_bnds top (tSubst i TUnit xs) (tSubst i TUnit subs))
 end
-| ICons (ILit (i), i2)::xs -> begin
-(match (i2) with
-| IVar (j) -> begin
+| ((TVar (i), TBool)) | ((TBool, TVar (i))) -> begin
+(unify_bnds top (tSubst i TBool xs) (tSubst i TBool subs))
+end
+| (TVar (i), TArray (iexp)) -> begin
 (
 
-let sub = (mergeLower i j xs)
-in (unify_bnds (iSubst j sub xs) (iSubst j sub check) (iSubst j sub subs)))
+let sub = TArray (IVar (top))
+in (unify_bnds (top + (Prims.parse_int "1")) (tSubst i sub ((ICons ((iexp, IVar (top))))::xs)) ((TCons ((TVar (i), sub)))::(tSubst i sub subs))))
 end
-| _20_2009 -> begin
-(unify_bnds xs ((ICons ((ILit (i), i2)))::check) subs)
+| (TArray (iexp), TVar (i)) -> begin
+(
+
+let sub = TArray (IVar (top))
+in (unify_bnds (top + (Prims.parse_int "1")) (tSubst i sub ((ICons ((IVar (top), iexp)))::xs)) ((TCons ((TVar (i), sub)))::(tSubst i sub subs))))
+end
+| (TVar (i), TArrow (t1, t2)) -> begin
+(
+
+let sub = TArrow ((TVar (top), TVar ((top + (Prims.parse_int "1")))))
+in (unify_bnds (top + (Prims.parse_int "2")) (tSubst i sub ((TCons ((t1, TVar (top))))::(TCons ((TVar ((top + (Prims.parse_int "1"))), t2)))::xs)) ((TCons ((TVar (i), sub)))::(tSubst i sub subs))))
+end
+| (TArrow (t1, t2), TVar (i)) -> begin
+(
+
+let sub = TArrow ((TVar (top), TVar ((top + (Prims.parse_int "1")))))
+in (unify_bnds (top + (Prims.parse_int "2")) (tSubst i sub ((TCons ((TVar (top), t1)))::(TCons ((t2, TVar ((top + (Prims.parse_int "1"))))))::xs)) ((TCons ((TVar (i), sub)))::(tSubst i sub subs))))
+end
+| (TVar (i), TVar (j)) -> begin
+(unify_bnds top (FStar.List.append xs ((TCons ((t1, t2)))::[])) subs)
+end
+| (TUnit, TUnit) -> begin
+(unify_bnds top xs subs)
+end
+| (TBool, TBool) -> begin
+(unify_bnds top xs subs)
+end
+| (TArray (iexp), TArray (iexp')) -> begin
+(unify_bnds top ((ICons ((iexp', iexp)))::xs) subs)
+end
+| (TArrow (t1, t2), TArrow (s1, s2)) -> begin
+(unify_bnds top ((TCons ((s1, t1)))::(TCons ((t2, s2)))::xs) subs)
+end
+| _20_2092 -> begin
+None
 end)
-end
-| _20_2011 -> begin
-(FStar.All.failwith "impossible")
 end))
 
 
-let rec unify_eq : l__Cons Prims.list  ->  l__Cons Prims.list  ->  l__Cons Prims.list  ->  l__Cons Prims.list Prims.option = (fun ( eqs  :  l__Cons Prims.list ) ( bnds  :  l__Cons Prims.list ) ( subs  :  l__Cons Prims.list ) -> (match (eqs) with
+let rec unify_eq : Prims.int  ->  l__Cons Prims.list  ->  l__Cons Prims.list  ->  l__Cons Prims.list  ->  l__Cons Prims.list Prims.option = (fun ( top  :  Prims.int ) ( eqs  :  l__Cons Prims.list ) ( bnds  :  l__Cons Prims.list ) ( subs  :  l__Cons Prims.list ) -> (match (eqs) with
 | [] -> begin
-(unify_bnds bnds [] subs)
+(unify_bnds top bnds subs)
 end
 | ICons (i1, i2)::xs -> begin
 (match (((normalize i1), (normalize i2))) with
 | ((IVar (i), iexp)) | ((iexp, IVar (i))) -> begin
-(unify_eq (iSubst i iexp xs) (iSubst i iexp bnds) (iSubst i iexp subs))
+(unify_eq top (iSubst i iexp xs) (iSubst i iexp bnds) (iSubst i iexp subs))
 end
 | (ILit (i), ILit (j)) -> begin
 if (i = j) then begin
-(unify_eq xs bnds subs)
+(unify_eq top xs bnds subs)
 end else begin
 None
 end
@@ -1701,36 +1403,36 @@ end
 (
 
 let sub = IPlus ((IMinus (y), iexp))
-in (unify_eq (iSubst i sub eqs) (iSubst i sub bnds) (iSubst i sub subs)))
+in (unify_eq top (iSubst i sub eqs) (iSubst i sub bnds) (iSubst i sub subs)))
 end
 | ((IPlus (IMinus (IVar (i)), y), iexp)) | ((iexp, IPlus (IMinus (IVar (i)), y))) -> begin
 (
 
 let sub = IPlus ((y, iexp))
-in (unify_eq (iSubst i sub eqs) (iSubst i sub bnds) (iSubst i sub subs)))
+in (unify_eq top (iSubst i sub eqs) (iSubst i sub bnds) (iSubst i sub subs)))
 end
-| _20_2060 -> begin
+| _20_2142 -> begin
 None
 end)
 end
 | TCons (t1, t2)::xs -> begin
 (match ((t1, t2)) with
 | ((TVar (i), ty)) | ((ty, TVar (i))) -> begin
-(unify_eq (tSubst i ty xs) (tSubst i ty bnds) ((TCons ((TVar (i), ty)))::subs))
+(unify_eq top (tSubst i ty xs) (tSubst i ty bnds) ((TCons ((TVar (i), ty)))::(tSubst i ty subs)))
 end
 | (TUnit, TUnit) -> begin
-(unify_eq xs bnds subs)
+(unify_eq top xs bnds subs)
 end
 | (TBool, TBool) -> begin
-(unify_eq xs bnds subs)
+(unify_eq top xs bnds subs)
 end
 | (TArray (iexp), TArray (iexp')) -> begin
-(unify_eq ((ICons ((iexp, iexp')))::xs) bnds subs)
+(unify_eq top ((ICons ((iexp, iexp')))::xs) bnds subs)
 end
 | (TArrow (t1, t2), TArrow (s1, s2)) -> begin
-(unify_eq ((TCons ((t1, s1)))::(TCons ((t2, s2)))::xs) bnds subs)
+(unify_eq top ((TCons ((t1, s1)))::(TCons ((t2, s2)))::xs) bnds subs)
 end
-| _20_2094 -> begin
+| _20_2176 -> begin
 None
 end)
 end))
@@ -1743,22 +1445,19 @@ end
 | TCons (TVar (i), texp)::xs -> begin
 (applySubs xs (substTyInGExpr tm i (toGType texp)))
 end
-| _20_2106 -> begin
+| _20_2188 -> begin
 (FStar.All.failwith "impossible")
 end))
 
 
 let annotate : l__GExpr  ->  l__GExpr Util.result = (fun ( tm  :  l__GExpr ) -> (
 
-let top = (varMaxTm tm)
-in (
-
-let _20_2114 = (inferTypes (top + (Prims.parse_int "1")) [] tm)
-in (match (_20_2114) with
-| (_20_2110, eqs, bnds, typ) -> begin
+let _20_2194 = (inferTypes (Prims.parse_int "0") [] tm)
+in (match (_20_2194) with
+| (top, eqs, bnds, typ) -> begin
 (
 
-let res = (unify_eq eqs bnds [])
+let res = (unify_eq top eqs bnds [])
 in (match (res) with
 | None -> begin
 Util.Err ("Could not infer types")
@@ -1766,7 +1465,7 @@ end
 | Some (subs) -> begin
 Util.Val ((applySubs subs tm))
 end))
-end))))
+end)))
 
 
 
