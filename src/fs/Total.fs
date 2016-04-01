@@ -6,10 +6,6 @@ type ('Aa, 'Ab) map =
 'Aa  ->  'Ab
 
 
-type ('Aa, 'Ab, 'Am1, 'Am2) l__Equal =
-('Aa, 'Ab, Prims.unit, Prims.unit) FStar.FunctionalExtensionality.l__FEq
-
-
 let lemma_map_equal_intro = (fun ( m1  :  ('Aa, 'Ab) map ) ( m2  :  ('Aa, 'Ab) map ) -> ())
 
 
@@ -32,7 +28,7 @@ end)
 let compose = (fun ( m  :  ('Aa, 'Ab) map ) ( m'  :  ('Ab, 'Ac) map ) ( i  :  'Aa ) -> (m' (m i)))
 
 
-let const_map = (fun ( v  :  'Ab ) ( _13_45  :  'Aa ) -> v)
+let const_map = (fun ( v  :  'Ab ) ( _10_45  :  'Aa ) -> v)
 
 
 type state =
@@ -40,6 +36,9 @@ type state =
 
 
 let agree_on_trans = (fun ( mp  :  ('Aa, 'Ab) map ) ( mp'  :  ('Aa, 'Ab) map ) ( mp''  :  ('Aa, 'Ab) map ) ( s  :  'Aa Util.set ) -> ())
+
+
+let map_mp = (fun ( f  :  'Ab  ->  'Ab ) ( m  :  ('Aa, 'Ab) map ) -> m)
 
 
 

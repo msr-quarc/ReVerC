@@ -44,3 +44,5 @@ val agree_on_trans : #a:Type -> #b:Type -> mp:map a b -> mp':map a b -> mp'':map
         (ensures  (agree_on mp mp'' s))
 let agree_on_trans mp mp' mp'' s = ()
 
+val map_mp : #a:Type -> #b:Type -> (b -> Tot b) -> map a b -> Tot (map a b)
+let map_mp f m = m

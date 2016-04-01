@@ -39,35 +39,35 @@ let popMin : l__AncHeap  ->  (l__AncHeap * Prims.int) = (fun ( ah  :  l__AncHeap
 | PairHeap.Empty -> begin
 ((
 
-let _16_16 = ah
-in {hp = _16_16.hp; max = (ah.max + (Prims.parse_int "1"))}), ah.max)
+let _13_16 = ah
+in {hp = _13_16.hp; max = (ah.max + (Prims.parse_int "1"))}), ah.max)
 end
 | PairHeap.Heap (r, l) -> begin
 (
 
 let hp' = (
 
-let _16_22 = ()
+let _13_22 = ()
 in (
 
-let _16_24 = ()
+let _13_24 = ()
 in (PairHeap.deleteMin ah.hp)))
 in ((
 
-let _16_27 = ah
-in {hp = hp'; max = _16_27.max}), (PairHeap.getMin ah.hp)))
+let _13_27 = ah
+in {hp = hp'; max = _13_27.max}), (PairHeap.getMin ah.hp)))
 end))
 
 
 let rec getn_acc : l__AncHeap  ->  Prims.int Prims.list  ->  Prims.nat  ->  (l__AncHeap * Prims.int Prims.list) = (fun ( ah  :  l__AncHeap ) ( acc  :  Prims.int Prims.list ) ( n  :  Prims.nat ) -> (match (n) with
-| _38_32 when (_38_32 = (Prims.parse_int "0")) -> begin
+| _35_32 when (_35_32 = (Prims.parse_int "0")) -> begin
 (ah, acc)
 end
 | n -> begin
 (
 
-let _16_36 = (popMin ah)
-in (match (_16_36) with
+let _13_36 = (popMin ah)
+in (match (_13_36) with
 | (newah, v) -> begin
 (getn_acc newah ((v)::acc) (n - (Prims.parse_int "1")))
 end))

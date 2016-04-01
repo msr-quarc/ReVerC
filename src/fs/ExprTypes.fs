@@ -10,7 +10,7 @@ type l__GType =
 | GVar of Prims.int
 
 
-let is_GUnit = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_GUnit = (fun ( _discr_  :  l__GType ) -> (match (_discr_) with
 | GUnit (_) -> begin
 true
 end
@@ -19,7 +19,7 @@ false
 end))
 
 
-let is_GBool = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_GBool = (fun ( _discr_  :  l__GType ) -> (match (_discr_) with
 | GBool (_) -> begin
 true
 end
@@ -28,7 +28,7 @@ false
 end))
 
 
-let is_GArray = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_GArray = (fun ( _discr_  :  l__GType ) -> (match (_discr_) with
 | GArray (_) -> begin
 true
 end
@@ -37,7 +37,7 @@ false
 end))
 
 
-let is_GFun = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_GFun = (fun ( _discr_  :  l__GType ) -> (match (_discr_) with
 | GFun (_) -> begin
 true
 end
@@ -46,7 +46,7 @@ false
 end))
 
 
-let is_GVar = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_GVar = (fun ( _discr_  :  l__GType ) -> (match (_discr_) with
 | GVar (_) -> begin
 true
 end
@@ -95,7 +95,7 @@ type l__GExpr =
 | BEXP of BoolExp.l__BoolExp
 
 
-let is_LET = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_LET = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
 | LET (_) -> begin
 true
 end
@@ -104,7 +104,7 @@ false
 end))
 
 
-let is_LAMBDA = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_LAMBDA = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
 | LAMBDA (_) -> begin
 true
 end
@@ -113,7 +113,7 @@ false
 end))
 
 
-let is_APPLY = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_APPLY = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
 | APPLY (_) -> begin
 true
 end
@@ -122,7 +122,7 @@ false
 end))
 
 
-let is_IFTHENELSE = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_IFTHENELSE = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
 | IFTHENELSE (_) -> begin
 true
 end
@@ -131,7 +131,7 @@ false
 end))
 
 
-let is_SEQUENCE = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_SEQUENCE = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
 | SEQUENCE (_) -> begin
 true
 end
@@ -140,7 +140,7 @@ false
 end))
 
 
-let is_ASSIGN = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_ASSIGN = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
 | ASSIGN (_) -> begin
 true
 end
@@ -149,7 +149,7 @@ false
 end))
 
 
-let is_VAR = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_VAR = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
 | VAR (_) -> begin
 true
 end
@@ -158,7 +158,7 @@ false
 end))
 
 
-let is_UNIT = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_UNIT = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
 | UNIT (_) -> begin
 true
 end
@@ -167,7 +167,7 @@ false
 end))
 
 
-let is_BOOL = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_BOOL = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
 | BOOL (_) -> begin
 true
 end
@@ -176,7 +176,7 @@ false
 end))
 
 
-let is_XOR = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_XOR = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
 | XOR (_) -> begin
 true
 end
@@ -185,7 +185,7 @@ false
 end))
 
 
-let is_AND = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_AND = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
 | AND (_) -> begin
 true
 end
@@ -194,7 +194,7 @@ false
 end))
 
 
-let is_ARRAY = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_ARRAY = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
 | ARRAY (_) -> begin
 true
 end
@@ -203,7 +203,7 @@ false
 end))
 
 
-let is_GET_ARRAY = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_GET_ARRAY = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
 | GET_ARRAY (_) -> begin
 true
 end
@@ -212,7 +212,7 @@ false
 end))
 
 
-let is_APPEND = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_APPEND = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
 | APPEND (_) -> begin
 true
 end
@@ -221,7 +221,7 @@ false
 end))
 
 
-let is_ROT = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_ROT = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
 | ROT (_) -> begin
 true
 end
@@ -230,7 +230,7 @@ false
 end))
 
 
-let is_SLICE = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_SLICE = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
 | SLICE (_) -> begin
 true
 end
@@ -239,7 +239,7 @@ false
 end))
 
 
-let is_ASSERT = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_ASSERT = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
 | ASSERT (_) -> begin
 true
 end
@@ -248,7 +248,7 @@ false
 end))
 
 
-let is_LOC = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_LOC = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
 | LOC (_) -> begin
 true
 end
@@ -257,7 +257,7 @@ false
 end))
 
 
-let is_BEXP = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_BEXP = (fun ( _discr_  :  l__GExpr ) -> (match (_discr_) with
 | BEXP (_) -> begin
 true
 end
@@ -791,7 +791,7 @@ let st1 = (prettyPrint t1)
 in (
 
 let st2 = (prettyPrint t2)
-in if (Util.for_someT (fun ( l  :  Prims.string Prims.list ) -> ((FStar.List.lengthT l) > (Prims.parse_int "1"))) ((st1)::(st2)::[])) then begin
+in if (Util.for_someT (fun ( l  :  Prims.string Prims.list ) -> ((FStar.List.length l) > (Prims.parse_int "1"))) ((st1)::(st2)::[])) then begin
 (FStar.List.append (FStar.List.append (("append")::[]) (indent (Prims.parse_int "2") st1)) (indent (Prims.parse_int "2") st2))
 end else begin
 ((FStar.String.strcat "append" (FStar.String.strcat (FStar.List.hd st1) (FStar.String.strcat " " (FStar.List.hd st2)))))::[]
@@ -976,971 +976,6 @@ end
 end))
 
 
-type ctxt =
-(Prims.string, l__GType) Par.map
-
-
-type ('dummyV3, 'dummyV2, 'dummyV1) wellTypedCtxt =
-| Ctxt_zero of Prims.string * l__GType * ctxt
-| Ctxt_succ of Prims.string * l__GType * (Prims.string * l__GType) * ctxt * (Prims.unit, Prims.unit, Prims.unit) wellTypedCtxt
-
-
-let is_Ctxt_zero = (fun ( _  :  obj ) ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Ctxt_zero (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_Ctxt_succ = (fun ( _  :  obj ) ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Ctxt_succ (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let ___Ctxt_zero___s = (fun ( _0  :  ctxt ) ( _1  :  Prims.string ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTypedCtxt ) -> (match (projectee) with
-| Ctxt_zero (_20_659, _20_660, _20_661) -> begin
-_20_659
-end))
-
-
-let ___Ctxt_zero___ty = (fun ( _0  :  ctxt ) ( _1  :  Prims.string ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTypedCtxt ) -> (match (projectee) with
-| Ctxt_zero (_20_663, _20_662, _20_664) -> begin
-_20_662
-end))
-
-
-let ___Ctxt_zero___xs = (fun ( _0  :  ctxt ) ( _1  :  Prims.string ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTypedCtxt ) -> (match (projectee) with
-| Ctxt_zero (_20_666, _20_667, _20_665) -> begin
-_20_665
-end))
-
-
-let ___Ctxt_succ___s = (fun ( _0  :  ctxt ) ( _1  :  Prims.string ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTypedCtxt ) -> (match (projectee) with
-| Ctxt_succ (_20_670, _20_671, _20_672, _20_673, _20_674) -> begin
-_20_670
-end))
-
-
-let ___Ctxt_succ___ty = (fun ( _0  :  ctxt ) ( _1  :  Prims.string ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTypedCtxt ) -> (match (projectee) with
-| Ctxt_succ (_20_676, _20_675, _20_677, _20_678, _20_679) -> begin
-_20_675
-end))
-
-
-let ___Ctxt_succ___x = (fun ( _0  :  ctxt ) ( _1  :  Prims.string ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTypedCtxt ) -> (match (projectee) with
-| Ctxt_succ (_20_681, _20_682, _20_680, _20_683, _20_684) -> begin
-_20_680
-end))
-
-
-let ___Ctxt_succ___xs = (fun ( _0  :  ctxt ) ( _1  :  Prims.string ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTypedCtxt ) -> (match (projectee) with
-| Ctxt_succ (_20_686, _20_687, _20_688, _20_685, _20_689) -> begin
-_20_685
-end))
-
-
-let ___Ctxt_succ____4 = (fun ( _0  :  ctxt ) ( _1  :  Prims.string ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTypedCtxt ) -> (match (projectee) with
-| Ctxt_succ (_20_691, _20_692, _20_693, _20_694, _20_690) -> begin
-_20_690
-end))
-
-
-type ('dummyV2, 'dummyV1) subType =
-| Sub_refl of l__GType
-| Sub_arry of Prims.nat * Prims.unit Util.fin
-| Sub_lam of l__GType * l__GType * l__GType * l__GType * (Prims.unit, Prims.unit) subType * (Prims.unit, Prims.unit) subType
-
-
-let is_Sub_refl = (fun ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Sub_refl (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_Sub_arry = (fun ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Sub_arry (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_Sub_lam = (fun ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Sub_lam (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let ___Sub_refl___t1 = (fun ( _0  :  l__GType ) ( _1  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit) subType ) -> (match (projectee) with
-| Sub_refl (_20_704) -> begin
-_20_704
-end))
-
-
-let ___Sub_arry___n = (fun ( _0  :  l__GType ) ( _1  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit) subType ) -> (match (projectee) with
-| Sub_arry (_20_707, _20_708) -> begin
-_20_707
-end))
-
-
-let ___Sub_arry___m = (fun ( _0  :  l__GType ) ( _1  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit) subType ) -> (match (projectee) with
-| Sub_arry (_20_710, _20_709) -> begin
-_20_709
-end))
-
-
-let ___Sub_lam___t1 = (fun ( _0  :  l__GType ) ( _1  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit) subType ) -> (match (projectee) with
-| Sub_lam (_20_713, _20_714, _20_715, _20_716, _20_717, _20_718) -> begin
-_20_713
-end))
-
-
-let ___Sub_lam___t2 = (fun ( _0  :  l__GType ) ( _1  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit) subType ) -> (match (projectee) with
-| Sub_lam (_20_720, _20_719, _20_721, _20_722, _20_723, _20_724) -> begin
-_20_719
-end))
-
-
-let ___Sub_lam___s1 = (fun ( _0  :  l__GType ) ( _1  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit) subType ) -> (match (projectee) with
-| Sub_lam (_20_726, _20_727, _20_725, _20_728, _20_729, _20_730) -> begin
-_20_725
-end))
-
-
-let ___Sub_lam___s2 = (fun ( _0  :  l__GType ) ( _1  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit) subType ) -> (match (projectee) with
-| Sub_lam (_20_732, _20_733, _20_734, _20_731, _20_735, _20_736) -> begin
-_20_731
-end))
-
-
-let ___Sub_lam____4 = (fun ( _0  :  l__GType ) ( _1  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit) subType ) -> (match (projectee) with
-| Sub_lam (_20_738, _20_739, _20_740, _20_741, _20_737, _20_742) -> begin
-_20_737
-end))
-
-
-let ___Sub_lam____5 = (fun ( _0  :  l__GType ) ( _1  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit) subType ) -> (match (projectee) with
-| Sub_lam (_20_744, _20_745, _20_746, _20_747, _20_748, _20_743) -> begin
-_20_743
-end))
-
-
-type ('dummyV3, 'dummyV2, 'dummyV1) wellTyped =
-| Wt_let of ctxt * Prims.string * l__GExpr * l__GExpr * l__GType * l__GType * (Prims.unit, Prims.unit, Prims.unit) wellTyped * (Prims.unit, Prims.unit, Prims.unit) wellTyped
-| Wt_lam of ctxt * Prims.string * l__GType * l__GExpr * l__GType * (Prims.unit, Prims.unit, Prims.unit) wellTyped
-| Wt_apl of ctxt * l__GExpr * l__GExpr * l__GType * l__GType * l__GType * (Prims.unit, Prims.unit, Prims.unit) wellTyped * (Prims.unit, Prims.unit, Prims.unit) wellTyped * (Prims.unit, Prims.unit) subType
-| Wt_ite of ctxt * l__GExpr * l__GExpr * l__GExpr * l__GType * l__GType * l__GType * (Prims.unit, Prims.unit, Prims.unit) wellTyped * (Prims.unit, Prims.unit, Prims.unit) wellTyped * (Prims.unit, Prims.unit, Prims.unit) wellTyped * (Prims.unit, Prims.unit) subType * (Prims.unit, Prims.unit) subType
-| Wt_seq of ctxt * l__GExpr * l__GExpr * l__GType * (Prims.unit, Prims.unit, Prims.unit) wellTyped * (Prims.unit, Prims.unit, Prims.unit) wellTyped
-| Wt_ass of ctxt * l__GExpr * l__GExpr * (Prims.unit, Prims.unit, Prims.unit) wellTyped * (Prims.unit, Prims.unit, Prims.unit) wellTyped
-| Wt_unt of ctxt
-| Wt_xor of ctxt * l__GExpr * l__GExpr * (Prims.unit, Prims.unit, Prims.unit) wellTyped * (Prims.unit, Prims.unit, Prims.unit) wellTyped
-| Wt_and of ctxt * l__GExpr * l__GExpr * (Prims.unit, Prims.unit, Prims.unit) wellTyped * (Prims.unit, Prims.unit, Prims.unit) wellTyped
-| Wt_bl of ctxt * Prims.bool
-| Wt_apn of ctxt * l__GExpr * l__GExpr * Prims.nat * Prims.nat * (Prims.unit, Prims.unit, Prims.unit) wellTyped * (Prims.unit, Prims.unit, Prims.unit) wellTyped
-| Wt_rot of ctxt * l__GExpr * Prims.nat * Prims.unit Util.fin * (Prims.unit, Prims.unit, Prims.unit) wellTyped
-| Wt_slc of ctxt * l__GExpr * Prims.nat * Prims.nat * Prims.nat * (Prims.unit, Prims.unit, Prims.unit) wellTyped
-| Wt_arz of ctxt
-| Wt_ars of ctxt * l__GExpr * l__GExpr Prims.list * Prims.nat * (Prims.unit, Prims.unit, Prims.unit) wellTyped * (Prims.unit, Prims.unit, Prims.unit) wellTyped
-| Wt_gta of ctxt * l__GExpr * Prims.nat * Prims.unit Util.fin * (Prims.unit, Prims.unit, Prims.unit) wellTyped
-| Wt_get of ctxt * Prims.string * l__GType * (Prims.unit, Prims.unit, Prims.unit) wellTypedCtxt
-| Wt_ast of ctxt * l__GExpr * (Prims.unit, Prims.unit, Prims.unit) wellTyped
-| Wt_loc of ctxt * Prims.int
-| Wt_bex of ctxt * BoolExp.l__BoolExp
-
-
-let is_Wt_let = (fun ( _  :  obj ) ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Wt_let (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_Wt_lam = (fun ( _  :  obj ) ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Wt_lam (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_Wt_apl = (fun ( _  :  obj ) ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Wt_apl (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_Wt_ite = (fun ( _  :  obj ) ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Wt_ite (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_Wt_seq = (fun ( _  :  obj ) ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Wt_seq (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_Wt_ass = (fun ( _  :  obj ) ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Wt_ass (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_Wt_unt = (fun ( _  :  obj ) ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Wt_unt (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_Wt_xor = (fun ( _  :  obj ) ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Wt_xor (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_Wt_and = (fun ( _  :  obj ) ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Wt_and (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_Wt_bl = (fun ( _  :  obj ) ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Wt_bl (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_Wt_apn = (fun ( _  :  obj ) ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Wt_apn (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_Wt_rot = (fun ( _  :  obj ) ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Wt_rot (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_Wt_slc = (fun ( _  :  obj ) ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Wt_slc (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_Wt_arz = (fun ( _  :  obj ) ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Wt_arz (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_Wt_ars = (fun ( _  :  obj ) ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Wt_ars (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_Wt_gta = (fun ( _  :  obj ) ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Wt_gta (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_Wt_get = (fun ( _  :  obj ) ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Wt_get (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_Wt_ast = (fun ( _  :  obj ) ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Wt_ast (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_Wt_loc = (fun ( _  :  obj ) ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Wt_loc (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let is_Wt_bex = (fun ( _  :  obj ) ( _  :  obj ) ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
-| Wt_bex (_) -> begin
-true
-end
-| _ -> begin
-false
-end))
-
-
-let ___Wt_let___ctx = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_let (_20_824, _20_825, _20_826, _20_827, _20_828, _20_829, _20_830, _20_831) -> begin
-_20_824
-end))
-
-
-let ___Wt_let___s = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_let (_20_833, _20_832, _20_834, _20_835, _20_836, _20_837, _20_838, _20_839) -> begin
-_20_832
-end))
-
-
-let ___Wt_let___t1 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_let (_20_841, _20_842, _20_840, _20_843, _20_844, _20_845, _20_846, _20_847) -> begin
-_20_840
-end))
-
-
-let ___Wt_let___t2 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_let (_20_849, _20_850, _20_851, _20_848, _20_852, _20_853, _20_854, _20_855) -> begin
-_20_848
-end))
-
-
-let ___Wt_let___ty1 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_let (_20_857, _20_858, _20_859, _20_860, _20_856, _20_861, _20_862, _20_863) -> begin
-_20_856
-end))
-
-
-let ___Wt_let___ty2 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_let (_20_865, _20_866, _20_867, _20_868, _20_869, _20_864, _20_870, _20_871) -> begin
-_20_864
-end))
-
-
-let ___Wt_let____6 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_let (_20_873, _20_874, _20_875, _20_876, _20_877, _20_878, _20_872, _20_879) -> begin
-_20_872
-end))
-
-
-let ___Wt_let____7 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_let (_20_881, _20_882, _20_883, _20_884, _20_885, _20_886, _20_887, _20_880) -> begin
-_20_880
-end))
-
-
-let ___Wt_lam___ctx = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_lam (_20_890, _20_891, _20_892, _20_893, _20_894, _20_895) -> begin
-_20_890
-end))
-
-
-let ___Wt_lam___s = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_lam (_20_897, _20_896, _20_898, _20_899, _20_900, _20_901) -> begin
-_20_896
-end))
-
-
-let ___Wt_lam___ty1 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_lam (_20_903, _20_904, _20_902, _20_905, _20_906, _20_907) -> begin
-_20_902
-end))
-
-
-let ___Wt_lam___t = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_lam (_20_909, _20_910, _20_911, _20_908, _20_912, _20_913) -> begin
-_20_908
-end))
-
-
-let ___Wt_lam___ty2 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_lam (_20_915, _20_916, _20_917, _20_918, _20_914, _20_919) -> begin
-_20_914
-end))
-
-
-let ___Wt_lam____5 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_lam (_20_921, _20_922, _20_923, _20_924, _20_925, _20_920) -> begin
-_20_920
-end))
-
-
-let ___Wt_apl___ctx = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_apl (_20_928, _20_929, _20_930, _20_931, _20_932, _20_933, _20_934, _20_935, _20_936) -> begin
-_20_928
-end))
-
-
-let ___Wt_apl___t1 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_apl (_20_938, _20_937, _20_939, _20_940, _20_941, _20_942, _20_943, _20_944, _20_945) -> begin
-_20_937
-end))
-
-
-let ___Wt_apl___t2 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_apl (_20_947, _20_948, _20_946, _20_949, _20_950, _20_951, _20_952, _20_953, _20_954) -> begin
-_20_946
-end))
-
-
-let ___Wt_apl___ty1 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_apl (_20_956, _20_957, _20_958, _20_955, _20_959, _20_960, _20_961, _20_962, _20_963) -> begin
-_20_955
-end))
-
-
-let ___Wt_apl___ty2 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_apl (_20_965, _20_966, _20_967, _20_968, _20_964, _20_969, _20_970, _20_971, _20_972) -> begin
-_20_964
-end))
-
-
-let ___Wt_apl___ty3 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_apl (_20_974, _20_975, _20_976, _20_977, _20_978, _20_973, _20_979, _20_980, _20_981) -> begin
-_20_973
-end))
-
-
-let ___Wt_apl____6 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_apl (_20_983, _20_984, _20_985, _20_986, _20_987, _20_988, _20_982, _20_989, _20_990) -> begin
-_20_982
-end))
-
-
-let ___Wt_apl____7 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_apl (_20_992, _20_993, _20_994, _20_995, _20_996, _20_997, _20_998, _20_991, _20_999) -> begin
-_20_991
-end))
-
-
-let ___Wt_apl____8 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_apl (_20_1001, _20_1002, _20_1003, _20_1004, _20_1005, _20_1006, _20_1007, _20_1008, _20_1000) -> begin
-_20_1000
-end))
-
-
-let ___Wt_ite___ctx = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ite (_20_1011, _20_1012, _20_1013, _20_1014, _20_1015, _20_1016, _20_1017, _20_1018, _20_1019, _20_1020, _20_1021, _20_1022) -> begin
-_20_1011
-end))
-
-
-let ___Wt_ite___t1 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ite (_20_1024, _20_1023, _20_1025, _20_1026, _20_1027, _20_1028, _20_1029, _20_1030, _20_1031, _20_1032, _20_1033, _20_1034) -> begin
-_20_1023
-end))
-
-
-let ___Wt_ite___t2 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ite (_20_1036, _20_1037, _20_1035, _20_1038, _20_1039, _20_1040, _20_1041, _20_1042, _20_1043, _20_1044, _20_1045, _20_1046) -> begin
-_20_1035
-end))
-
-
-let ___Wt_ite___t3 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ite (_20_1048, _20_1049, _20_1050, _20_1047, _20_1051, _20_1052, _20_1053, _20_1054, _20_1055, _20_1056, _20_1057, _20_1058) -> begin
-_20_1047
-end))
-
-
-let ___Wt_ite___ty1 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ite (_20_1060, _20_1061, _20_1062, _20_1063, _20_1059, _20_1064, _20_1065, _20_1066, _20_1067, _20_1068, _20_1069, _20_1070) -> begin
-_20_1059
-end))
-
-
-let ___Wt_ite___ty2 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ite (_20_1072, _20_1073, _20_1074, _20_1075, _20_1076, _20_1071, _20_1077, _20_1078, _20_1079, _20_1080, _20_1081, _20_1082) -> begin
-_20_1071
-end))
-
-
-let ___Wt_ite___ty3 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ite (_20_1084, _20_1085, _20_1086, _20_1087, _20_1088, _20_1089, _20_1083, _20_1090, _20_1091, _20_1092, _20_1093, _20_1094) -> begin
-_20_1083
-end))
-
-
-let ___Wt_ite____7 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ite (_20_1096, _20_1097, _20_1098, _20_1099, _20_1100, _20_1101, _20_1102, _20_1095, _20_1103, _20_1104, _20_1105, _20_1106) -> begin
-_20_1095
-end))
-
-
-let ___Wt_ite____8 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ite (_20_1108, _20_1109, _20_1110, _20_1111, _20_1112, _20_1113, _20_1114, _20_1115, _20_1107, _20_1116, _20_1117, _20_1118) -> begin
-_20_1107
-end))
-
-
-let ___Wt_ite____9 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ite (_20_1120, _20_1121, _20_1122, _20_1123, _20_1124, _20_1125, _20_1126, _20_1127, _20_1128, _20_1119, _20_1129, _20_1130) -> begin
-_20_1119
-end))
-
-
-let ___Wt_ite____10 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ite (_20_1132, _20_1133, _20_1134, _20_1135, _20_1136, _20_1137, _20_1138, _20_1139, _20_1140, _20_1141, _20_1131, _20_1142) -> begin
-_20_1131
-end))
-
-
-let ___Wt_ite____11 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ite (_20_1144, _20_1145, _20_1146, _20_1147, _20_1148, _20_1149, _20_1150, _20_1151, _20_1152, _20_1153, _20_1154, _20_1143) -> begin
-_20_1143
-end))
-
-
-let ___Wt_seq___ctx = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_seq (_20_1157, _20_1158, _20_1159, _20_1160, _20_1161, _20_1162) -> begin
-_20_1157
-end))
-
-
-let ___Wt_seq___t1 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_seq (_20_1164, _20_1163, _20_1165, _20_1166, _20_1167, _20_1168) -> begin
-_20_1163
-end))
-
-
-let ___Wt_seq___t2 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_seq (_20_1170, _20_1171, _20_1169, _20_1172, _20_1173, _20_1174) -> begin
-_20_1169
-end))
-
-
-let ___Wt_seq___ty = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_seq (_20_1176, _20_1177, _20_1178, _20_1175, _20_1179, _20_1180) -> begin
-_20_1175
-end))
-
-
-let ___Wt_seq____4 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_seq (_20_1182, _20_1183, _20_1184, _20_1185, _20_1181, _20_1186) -> begin
-_20_1181
-end))
-
-
-let ___Wt_seq____5 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_seq (_20_1188, _20_1189, _20_1190, _20_1191, _20_1192, _20_1187) -> begin
-_20_1187
-end))
-
-
-let ___Wt_ass___ctx = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ass (_20_1195, _20_1196, _20_1197, _20_1198, _20_1199) -> begin
-_20_1195
-end))
-
-
-let ___Wt_ass___t1 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ass (_20_1201, _20_1200, _20_1202, _20_1203, _20_1204) -> begin
-_20_1200
-end))
-
-
-let ___Wt_ass___t2 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ass (_20_1206, _20_1207, _20_1205, _20_1208, _20_1209) -> begin
-_20_1205
-end))
-
-
-let ___Wt_ass____3 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ass (_20_1211, _20_1212, _20_1213, _20_1210, _20_1214) -> begin
-_20_1210
-end))
-
-
-let ___Wt_ass____4 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ass (_20_1216, _20_1217, _20_1218, _20_1219, _20_1215) -> begin
-_20_1215
-end))
-
-
-let ___Wt_unt___ctx = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_unt (_20_1222) -> begin
-_20_1222
-end))
-
-
-let ___Wt_xor___ctx = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_xor (_20_1225, _20_1226, _20_1227, _20_1228, _20_1229) -> begin
-_20_1225
-end))
-
-
-let ___Wt_xor___t1 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_xor (_20_1231, _20_1230, _20_1232, _20_1233, _20_1234) -> begin
-_20_1230
-end))
-
-
-let ___Wt_xor___t2 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_xor (_20_1236, _20_1237, _20_1235, _20_1238, _20_1239) -> begin
-_20_1235
-end))
-
-
-let ___Wt_xor____3 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_xor (_20_1241, _20_1242, _20_1243, _20_1240, _20_1244) -> begin
-_20_1240
-end))
-
-
-let ___Wt_xor____4 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_xor (_20_1246, _20_1247, _20_1248, _20_1249, _20_1245) -> begin
-_20_1245
-end))
-
-
-let ___Wt_and___ctx = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_and (_20_1252, _20_1253, _20_1254, _20_1255, _20_1256) -> begin
-_20_1252
-end))
-
-
-let ___Wt_and___t1 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_and (_20_1258, _20_1257, _20_1259, _20_1260, _20_1261) -> begin
-_20_1257
-end))
-
-
-let ___Wt_and___t2 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_and (_20_1263, _20_1264, _20_1262, _20_1265, _20_1266) -> begin
-_20_1262
-end))
-
-
-let ___Wt_and____3 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_and (_20_1268, _20_1269, _20_1270, _20_1267, _20_1271) -> begin
-_20_1267
-end))
-
-
-let ___Wt_and____4 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_and (_20_1273, _20_1274, _20_1275, _20_1276, _20_1272) -> begin
-_20_1272
-end))
-
-
-let ___Wt_bl___ctx = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_bl (_20_1279, _20_1280) -> begin
-_20_1279
-end))
-
-
-let ___Wt_bl___b = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_bl (_20_1282, _20_1281) -> begin
-_20_1281
-end))
-
-
-let ___Wt_apn___ctx = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_apn (_20_1285, _20_1286, _20_1287, _20_1288, _20_1289, _20_1290, _20_1291) -> begin
-_20_1285
-end))
-
-
-let ___Wt_apn___t1 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_apn (_20_1293, _20_1292, _20_1294, _20_1295, _20_1296, _20_1297, _20_1298) -> begin
-_20_1292
-end))
-
-
-let ___Wt_apn___t2 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_apn (_20_1300, _20_1301, _20_1299, _20_1302, _20_1303, _20_1304, _20_1305) -> begin
-_20_1299
-end))
-
-
-let ___Wt_apn___n = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_apn (_20_1307, _20_1308, _20_1309, _20_1306, _20_1310, _20_1311, _20_1312) -> begin
-_20_1306
-end))
-
-
-let ___Wt_apn___m = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_apn (_20_1314, _20_1315, _20_1316, _20_1317, _20_1313, _20_1318, _20_1319) -> begin
-_20_1313
-end))
-
-
-let ___Wt_apn____5 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_apn (_20_1321, _20_1322, _20_1323, _20_1324, _20_1325, _20_1320, _20_1326) -> begin
-_20_1320
-end))
-
-
-let ___Wt_apn____6 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_apn (_20_1328, _20_1329, _20_1330, _20_1331, _20_1332, _20_1333, _20_1327) -> begin
-_20_1327
-end))
-
-
-let ___Wt_rot___ctx = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_rot (_20_1336, _20_1337, _20_1338, _20_1339, _20_1340) -> begin
-_20_1336
-end))
-
-
-let ___Wt_rot___t = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_rot (_20_1342, _20_1341, _20_1343, _20_1344, _20_1345) -> begin
-_20_1341
-end))
-
-
-let ___Wt_rot___n = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_rot (_20_1347, _20_1348, _20_1346, _20_1349, _20_1350) -> begin
-_20_1346
-end))
-
-
-let ___Wt_rot___i = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_rot (_20_1352, _20_1353, _20_1354, _20_1351, _20_1355) -> begin
-_20_1351
-end))
-
-
-let ___Wt_rot____4 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_rot (_20_1357, _20_1358, _20_1359, _20_1360, _20_1356) -> begin
-_20_1356
-end))
-
-
-let ___Wt_slc___ctx = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_slc (_20_1363, _20_1364, _20_1365, _20_1366, _20_1367, _20_1368) -> begin
-_20_1363
-end))
-
-
-let ___Wt_slc___t = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_slc (_20_1370, _20_1369, _20_1371, _20_1372, _20_1373, _20_1374) -> begin
-_20_1369
-end))
-
-
-let ___Wt_slc___n = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_slc (_20_1376, _20_1377, _20_1375, _20_1378, _20_1379, _20_1380) -> begin
-_20_1375
-end))
-
-
-let ___Wt_slc___i = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_slc (_20_1382, _20_1383, _20_1384, _20_1381, _20_1385, _20_1386) -> begin
-_20_1381
-end))
-
-
-let ___Wt_slc___j = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_slc (_20_1388, _20_1389, _20_1390, _20_1391, _20_1387, _20_1392) -> begin
-_20_1387
-end))
-
-
-let ___Wt_slc____5 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_slc (_20_1394, _20_1395, _20_1396, _20_1397, _20_1398, _20_1393) -> begin
-_20_1393
-end))
-
-
-let ___Wt_arz___ctx = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_arz (_20_1401) -> begin
-_20_1401
-end))
-
-
-let ___Wt_ars___ctx = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ars (_20_1404, _20_1405, _20_1406, _20_1407, _20_1408, _20_1409) -> begin
-_20_1404
-end))
-
-
-let ___Wt_ars___t = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ars (_20_1411, _20_1410, _20_1412, _20_1413, _20_1414, _20_1415) -> begin
-_20_1410
-end))
-
-
-let ___Wt_ars___ts = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ars (_20_1417, _20_1418, _20_1416, _20_1419, _20_1420, _20_1421) -> begin
-_20_1416
-end))
-
-
-let ___Wt_ars___n = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ars (_20_1423, _20_1424, _20_1425, _20_1422, _20_1426, _20_1427) -> begin
-_20_1422
-end))
-
-
-let ___Wt_ars____4 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ars (_20_1429, _20_1430, _20_1431, _20_1432, _20_1428, _20_1433) -> begin
-_20_1428
-end))
-
-
-let ___Wt_ars____5 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ars (_20_1435, _20_1436, _20_1437, _20_1438, _20_1439, _20_1434) -> begin
-_20_1434
-end))
-
-
-let ___Wt_gta___ctx = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_gta (_20_1442, _20_1443, _20_1444, _20_1445, _20_1446) -> begin
-_20_1442
-end))
-
-
-let ___Wt_gta___t = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_gta (_20_1448, _20_1447, _20_1449, _20_1450, _20_1451) -> begin
-_20_1447
-end))
-
-
-let ___Wt_gta___n = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_gta (_20_1453, _20_1454, _20_1452, _20_1455, _20_1456) -> begin
-_20_1452
-end))
-
-
-let ___Wt_gta___i = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_gta (_20_1458, _20_1459, _20_1460, _20_1457, _20_1461) -> begin
-_20_1457
-end))
-
-
-let ___Wt_gta____4 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_gta (_20_1463, _20_1464, _20_1465, _20_1466, _20_1462) -> begin
-_20_1462
-end))
-
-
-let ___Wt_get___ctx = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_get (_20_1469, _20_1470, _20_1471, _20_1472) -> begin
-_20_1469
-end))
-
-
-let ___Wt_get___s = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_get (_20_1474, _20_1473, _20_1475, _20_1476) -> begin
-_20_1473
-end))
-
-
-let ___Wt_get___ty = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_get (_20_1478, _20_1479, _20_1477, _20_1480) -> begin
-_20_1477
-end))
-
-
-let ___Wt_get____3 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_get (_20_1482, _20_1483, _20_1484, _20_1481) -> begin
-_20_1481
-end))
-
-
-let ___Wt_ast___ctx = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ast (_20_1487, _20_1488, _20_1489) -> begin
-_20_1487
-end))
-
-
-let ___Wt_ast___t = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ast (_20_1491, _20_1490, _20_1492) -> begin
-_20_1490
-end))
-
-
-let ___Wt_ast____2 = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_ast (_20_1494, _20_1495, _20_1493) -> begin
-_20_1493
-end))
-
-
-let ___Wt_loc___ctx = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_loc (_20_1498, _20_1499) -> begin
-_20_1498
-end))
-
-
-let ___Wt_loc___i = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_loc (_20_1501, _20_1500) -> begin
-_20_1500
-end))
-
-
-let ___Wt_bex___ctx = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_bex (_20_1504, _20_1505) -> begin
-_20_1504
-end))
-
-
-let ___Wt_bex___bexp = (fun ( _0  :  ctxt ) ( _1  :  l__GExpr ) ( _2  :  l__GType ) ( projectee  :  (Prims.unit, Prims.unit, Prims.unit) wellTyped ) -> (match (projectee) with
-| Wt_bex (_20_1507, _20_1506) -> begin
-_20_1506
-end))
-
-
 let rec subtype : l__GType  ->  l__GType  ->  Prims.bool = (fun ( t1  :  l__GType ) ( t2  :  l__GType ) -> if (t1 = t2) then begin
 true
 end else begin
@@ -1971,18 +1006,6 @@ end)
 end)
 
 
-let rec welltyctx_imp_findctx : ctxt  ->  Prims.string  ->  l__GType  ->  (Prims.unit, Prims.unit, Prims.unit) wellTypedCtxt  ->  Prims.unit = (fun ( ctx  :  ctxt ) ( s  :  Prims.string ) ( ty  :  l__GType ) ( h  :  (Prims.unit, Prims.unit, Prims.unit) wellTypedCtxt ) -> ())
-
-
-let rec findctx_imp_welltyctx : ctxt  ->  Prims.string  ->  l__GType  ->  Prims.unit  ->  (Prims.unit, Prims.unit, Prims.unit) wellTypedCtxt = (fun ( ctx  :  ctxt ) ( s  :  Prims.string ) ( ty  :  l__GType ) ( h  :  Prims.unit ) -> (match (ctx) with
-| (x, y)::xs -> begin
-if ((x = s) && (y = ty)) then begin
-Ctxt_zero (s, ty, xs)
-end else begin
-Ctxt_succ (s, ty, (x, y), xs, (findctx_imp_welltyctx xs s ty ()))
-end
-end))
-
 
 type l__IExp =
 | ILit of Prims.int
@@ -1991,7 +1014,7 @@ type l__IExp =
 | IMinus of l__IExp
 
 
-let is_ILit = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_ILit = (fun ( _discr_  :  l__IExp ) -> (match (_discr_) with
 | ILit (_) -> begin
 true
 end
@@ -2000,7 +1023,7 @@ false
 end))
 
 
-let is_IVar = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_IVar = (fun ( _discr_  :  l__IExp ) -> (match (_discr_) with
 | IVar (_) -> begin
 true
 end
@@ -2009,7 +1032,7 @@ false
 end))
 
 
-let is_IPlus = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_IPlus = (fun ( _discr_  :  l__IExp ) -> (match (_discr_) with
 | IPlus (_) -> begin
 true
 end
@@ -2018,7 +1041,7 @@ false
 end))
 
 
-let is_IMinus = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_IMinus = (fun ( _discr_  :  l__IExp ) -> (match (_discr_) with
 | IMinus (_) -> begin
 true
 end
@@ -2059,7 +1082,7 @@ type l__TyExp =
 | TArrow of (l__TyExp * l__TyExp)
 
 
-let is_TUnit = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_TUnit = (fun ( _discr_  :  l__TyExp ) -> (match (_discr_) with
 | TUnit (_) -> begin
 true
 end
@@ -2068,7 +1091,7 @@ false
 end))
 
 
-let is_TBool = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_TBool = (fun ( _discr_  :  l__TyExp ) -> (match (_discr_) with
 | TBool (_) -> begin
 true
 end
@@ -2077,7 +1100,7 @@ false
 end))
 
 
-let is_TVar = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_TVar = (fun ( _discr_  :  l__TyExp ) -> (match (_discr_) with
 | TVar (_) -> begin
 true
 end
@@ -2086,7 +1109,7 @@ false
 end))
 
 
-let is_TArray = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_TArray = (fun ( _discr_  :  l__TyExp ) -> (match (_discr_) with
 | TArray (_) -> begin
 true
 end
@@ -2095,7 +1118,7 @@ false
 end))
 
 
-let is_TArrow = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_TArrow = (fun ( _discr_  :  l__TyExp ) -> (match (_discr_) with
 | TArrow (_) -> begin
 true
 end
@@ -2208,7 +1231,7 @@ type l__Cons =
 | TCons of (l__TyExp * l__TyExp)
 
 
-let is_ICons = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_ICons = (fun ( _discr_  :  l__Cons ) -> (match (_discr_) with
 | ICons (_) -> begin
 true
 end
@@ -2217,7 +1240,7 @@ false
 end))
 
 
-let is_TCons = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_TCons = (fun ( _discr_  :  l__Cons ) -> (match (_discr_) with
 | TCons (_) -> begin
 true
 end
@@ -2399,7 +1422,7 @@ end
 let _20_1819 = (inferTypes_lst top ctx tlst)
 in (match (_20_1819) with
 | (top', ec, lc) -> begin
-(top', ec, lc, TArray (ILit ((FStar.List.lengthT tlst))))
+(top', ec, lc, TArray (ILit ((FStar.List.length tlst))))
 end))
 end
 | GET_ARRAY (t, i) -> begin

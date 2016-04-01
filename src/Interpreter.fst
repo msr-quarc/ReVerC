@@ -535,12 +535,12 @@ type qubit =
     cval : BoolExp }
 
 val null_q : qubit
-val get_substs : map int qubit -> int -> Tot int
+val get_subst : map int qubit -> int -> Tot int
 val data_q : int -> Tot qubit
 val anc_q  : int -> Tot qubit
 
 let nullq = { id = 0; ival = BFalse; cval = BFalse }
-let get_substs m = fun i -> (m i).id
+let get_subst m = fun i -> (m i).id
 let data_q i = { id = i; ival = BVar i; cval = BFalse }
 let anc_q i  = { id = i; ival = BFalse; cval = BFalse }
 
@@ -560,17 +560,18 @@ val circGCEval   : circGCState -> state -> int -> Tot bool
 //  -compile the current value in place (i.e. ival + cval + cval = ival),
 //  -if the qubit is an ancilla, push it back onto the heap, and
 //  -update the current value of all other bits by substituting q.id with ival + cval
+val garbageCollect : circGCState -> qubit -> Tot circGCState
 let garbageCollect cs q = 
-  let (ah', res, ancs, circ) = compileBexp ah q.id q.cval in
+  let (ah', res, ancs, circ) = compileBexp cs.ah q.id q.cval in
   let ah'' = if q.ival = BFalse then insert ah' q.id else ah' in
   let f q' = 
     let subq = fun v -> if v = q.id then BXor (q.ival, q.cval) else BVar v in
-      { id = q'.id; ival = q'.ival; cval = simplify (substBExp q'.cval subq) }
+      { id = q'.id; ival = q'.ival; cval = simplify (substBexp q'.cval subq) }
   in
-  let symtab' = Map.map f cs.symtab in
+  let symtab' = map_mp f cs.symtab in
     { top = cs.top; ah = ah''; gates = cs.gates @ circ; symtab = symtab' }
 
-let circGCInit = { top = 0; ah = emptyHeap; gates = []; subs = const_map nullq}
+let circGCInit = { top = 0; ah = emptyHeap; gates = []; subs = const_map nullq; symtab = const_map nullq }
 let circGCAlloc cs bexp = 
   let bexp' = simplify (substVar bexp (get_subst cs.symtab)) in
   let (ah', bit) = popMin cs.ah in
@@ -581,33 +582,30 @@ let circGCAlloc cs bexp =
   let symtab' = update cs.symtab cs.top q in
   (cs.top, {top = top'; ah = ah''; gates = gates'; symtab = symtab'})
 let circGCAssign cs l bexp =
-  let targ = lookup cs.symtab l in
+  let q = lookup cs.symtab l in
   let bexp' = simplify (substVar bexp (get_subst cs.symtab)) in
-  let bexpfac = factorAs bexp' targ.id in
+  let bexpfac = factorAs bexp' q.id in
   match (q.cval, bexpfac) with
     | (BFalse, _)      -> // substitute q.id with BFalse, compile in place
-      let bexp'' = substBExp bexp' (fun v -> if v = q.id then BFalse else BVar v) in
+      let bexp'' = substBexp bexp' (fun v -> if v = q.id then BFalse else BVar v) in
       let (ah', res, ancs, circ) = compileBexp cs.ah q.id bexp'' in
-      let q' = { id = q.id; ival = q.ival; cval = bexp'' }
-        {top = cs.top; ah = ah'; gates = cq.gates @ circ; update cs.symtab l q' }
-    | (BTrue, _)       -> // substtitue q.id with BTrue, compile (not bexp') in place
-      let bexp'' = substBExp bexp' (fun v -> if v = q.id then BNot BFalse else BVar v) in
-      let (ah', res, ancs, circ) = compileBexp cs.ah q.id bexp'' in
-      let q' = { id = q.id; ival = q.ival; cval = bexp'' }
-        {top = cs.top; ah = ah'; gates = cq.gates @ circ; update cs.symtab l q' }
+      let q' = { id = q.id; ival = q.ival; cval = bexp'' } in
+        {top = cs.top; ah = ah'; gates = cs.gates @ circ; symtab = update cs.symtab l q' }
     | (_, Some bexp'') -> // compile in place, substitute q.id with q.id \oplus bexp''
       let (ah', res, ancs, circ') = compileBexp cs.ah q.id bexp'' in
       let q' = { id = q.id; ival = q.ival; cval = simplify (BXor (q.cval, bexp'')) } in
       let f b = 
-        let subq = fun v -> if v = q.id then BXor (q.id, bexp'') else BVar v in
-          { id = b.id; ival = b.ival; cval = simplify (substBExp b.cval subq) }
+        let subq = fun v -> if v = q.id then BXor (BVar q.id, bexp'') else BVar v in
+          { id = b.id; ival = b.ival; cval = simplify (substBexp b.cval subq) }
       in
-      let symtab' = update (Map.map f cs.symtab) l q'
+      let symtab' = update (map_mp f cs.symtab) l q' in
+        {top = cs.top; ah = ah'; gates = cs.gates @ circ'; symtab = update cs.symtab l q' }
     | _                -> // Compile out of place, clean q.id
-      let (ah', res, ancs, circ') = compileBexp_oop cs.ah bexp'' in
-      let q' = { id = res; ival = BFalse; cval = bexp'' } in
-      let cs' = { top = cs.top; ah = ah'; gates = cs.gates @ circ; update cs.symtab l q' } in
+      let (ah', res, ancs, circ') = compileBexp_oop cs.ah bexp' in
+      let q' = { id = res; ival = BFalse; cval = bexp' } in
+      let cs' = { top = cs.top; ah = ah'; gates = cs.gates @ circ'; symtab = update cs.symtab l q' } in
         garbageCollect cs' q
+let circGCEval cs st i = false
 
 let circGCInterp = {
   alloc = circGCAlloc;
@@ -643,29 +641,29 @@ let allocTycircGC ty cs = match ty with
       Val (ARRAY locs, st')
   | _ -> Err "Invalid parameter type for circuit generation"
 
-val lookup_Lst : map int qubit -> lst:(list GExpr){isVal_lst lst} -> Tot (list int)
-let rec lookup_Lst symtab lst = match lst with
+val lookup_Lst_gc : map int qubit -> lst:(list GExpr){isVal_lst lst} -> Tot (list int)
+let rec lookup_Lst_gc symtab lst = match lst with
   | [] -> []
-  | (LOC l)::xs -> ((lookup symtab l).id)::(lookup_Lst symtab xs)
+  | (LOC l)::xs -> ((lookup symtab l).id)::(lookup_Lst_gc symtab xs)
 
-val compileCirc : config circGCState -> Dv (result (list int * list Gate))
-let rec compileCirc (gexp, cs) =
+val compileGCCirc : config circGCState -> Dv (result (list int * list Gate))
+let rec compileGCCirc (gexp, cs) =
   if isVal gexp then match gexp with
     | UNIT -> Val ([], [])
     | LAMBDA (x, ty, t) ->
       begin match allocTycircGC ty cs with
         | Err s -> Err s
-        | Val (v, cs') -> compileCirc (substGExpr t x v, cs')
+        | Val (v, cs') -> compileGCCirc (substGExpr t x v, cs')
       end
     | LOC l ->
       let res = lookup cs.symtab l in
         Val ([res.id], cs.gates)
     | ARRAY lst ->
-      let res = lookup_Lst cs.symtab lst in
+      let res = lookup_Lst_gc cs.symtab lst in
         Val (res, cs.gates)
   else match (step (gexp, cs) circGCInterp) with
     | Err s -> Err s
-    | Val c' -> compileCirc c'
+    | Val c' -> compileGCCirc c'
 
 // Dependence graph interpretation
 (*
@@ -804,6 +802,7 @@ and state_equiv_step_lst lst st st' init = match lst with
     state_equiv_step_lst xs st st' init
 
 // Correctness of circuit compilation
+(*
 type circ_equiv (st:boolState) (cs:circState) (init:state) =
   fst st = cs.top /\
   zeroHeap (evalCirc cs.gates init) cs.ah /\
@@ -989,4 +988,4 @@ and circ_equiv_step_lst lst st st' init = match lst with
   | [] -> ()
   | x::xs ->
     circ_equiv_step x st st' init;
-    circ_equiv_step_lst xs st st' init
+    circ_equiv_step_lst xs st st' init*)

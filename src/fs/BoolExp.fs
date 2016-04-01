@@ -10,7 +10,7 @@ type l__BoolExp =
 | BXor of (l__BoolExp * l__BoolExp)
 
 
-let is_BFalse = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_BFalse = (fun ( _discr_  :  l__BoolExp ) -> (match (_discr_) with
 | BFalse (_) -> begin
 true
 end
@@ -19,7 +19,7 @@ false
 end))
 
 
-let is_BVar = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_BVar = (fun ( _discr_  :  l__BoolExp ) -> (match (_discr_) with
 | BVar (_) -> begin
 true
 end
@@ -28,7 +28,7 @@ false
 end))
 
 
-let is_BNot = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_BNot = (fun ( _discr_  :  l__BoolExp ) -> (match (_discr_) with
 | BNot (_) -> begin
 true
 end
@@ -37,7 +37,7 @@ false
 end))
 
 
-let is_BAnd = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_BAnd = (fun ( _discr_  :  l__BoolExp ) -> (match (_discr_) with
 | BAnd (_) -> begin
 true
 end
@@ -46,7 +46,7 @@ false
 end))
 
 
-let is_BXor = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_BXor = (fun ( _discr_  :  l__BoolExp ) -> (match (_discr_) with
 | BXor (_) -> begin
 true
 end
@@ -159,7 +159,7 @@ end
 end))
 
 
-let varCount : l__BoolExp  ->  Prims.int = (fun ( exp  :  l__BoolExp ) -> (FStar.List.lengthT (getVars exp)))
+let varCount : l__BoolExp  ->  Prims.int = (fun ( exp  :  l__BoolExp ) -> (FStar.List.length (getVars exp)))
 
 
 let varMax : l__BoolExp  ->  Prims.int = (fun ( exp  :  l__BoolExp ) -> (listMax (getVars exp)))
@@ -484,7 +484,7 @@ in (match (_19_327) with
 let cleanup = (Circuit.uncompute circ res)
 in (
 
-let ah'' = (FStar.List.fold_leftT AncillaHeap.insert ah' anc)
+let ah'' = (FStar.List.fold_left AncillaHeap.insert ah' anc)
 in (ah'', res, [], (FStar.List.append circ (FStar.List.rev cleanup)))))
 end)))
 
@@ -533,7 +533,7 @@ in (match (_19_365) with
 let cleanup = (Circuit.uncompute (FStar.List.append xgate ygate) targ)
 in (
 
-let ah''' = (FStar.List.fold_leftT AncillaHeap.insert ah'' (FStar.List.append xanc yanc))
+let ah''' = (FStar.List.fold_left AncillaHeap.insert ah'' (FStar.List.append xanc yanc))
 in (ah''', targ, [], (FStar.List.append (FStar.List.append (FStar.List.append xgate ygate) ((Circuit.RTOFF ((xres, yres, targ)))::[])) (FStar.List.rev cleanup)))))
 end))
 end))
@@ -688,10 +688,6 @@ let rec distribute_preserves_semantics : l__BoolExp  ->  Prims.unit = (fun ( exp
 let rec undistribute_preserves_semantics : l__BoolExp  ->  Prims.unit = (fun ( exp  :  l__BoolExp ) -> ())
 
 
-type partition =
-Prims.unit  ->  obj Util.set  ->  obj Util.set  ->  obj Util.set  ->  (((obj, Prims.unit, Prims.unit) Util.disjoint, (obj, Prims.unit, Prims.unit) Util.disjoint) Prims.l_and, (obj, Prims.unit, Prims.unit) Util.disjoint) Prims.l_and
-
-
 let rec compile_decreases_heap : AncillaHeap.l__AncHeap  ->  Prims.int  ->  l__BoolExp  ->  Prims.unit = (fun ( ah  :  AncillaHeap.l__AncHeap ) ( targ  :  Prims.int ) ( exp  :  l__BoolExp ) -> ())
 and compile_decreases_heap_oop : AncillaHeap.l__AncHeap  ->  l__BoolExp  ->  Prims.unit = (fun ( ah  :  AncillaHeap.l__AncHeap ) ( exp  :  l__BoolExp ) -> ())
 
@@ -734,14 +730,6 @@ and compile_anc_oop : AncillaHeap.l__AncHeap  ->  l__BoolExp  ->  Prims.unit = (
 
 let rec compile_ctrls : AncillaHeap.l__AncHeap  ->  Prims.int  ->  l__BoolExp  ->  Prims.unit = (fun ( ah  :  AncillaHeap.l__AncHeap ) ( targ  :  Prims.int ) ( x  :  l__BoolExp ) -> ())
 and compile_ctrls_oop : AncillaHeap.l__AncHeap  ->  l__BoolExp  ->  Prims.unit = (fun ( ah  :  AncillaHeap.l__AncHeap ) ( x  :  l__BoolExp ) -> ())
-
-
-type ('Aah, 'Atarg, 'Aexp, 'Ast) clean_heap_cond =
-(Prims.unit, Prims.unit) AncillaHeap.zeroHeap
-
-
-type ('Aah, 'Atarg, 'Aexp, 'Ast) clean_corr_cond =
-Prims.unit Prims.b2t
 
 
 let compile_with_cleanup : AncillaHeap.l__AncHeap  ->  Prims.int  ->  l__BoolExp  ->  Total.state  ->  Prims.unit = (fun ( ah  :  AncillaHeap.l__AncHeap ) ( targ  :  Prims.int ) ( exp  :  l__BoolExp ) ( st  :  Total.state ) -> ())

@@ -7,7 +7,7 @@ type 'a heap =
 | Heap of ('a * 'a heap Prims.list)
 
 
-let is_Empty = (fun ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
+let is_Empty = (fun ( _discr_  :  'a heap ) -> (match (_discr_) with
 | Empty (_) -> begin
 true
 end
@@ -16,7 +16,7 @@ false
 end))
 
 
-let is_Heap = (fun ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
+let is_Heap = (fun ( _discr_  :  'a heap ) -> (match (_discr_) with
 | Heap (_) -> begin
 true
 end
@@ -26,8 +26,8 @@ end))
 
 
 let ___Heap____0 = (fun ( projectee  :  'a heap ) -> (match (projectee) with
-| Heap (_15_4) -> begin
-_15_4
+| Heap (_12_4) -> begin
+_12_4
 end))
 
 
@@ -42,10 +42,10 @@ end))
 
 
 let merge : intHeap  ->  intHeap  ->  intHeap = (fun ( hp1  :  intHeap ) ( hp2  :  intHeap ) -> (match ((hp1, hp2)) with
-| (Empty, _15_16) -> begin
+| (Empty, _12_16) -> begin
 hp2
 end
-| (_15_19, Empty) -> begin
+| (_12_19, Empty) -> begin
 hp1
 end
 | (Heap (r1, h1), Heap (r2, h2)) -> begin
@@ -77,13 +77,13 @@ end))
 
 
 let deleteMin : intHeap  ->  intHeap = (fun ( hp  :  intHeap ) -> (match (hp) with
-| Heap (_15_47, lst) -> begin
+| Heap (_12_47, lst) -> begin
 (mergePairs lst)
 end))
 
 
 let getMin : intHeap  ->  Prims.int = (fun ( hp  :  intHeap ) -> (match (hp) with
-| Heap (r, _15_56) -> begin
+| Heap (r, _12_56) -> begin
 r
 end))
 
@@ -111,7 +111,7 @@ let leq_heap : Prims.int  ->  intHeap  ->  Prims.bool = (fun ( i  :  Prims.int )
 | Empty -> begin
 true
 end
-| Heap (j, _15_83) -> begin
+| Heap (j, _12_83) -> begin
 (i < j)
 end))
 
@@ -121,7 +121,7 @@ let rec is_heap : intHeap  ->  Prims.bool = (fun ( hp  :  intHeap ) -> (match (h
 true
 end
 | Heap (i, lst) -> begin
-((is_heap_list lst) && (FStar.List.for_allT (leq_heap i) lst))
+((is_heap_list lst) && (FStar.List.for_all (leq_heap i) lst))
 end))
 and is_heap_list : intHeap Prims.list  ->  Prims.bool = (fun ( lst  :  intHeap Prims.list ) -> (match (lst) with
 | [] -> begin
@@ -150,7 +150,7 @@ end))
 let merge_heap : intHeap  ->  intHeap  ->  Prims.unit = (fun ( hp1  :  intHeap ) ( hp2  :  intHeap ) -> ())
 
 
-let insert_heap : intHeap  ->  Prims.int  ->  Prims.unit = (fun ( _15_166  :  intHeap ) ( _15_168  :  Prims.int ) -> ())
+let insert_heap : intHeap  ->  Prims.int  ->  Prims.unit = (fun ( _12_166  :  intHeap ) ( _12_168  :  Prims.int ) -> ())
 
 
 let rec mergePairs_heap : intHeap Prims.list  ->  Prims.unit = (fun ( lst  :  intHeap Prims.list ) -> ())

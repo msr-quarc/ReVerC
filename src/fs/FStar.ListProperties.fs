@@ -20,7 +20,7 @@ let rev_mem = (fun ( l  :  'a Prims.list ) ( x  :  'a ) -> ())
 let append_nil_l = (fun ( l  :  'a Prims.list ) -> ())
 
 
-let rec append_l_nil = (fun ( _10_1  :  'a Prims.list ) -> ())
+let rec append_l_nil = (fun ( _7_1  :  'a Prims.list ) -> ())
 
 
 let append_cons_l = (fun ( hd  :  'a ) ( tl  :  'a Prims.list ) ( l  :  'a Prims.list ) -> ())
@@ -59,7 +59,7 @@ let rec append_inv_head = (fun ( l  :  'a Prims.list ) ( l1  :  'a Prims.list ) 
 let rec append_inv_tail = (fun ( l  :  'a Prims.list ) ( l1  :  'a Prims.list ) ( l2  :  'a Prims.list ) -> ())
 
 
-let rec rev' = (fun ( _10_2  :  'a Prims.list ) -> (match (_10_2) with
+let rec rev' = (fun ( _7_2  :  'a Prims.list ) -> (match (_7_2) with
 | [] -> begin
 []
 end
@@ -83,13 +83,13 @@ let rec rev'_append = (fun ( l1  :  'a Prims.list ) ( l2  :  'a Prims.list ) -> 
 let rev_append = (fun ( l1  :  'a Prims.list ) ( l2  :  'a Prims.list ) -> ())
 
 
-let rec rev'_involutive = (fun ( _10_3  :  'a Prims.list ) -> ())
+let rec rev'_involutive = (fun ( _7_3  :  'a Prims.list ) -> ())
 
 
 let rev_involutive = (fun ( l  :  'a Prims.list ) -> ())
 
 
-let rec rev'_list_ind = (fun ( p  :  'a Prims.list  ->  Prims.bool ) ( _10_4  :  'a Prims.list ) -> ())
+let rec rev'_list_ind = (fun ( p  :  'a Prims.list  ->  Prims.bool ) ( _7_4  :  'a Prims.list ) -> ())
 
 
 let rev_ind = (fun ( p  :  'a Prims.list  ->  Prims.bool ) ( l  :  'a Prims.list ) -> ())
@@ -119,7 +119,7 @@ let rec partition_count_forall = (fun ( f  :  'a  ->  Prims.bool ) ( l  :  'a Pr
 let rec sortWithT_permutation = (fun ( f  :  'a  ->  'a  ->  Prims.int ) ( l  :  'a Prims.list ) -> ())
 
 
-let rec sorted = (fun ( f  :  'a  ->  'a  ->  Prims.bool ) ( _10_5  :  'a Prims.list ) -> (match (_10_5) with
+let rec sorted = (fun ( f  :  'a  ->  'a  ->  Prims.bool ) ( _7_5  :  'a Prims.list ) -> (match (_7_5) with
 | ([]) | (_::[]) -> begin
 true
 end

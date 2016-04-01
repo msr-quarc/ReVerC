@@ -2,10 +2,6 @@
 module Util
 open Prims
 
-type 'An fin =
-Prims.nat
-
-
 type 'Aa set =
 'Aa  ->  Prims.bool
 
@@ -13,7 +9,7 @@ type 'Aa set =
 let mem = (fun ( i  :  'Aa ) ( s  :  'Aa set ) -> (s i))
 
 
-let empty = (fun ( _12_13  :  'Aa ) -> false)
+let empty = (fun ( _9_13  :  'Aa ) -> false)
 
 
 let singleton = (fun ( a  :  'Aa ) ( b  :  'Aa ) -> (b = a))
@@ -29,10 +25,6 @@ let complement = (fun ( s  :  'Aa set ) ( x  :  'Aa ) -> (not ((s x))))
 
 
 let ins = (fun ( a  :  'Aa ) ( b  :  'Aa set ) -> (union (singleton a) b))
-
-
-type ('Aa, 'As1, 'As2) l__Equal =
-('Aa, Prims.bool, Prims.unit, Prims.unit) FStar.FunctionalExtensionality.l__FEq
 
 
 let lemma_equal_intro = (fun ( s1  :  'Aa set ) ( s2  :  'Aa set ) -> ())
@@ -64,7 +56,7 @@ type 'a result =
 | Err of Prims.string
 
 
-let is_Val = (fun ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
+let is_Val = (fun ( _discr_ : 'a result ) -> (match (_discr_) with
 | Val (_) -> begin
 true
 end
@@ -73,7 +65,7 @@ false
 end))
 
 
-let is_Err = (fun ( _  :  obj ) ( _discr_  :  obj ) -> (match (_discr_) with
+let is_Err = (fun ( _discr_  :  'a result ) -> (match (_discr_) with
 | Err (_) -> begin
 true
 end
@@ -83,14 +75,14 @@ end))
 
 
 let ___Val____0 = (fun ( projectee  :  'a result ) -> (match (projectee) with
-| Val (_12_90) -> begin
-_12_90
+| Val (_9_90) -> begin
+_9_90
 end))
 
 
 let ___Err____0 = (fun ( projectee  :  'a result ) -> (match (projectee) with
-| Err (_12_93) -> begin
-_12_93
+| Err (_9_93) -> begin
+_9_93
 end))
 
 
@@ -167,7 +159,7 @@ let rec remove = (fun ( l  :  'a Prims.list ) ( i  :  Prims.nat ) -> if (i = (Pr
 l
 end else begin
 (match (l) with
-| _12_164::xs -> begin
+| _9_164::xs -> begin
 (remove xs (i - (Prims.parse_int "1")))
 end)
 end)
@@ -185,7 +177,7 @@ end)
 
 let rotate = (fun ( l  :  'a Prims.list ) ( i  :  Prims.nat ) -> (
 
-let _12_183 = ()
+let _9_183 = ()
 in (rotate_rec [] (FStar.List.rev l) i)))
 
 

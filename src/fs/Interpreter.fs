@@ -6,9 +6,6 @@ type 'Astate interpretation =
 {alloc : 'Astate  ->  BoolExp.l__BoolExp  ->  (Prims.int * 'Astate); assign : 'Astate  ->  Prims.int  ->  BoolExp.l__BoolExp  ->  'Astate; eval : 'Astate  ->  Total.state  ->  Prims.int  ->  Prims.bool}
 
 
-let is_Mkinterpretation = (Prims.checked_cast(fun ( _  :  'Astate interpretation ) -> (FStar.All.failwith "Not yet implemented:is_Mkinterpretation")))
-
-
 let rec isVal : ExprTypes.l__GExpr  ->  Prims.bool = (fun ( tm  :  ExprTypes.l__GExpr ) -> (match (tm) with
 | ExprTypes.UNIT -> begin
 true
@@ -231,7 +228,7 @@ end)))
 end else begin
 (match (t) with
 | ExprTypes.ARRAY (lst) -> begin
-if (((Prims.parse_int "0") <= i) && (i < (FStar.List.lengthT lst))) then begin
+if (((Prims.parse_int "0") <= i) && (i < (FStar.List.length lst))) then begin
 Util.Val ((ExprTypes.ARRAY ((Util.rotate lst i)), st))
 end else begin
 Util.Err ((FStar.String.strcat "Array out of bounds: " (ExprTypes.show tm)))
@@ -251,7 +248,7 @@ end)))
 end else begin
 (match (t) with
 | ExprTypes.ARRAY (lst) -> begin
-if ((((Prims.parse_int "0") <= i) && (i <= j)) && (j < (FStar.List.lengthT lst))) then begin
+if ((((Prims.parse_int "0") <= i) && (i <= j)) && (j < (FStar.List.length lst))) then begin
 Util.Val ((ExprTypes.ARRAY ((Util.slice lst i j)), st))
 end else begin
 Util.Err ((FStar.String.strcat "Array out of bounds: " (ExprTypes.show tm)))
@@ -277,7 +274,7 @@ end)))
 end else begin
 (match (t) with
 | ExprTypes.ARRAY (lst) -> begin
-if (((Prims.parse_int "0") <= i) && (i < (FStar.List.lengthT lst))) then begin
+if (((Prims.parse_int "0") <= i) && (i < (FStar.List.length lst))) then begin
 Util.Val (((Util.nthT lst i), st))
 end else begin
 Util.Err ((FStar.String.strcat "Array out of bounds: " (ExprTypes.show tm)))
@@ -464,14 +461,11 @@ end
 (match (v) with
 | ExprTypes.ARRAY (lst) -> begin
 if (((Prims.parse_int "0") <= i) && (i < (FStar.List.length lst))) then begin
-(match ((FStar.List.total_nth lst i)) with
-| Some (ExprTypes.LOC (l)) -> begin
+(match ((FStar.List.nth lst i)) with
+| ExprTypes.LOC (l) -> begin
 Util.Val ((ExprTypes.LOC (l), st'))
 end
-| Some (_21_357) -> begin
-Util.Err ("Impossible")
-end
-| None -> begin
+| _ -> begin
 Util.Err ((FStar.String.strcat "Array out of bounds: " (ExprTypes.show tm)))
 end)
 end else begin
@@ -666,7 +660,7 @@ type l__CleanupStrategy =
 | Bennett
 
 
-let is_Pebbled = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_Pebbled = (fun ( _discr_  :  l__CleanupStrategy ) -> (match (_discr_) with
 | Pebbled (_) -> begin
 true
 end
@@ -675,7 +669,7 @@ false
 end))
 
 
-let is_Boundaries = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_Boundaries = (fun ( _discr_  :  l__CleanupStrategy ) -> (match (_discr_) with
 | Boundaries (_) -> begin
 true
 end
@@ -684,7 +678,7 @@ false
 end))
 
 
-let is_Bennett = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_Bennett = (fun ( _discr_  :  l__CleanupStrategy ) -> (match (_discr_) with
 | Bennett (_) -> begin
 true
 end
@@ -825,7 +819,7 @@ let _21_607 = (match (strategy) with
 | Pebbled -> begin
 (
 
-let _21_589 = (FStar.List.fold_leftT foldPebble ((AncillaHeap.above (max + (Prims.parse_int "1"))), [], [], []) blst)
+let _21_589 = (FStar.List.fold_left foldPebble ((AncillaHeap.above (max + (Prims.parse_int "1"))), [], [], []) blst)
 in (match (_21_589) with
 | (ah, outs, anc, circ) -> begin
 (ah, (FStar.List.rev outs), (FStar.List.rev anc), circ)
@@ -834,7 +828,7 @@ end
 | Boundaries -> begin
 (
 
-let _21_595 = (FStar.List.fold_leftT foldClean ((AncillaHeap.above (max + (Prims.parse_int "1"))), [], [], []) blst)
+let _21_595 = (FStar.List.fold_left foldClean ((AncillaHeap.above (max + (Prims.parse_int "1"))), [], [], []) blst)
 in (match (_21_595) with
 | (ah, outs, anc, circ) -> begin
 (ah, (FStar.List.rev outs), (FStar.List.rev anc), circ)
@@ -843,7 +837,7 @@ end
 | Bennett -> begin
 (
 
-let _21_602 = (FStar.List.fold_leftT foldBennett ((AncillaHeap.above (max + (Prims.parse_int "1"))), [], [], [], []) blst)
+let _21_602 = (FStar.List.fold_left foldBennett ((AncillaHeap.above (max + (Prims.parse_int "1"))), [], [], [], []) blst)
 in (match (_21_602) with
 | (ah, outs, anc, circ, ucirc) -> begin
 (ah, (FStar.List.rev outs), (FStar.List.rev anc), (FStar.List.append circ ucirc))
@@ -1016,6 +1010,266 @@ end
 end))
 
 
+type qubit =
+{id : Prims.int; ival : BoolExp.l__BoolExp; cval : BoolExp.l__BoolExp}
+
+
+let is_Mkqubit : qubit  ->  Prims.bool = (Prims.checked_cast(fun ( _  :  qubit ) -> (FStar.All.failwith "Not yet implemented:is_Mkqubit")))
+
+
+let nullq : qubit = {id = (Prims.parse_int "0"); ival = BoolExp.BFalse; cval = BoolExp.BFalse}
+
+
+let get_subst : (Prims.int, qubit) Total.map  ->  Prims.int  ->  Prims.int = (fun ( m  :  (Prims.int, qubit) Total.map ) ( i  :  Prims.int ) -> (m i).id)
+
+
+let data_q : Prims.int  ->  qubit = (fun ( i  :  Prims.int ) -> {id = i; ival = BoolExp.BVar (i); cval = BoolExp.BFalse})
+
+
+let anc_q : Prims.int  ->  qubit = (fun ( i  :  Prims.int ) -> {id = i; ival = BoolExp.BFalse; cval = BoolExp.BFalse})
+
+
+type circGCState =
+{top : Prims.int; ah : AncillaHeap.l__AncHeap; gates : Circuit.l__Gate Prims.list; symtab : (Prims.int, qubit) Total.map}
+
+
+let is_MkcircGCState : circGCState  ->  Prims.bool = (Prims.checked_cast(fun ( _  :  circGCState ) -> (FStar.All.failwith "Not yet implemented:is_MkcircGCState")))
+
+
+let garbageCollect : circGCState  ->  qubit  ->  circGCState = (fun ( cs  :  circGCState ) ( q  :  qubit ) -> (
+
+let _21_720 = (BoolExp.compileBexp cs.ah q.id q.cval)
+in (match (_21_720) with
+| (ah', res, ancs, circ) -> begin
+(
+
+let ah'' = if (q.ival = BoolExp.BFalse) then begin
+(AncillaHeap.insert ah' q.id)
+end else begin
+ah'
+end
+in (
+
+let f = (fun ( q'  :  qubit ) -> (
+
+let subq = (fun ( v  :  Prims.int ) -> if (v = q.id) then begin
+BoolExp.BXor ((q.ival, q.cval))
+end else begin
+BoolExp.BVar (v)
+end)
+in {id = q'.id; ival = q'.ival; cval = (BoolExp.simplify (BoolExp.substBexp q'.cval subq))}))
+in (
+
+let symtab' = (Total.map_mp f cs.symtab)
+in {top = cs.top; ah = ah''; gates = (FStar.List.append cs.gates circ); symtab = symtab'})))
+end)))
+
+
+let circGCInit : circGCState = {top = (Prims.parse_int "0"); ah = AncillaHeap.emptyHeap; gates = []; symtab = (Total.const_map nullq)}
+
+
+let circGCAlloc : circGCState  ->  BoolExp.l__BoolExp  ->  (Prims.int * circGCState) = (fun ( cs  :  circGCState ) ( bexp  :  BoolExp.l__BoolExp ) -> (
+
+let bexp' = (BoolExp.simplify (BoolExp.substVar bexp (get_subst cs.symtab)))
+in (
+
+let _21_732 = (AncillaHeap.popMin cs.ah)
+in (match (_21_732) with
+| (ah', bit) -> begin
+(
+
+let _21_737 = (BoolExp.compileBexp ah' bit bexp')
+in (match (_21_737) with
+| (ah'', res, ancs, circ') -> begin
+(
+
+let q = {id = bit; ival = BoolExp.BFalse; cval = bexp'}
+in (
+
+let top' = (cs.top + (Prims.parse_int "1"))
+in (
+
+let gates' = (FStar.List.append cs.gates circ')
+in (
+
+let symtab' = (Total.update cs.symtab cs.top q)
+in (cs.top, {top = top'; ah = ah''; gates = gates'; symtab = symtab'})))))
+end))
+end))))
+
+
+let circGCAssign : circGCState  ->  Prims.int  ->  BoolExp.l__BoolExp  ->  circGCState = (fun ( cs  :  circGCState ) ( l  :  Prims.int ) ( bexp  :  BoolExp.l__BoolExp ) -> (
+
+let q = (Total.lookup cs.symtab l)
+in (
+
+let bexp' = (BoolExp.simplify (BoolExp.substVar bexp (get_subst cs.symtab)))
+in (
+
+let bexpfac = (BoolExp.factorAs bexp' q.id)
+in (match ((q.cval, bexpfac)) with
+| (BoolExp.BFalse, _21_750) -> begin
+(
+
+let bexp'' = (BoolExp.substBexp bexp' (fun ( v  :  Prims.int ) -> if (v = q.id) then begin
+BoolExp.BFalse
+end else begin
+BoolExp.BVar (v)
+end))
+in (
+
+let _21_758 = (BoolExp.compileBexp cs.ah q.id bexp'')
+in (match (_21_758) with
+| (ah', res, ancs, circ) -> begin
+(
+
+let q' = {id = q.id; ival = q.ival; cval = bexp''}
+in {top = cs.top; ah = ah'; gates = (FStar.List.append cs.gates circ); symtab = (Total.update cs.symtab l q')})
+end)))
+end
+| (_21_761, Some (bexp'')) -> begin
+(
+
+let _21_769 = (BoolExp.compileBexp cs.ah q.id bexp'')
+in (match (_21_769) with
+| (ah', res, ancs, circ') -> begin
+(
+
+let q' = {id = q.id; ival = q.ival; cval = (BoolExp.simplify (BoolExp.BXor ((q.cval, bexp''))))}
+in (
+
+let f = (fun ( b  :  qubit ) -> (
+
+let subq = (fun ( v  :  Prims.int ) -> if (v = q.id) then begin
+BoolExp.BXor ((BoolExp.BVar (q.id), bexp''))
+end else begin
+BoolExp.BVar (v)
+end)
+in {id = b.id; ival = b.ival; cval = (BoolExp.simplify (BoolExp.substBexp b.cval subq))}))
+in (
+
+let symtab' = (Total.update (Total.map_mp f cs.symtab) l q')
+in {top = cs.top; ah = ah'; gates = (FStar.List.append cs.gates circ'); symtab = (Total.update cs.symtab l q')})))
+end))
+end
+| _21_777 -> begin
+(
+
+let _21_782 = (BoolExp.compileBexp_oop cs.ah bexp')
+in (match (_21_782) with
+| (ah', res, ancs, circ') -> begin
+(
+
+let q' = {id = res; ival = BoolExp.BFalse; cval = bexp'}
+in (
+
+let cs' = {top = cs.top; ah = ah'; gates = (FStar.List.append cs.gates circ'); symtab = (Total.update cs.symtab l q')}
+in (garbageCollect cs' q)))
+end))
+end)))))
+
+
+let circGCEval : circGCState  ->  Total.state  ->  Prims.int  ->  Prims.bool = (fun ( cs  :  circGCState ) ( st  :  Total.state ) ( i  :  Prims.int ) -> false)
+
+
+let circGCInterp : circGCState interpretation = {alloc = circGCAlloc; assign = circGCAssign; eval = circGCEval}
+
+
+let rec allocNcircGC : (ExprTypes.l__GExpr Prims.list * circGCState)  ->  Prims.int  ->  (ExprTypes.l__GExpr Prims.list * circGCState) = (fun ( _21_791  :  (ExprTypes.l__GExpr Prims.list * circGCState) ) ( i  :  Prims.int ) -> (match (_21_791) with
+| (locs, cs) -> begin
+if (i <= (Prims.parse_int "0")) then begin
+((FStar.List.rev locs), cs)
+end else begin
+(
+
+let _21_795 = (AncillaHeap.popMin cs.ah)
+in (match (_21_795) with
+| (ah', res) -> begin
+(
+
+let cs' = {top = (cs.top + (Prims.parse_int "1")); ah = ah'; gates = cs.gates; symtab = (Total.update cs.symtab cs.top (data_q res))}
+in (allocNcircGC ((ExprTypes.LOC (cs.top))::locs, cs') (i - (Prims.parse_int "1"))))
+end))
+end
+end))
+
+
+let allocTycircGC : ExprTypes.l__GType  ->  circGCState  ->  (ExprTypes.l__GExpr * circGCState) Util.result = (fun ( ty  :  ExprTypes.l__GType ) ( cs  :  circGCState ) -> (match (ty) with
+| ExprTypes.GBool -> begin
+(
+
+let _21_802 = (AncillaHeap.popMin cs.ah)
+in (match (_21_802) with
+| (ah', res) -> begin
+(
+
+let cs' = {top = (cs.top + (Prims.parse_int "1")); ah = ah'; gates = cs.gates; symtab = (Total.update cs.symtab cs.top (data_q res))}
+in Util.Val ((ExprTypes.LOC (cs.top), cs')))
+end))
+end
+| ExprTypes.GArray (n) -> begin
+(
+
+let _21_808 = (allocNcircGC ([], cs) n)
+in (match (_21_808) with
+| (locs, st') -> begin
+Util.Val ((ExprTypes.ARRAY (locs), st'))
+end))
+end
+| _21_810 -> begin
+Util.Err ("Invalid parameter type for circuit generation")
+end))
+
+
+let rec lookup_Lst_gc : (Prims.int, qubit) Total.map  ->  ExprTypes.l__GExpr Prims.list  ->  Prims.int Prims.list = (fun ( symtab  :  (Prims.int, qubit) Total.map ) ( lst  :  ExprTypes.l__GExpr Prims.list ) -> (match (lst) with
+| [] -> begin
+[]
+end
+| ExprTypes.LOC (l)::xs -> begin
+((Total.lookup symtab l).id)::(lookup_Lst_gc symtab xs)
+end))
+
+
+let rec compileGCCirc : circGCState config  ->  (Prims.int Prims.list * Circuit.l__Gate Prims.list) Util.result = (fun ( _21_822  :  circGCState config ) -> (match (_21_822) with
+| (gexp, cs) -> begin
+if (isVal gexp) then begin
+(match (gexp) with
+| ExprTypes.UNIT -> begin
+Util.Val (([], []))
+end
+| ExprTypes.LAMBDA (x, ty, t) -> begin
+(match ((allocTycircGC ty cs)) with
+| Util.Err (s) -> begin
+Util.Err (s)
+end
+| Util.Val (v, cs') -> begin
+(compileGCCirc ((ExprTypes.substGExpr t x v), cs'))
+end)
+end
+| ExprTypes.LOC (l) -> begin
+(
+
+let res = (Total.lookup cs.symtab l)
+in Util.Val (((res.id)::[], cs.gates)))
+end
+| ExprTypes.ARRAY (lst) -> begin
+(
+
+let res = (lookup_Lst_gc cs.symtab lst)
+in Util.Val ((res, cs.gates)))
+end)
+end else begin
+(match ((step (gexp, cs) circGCInterp)) with
+| Util.Err (s) -> begin
+Util.Err (s)
+end
+| Util.Val (c') -> begin
+(compileGCCirc c')
+end)
+end
+end))
+
+
 let rec eval_bexp_swap : boolState  ->  l__BExpState  ->  BoolExp.l__BoolExp  ->  Total.state  ->  Prims.unit = (fun ( st  :  boolState ) ( st'  :  l__BExpState ) ( bexp  :  BoolExp.l__BoolExp ) ( init  :  Total.state ) -> ())
 
 
@@ -1027,25 +1281,6 @@ let state_equiv_assign : boolState  ->  l__BExpState  ->  Total.state  ->  Prims
 
 let rec state_equiv_step : ExprTypes.l__GExpr  ->  boolState  ->  l__BExpState  ->  Total.state  ->  Prims.unit = (fun ( gexp  :  ExprTypes.l__GExpr ) ( st  :  boolState ) ( st'  :  l__BExpState ) ( init  :  Total.state ) -> ())
 and state_equiv_step_lst : ExprTypes.l__GExpr Prims.list  ->  boolState  ->  l__BExpState  ->  Total.state  ->  Prims.unit = (fun ( lst  :  ExprTypes.l__GExpr Prims.list ) ( st  :  boolState ) ( st'  :  l__BExpState ) ( init  :  Total.state ) -> ())
-
-
-let rec eval_bexp_swap2 : boolState  ->  circState  ->  BoolExp.l__BoolExp  ->  BoolExp.l__BoolExp  ->  Total.state  ->  Prims.unit = (fun ( st  :  boolState ) ( cs  :  circState ) ( bexp  :  BoolExp.l__BoolExp ) ( bexp'  :  BoolExp.l__BoolExp ) ( init  :  Total.state ) -> ())
-
-
-let eval_commutes_subst_circ : boolState  ->  circState  ->  BoolExp.l__BoolExp  ->  BoolExp.l__BoolExp  ->  Total.state  ->  Prims.int  ->  Prims.int  ->  Prims.unit = (fun ( st  :  boolState ) ( cs  :  circState ) ( bexp  :  BoolExp.l__BoolExp ) ( bexp'  :  BoolExp.l__BoolExp ) ( init  :  Total.state ) ( targ  :  Prims.int ) ( targ'  :  Prims.int ) -> ())
-
-
-let eval_commutes_subst_circ_oop : boolState  ->  circState  ->  BoolExp.l__BoolExp  ->  BoolExp.l__BoolExp  ->  Total.state  ->  Prims.unit = (fun ( st  :  boolState ) ( cs  :  circState ) ( bexp  :  BoolExp.l__BoolExp ) ( bexp'  :  BoolExp.l__BoolExp ) ( init  :  Total.state ) -> ())
-
-
-let circ_equiv_alloc : boolState  ->  circState  ->  Total.state  ->  BoolExp.l__BoolExp  ->  Prims.unit = (fun ( st  :  boolState ) ( cs  :  circState ) ( init  :  Total.state ) ( bexp  :  BoolExp.l__BoolExp ) -> ())
-
-
-let circ_equiv_assign : boolState  ->  circState  ->  Total.state  ->  Prims.int  ->  BoolExp.l__BoolExp  ->  Prims.unit = (fun ( st  :  boolState ) ( cs  :  circState ) ( init  :  Total.state ) ( l  :  Prims.int ) ( bexp  :  BoolExp.l__BoolExp ) -> ())
-
-
-let rec circ_equiv_step : ExprTypes.l__GExpr  ->  boolState  ->  circState  ->  Total.state  ->  Prims.unit = (fun ( gexp  :  ExprTypes.l__GExpr ) ( st  :  boolState ) ( st'  :  circState ) ( init  :  Total.state ) -> ())
-and circ_equiv_step_lst : ExprTypes.l__GExpr Prims.list  ->  boolState  ->  circState  ->  Total.state  ->  Prims.unit = (fun ( lst  :  ExprTypes.l__GExpr Prims.list ) ( st  :  boolState ) ( st'  :  circState ) ( init  :  Total.state ) -> ())
 
 
 

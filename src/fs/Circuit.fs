@@ -8,7 +8,7 @@ type l__Gate =
 | RNOT of Prims.int
 
 
-let is_RCNOT = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_RCNOT = (fun ( _discr_  :  l__Gate ) -> (match (_discr_) with
 | RCNOT (_) -> begin
 true
 end
@@ -17,7 +17,7 @@ false
 end))
 
 
-let is_RTOFF = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_RTOFF = (fun ( _discr_  :  l__Gate ) -> (match (_discr_) with
 | RTOFF (_) -> begin
 true
 end
@@ -26,7 +26,7 @@ false
 end))
 
 
-let is_RNOT = (fun ( _discr_  :  obj ) -> (match (_discr_) with
+let is_RNOT = (fun ( _discr_  :  l__Gate ) -> (match (_discr_) with
 | RNOT (_) -> begin
 true
 end
@@ -36,20 +36,20 @@ end))
 
 
 let ___RCNOT____0 = (fun ( projectee  :  l__Gate ) -> (match (projectee) with
-| RCNOT (_14_3) -> begin
-_14_3
+| RCNOT (_11_3) -> begin
+_11_3
 end))
 
 
 let ___RTOFF____0 = (fun ( projectee  :  l__Gate ) -> (match (projectee) with
-| RTOFF (_14_6) -> begin
-_14_6
+| RTOFF (_11_6) -> begin
+_11_6
 end))
 
 
 let ___RNOT____0 = (fun ( projectee  :  l__Gate ) -> (match (projectee) with
-| RNOT (_14_9) -> begin
-_14_9
+| RNOT (_11_9) -> begin
+_11_9
 end))
 
 

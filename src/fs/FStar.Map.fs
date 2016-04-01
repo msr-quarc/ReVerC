@@ -19,7 +19,7 @@ end else begin
 end); domain = (fun ( x  :  'Akey ) -> ((x = k) || (m.domain x)))})
 
 
-let const = (fun ( v  :  'Avalue ) -> {mappings = (fun ( _6_26  :  'Akey ) -> v); domain = (fun ( _6_28  :  'Akey ) -> true)})
+let const_map = (fun ( v  :  'Avalue ) -> {mappings = (fun ( _16_26  :  'Akey ) -> v); domain = (fun ( _16_28  :  'Akey ) -> true)})
 
 
 let concat = (fun ( m1  :  ('Akey, 'Avalue) t ) ( m2  :  ('Akey, 'Avalue) t ) -> {mappings = (fun ( x  :  'Akey ) -> if (m2.domain x) then begin
@@ -77,7 +77,7 @@ let lemma_equal_elim = (fun ( m1  :  ('Akey, 'Avalue) t ) ( m2  :  ('Akey, 'Aval
 let lemma_equal_refl = (fun ( m1  :  ('Akey, 'Avalue) t ) ( m2  :  ('Akey, 'Avalue) t ) -> ())
 
 
-let const_on = (fun ( dom  :  'Akey FStar.Set.set ) ( v  :  'Avalue ) -> (restrict dom (const v)))
+let const_on = (fun ( dom  :  'Akey FStar.Set.set ) ( v  :  'Avalue ) -> (restrict dom (const_map v)))
 
 
 
