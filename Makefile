@@ -3,7 +3,8 @@ FSTAR_HOME = /home/meamy/Programming/FStar
 FSTAR = $(FSTAR_HOME)/bin/fstar.exe
 FSHARP = fsharpc
 
-FILES = Util.fst Total.fst Par.fst PairHeap.fst AncillaHeap.fst Circuit.fst BoolExp.fst ExprTypes.fst Interpreter.fst
+#FILES = Util.fst Total.fst Par.fst PairHeap.fst AncillaHeap.fst Circuit.fst BoolExp.fst ExprTypes.fst Interpreter.fst
+FILES = Util.fst Maps.fst PairHeap.fst AncillaHeap.fst Circuit.fst BoolExp.fst ExprTypes.fst Interpreter.fst
 REVS  = GenOp.fs Examples.fs Program.fs
 SUPPORT = FStar.Set FStar.Heap FStar.ST FStar.All FStar.List FStar.String FStar.IO
 

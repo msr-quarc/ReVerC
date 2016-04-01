@@ -33,11 +33,11 @@ let runDirect program cleanupStrategy =
       | Some subs -> 
           let gexp' = applySubs subs gexp
           printf "Annotated gExp:\n%s\n" (show gexp');
-          let res = compileCirc (gexp', circInit)
+          let res = compileGCCirc (gexp', circGCInit)
           match res with
             | Err s -> printf "%s\n" s
             | Val (_, circ) -> printf "Circuit:\n%s\n" (String.concat "\n" (prettyPrintCircuit circ));
-                               //printf "Bits used: %d\n" (Set.count (getUses circ));
+                               printf "Bits used: %d\n" (Set.count (getUses circ));
                                printf "Gates: %d\n" (List.length circ);
                                printf "Toffolis: %d\n" (List.length (List.filter (fun x -> match x with RTOFF _ -> true | _ -> false) circ))
 
@@ -62,31 +62,64 @@ let runBool program cleanupStrategy =
           match res with
             | Err s -> printf "%s\n" s
             | Val (_, circ) -> printf "Circuit:\n%s\n" (String.concat "\n" (prettyPrintCircuit circ))
-                               //printf "Bits used: %d\n" (Set.count (getUses circ));
+                               printf "Bits used: %d\n" (Set.count (getUses circ));
                                printf "Gates: %d\n" (List.length circ);
                                printf "Toffolis: %d\n" (List.length (List.filter (fun x -> match x with RTOFF _ -> true | _ -> false) circ))
 
 
 [<EntryPoint>]
 let __main _ = 
-  printf "Carry-Ripple 2:\n"
-  ignore <| runBool (carryRippleAdder 2) Pebbled
-  printf "\nCarry-Ripple 4:\n"
-  ignore <| runBool (carryRippleAdder 4) Pebbled
-  printf "Carry-Ripple 8:\n"
-  ignore <| runBool (carryRippleAdder 8) Pebbled
-  printf "\nMult 2:\n"
-  ignore <| runBool (mult22 2) Pebbled
-  printf "\nModular adder 2:\n"
-  ignore <| runBool (addMod2 2) Pebbled
-  printf "\nModular adder 4:\n"
-  ignore <| runBool (addMod 4) Pebbled
-  printf "\nCucarro adder 2:\n"
-  ignore <| runBool (cucarro2 2) Pebbled
-  printf "\nCucarro adder 4:\n"
-  ignore <| runBool (cucarro 4) Pebbled
-  printf "\nCucarro adder 8:\n"
-  ignore <| runBool (cucarro 8) Pebbled
+  printf "\nSHA (2 rounds):\n"
+  ignore <| runDirect (exprSha 2) Pebbled
+  Console.Out.Flush()
+  (*
+  printf "Carry-Ripple 32:\n"
+  //ignore <| runDirect (carryRippleAdder 32) Pebbled
+  Console.Out.Flush()
+  printf "\nCarry-Ripple 64:\n"
+  //ignore <| runDirect (carryRippleAdder 64) Pebbled
+  Console.Out.Flush()
+  printf "\nMult 32:\n"
+  //ignore <| runDirect (mult 32) Pebbled
+  Console.Out.Flush()
+  printf "\nMult 64:\n"
+  //ignore <| runDirect (mult 64) Pebbled
+  Console.Out.Flush()
+  (*
+  printf "\nCarry-Lookahead 32:\n"
+  ignore <| runDirect (carryLookaheadAdder 32) Pebbled
+  Console.Out.Flush()
+  printf "\nCarry-Lookahead 64:\n"
+  ignore <| runDirect (carryLookaheadAdder 64) Pebbled
+  Console.Out.Flush()*)
+  printf "\nModular adder 32:\n"
+  ignore <| runDirect (addMod 32) Pebbled
+  Console.Out.Flush()
+  printf "\nModular adder 64:\n"
+  ignore <| runDirect (addMod 64) Pebbled
+  Console.Out.Flush()
+  printf "\nCucarro adder 32:\n"
+  ignore <| runDirect (cucarro 32) Pebbled
+  Console.Out.Flush()
+  printf "\nCucarro adder 64:\n"
+  ignore <| runDirect (cucarro 64) Pebbled
+  Console.Out.Flush()
   printf "\nma4:\n"
-  ignore <| runBool (ma4) Pebbled
+  ignore <| runDirect (ma4) Pebbled
+  Console.Out.Flush()
+  printf "\nSHA (2 rounds):\n"
+  ignore <| runDirect (exprSha 2) Pebbled
+  Console.Out.Flush()
+  printf "\nMD5 (2 rounds):\n"
+  ignore <| runDirect (exprMD5 2) Pebbled
+  Console.Out.Flush()
+  printf "\nSHA (4 rounds):\n"
+  ignore <| runDirect (exprSha 4) Pebbled
+  Console.Out.Flush()
+  printf "\nSHA (8 rounds):\n"
+  ignore <| runDirect (exprSha 8) Pebbled
+  Console.Out.Flush()
+  printf "\nSHA (16 rounds):\n"
+  ignore <| runDirect (exprSha 16) Pebbled
+  Console.Out.Flush()*)
   0
