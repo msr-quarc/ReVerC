@@ -108,7 +108,7 @@ let rec for_someT f l = match l with
     | [] -> false
     | hd::tl -> if f hd then true else for_someT f tl
 
-val take : l:(list 'a) -> i:int{i < List.length l} -> Tot (list 'a) (decreases i)
+val take : l:(list 'a) -> i:int{i <= List.length l} -> Tot (list 'a) (decreases i)
 let rec take l i =
   if i <= 0 then []
   else match l with

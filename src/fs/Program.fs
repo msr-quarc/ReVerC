@@ -33,7 +33,7 @@ let runDirect program cleanupStrategy =
       | Some subs -> 
           let gexp' = applySubs subs gexp
           printf "Annotated gExp:\n%s\n" (show gexp');
-          let res = compileGCCirc (gexp', circGCInit)
+          let res = compileCirc (gexp', circInit)
           match res with
             | Err s -> printf "%s\n" s
             | Val (_, circ) -> printf "Circuit:\n%s\n" (String.concat "\n" (prettyPrintCircuit circ));
@@ -72,10 +72,10 @@ let __main _ =
   printf "\nSHA (2 rounds):\n"
   ignore <| runDirect (exprSha 2) Pebbled
   Console.Out.Flush()
-  (*
   printf "Carry-Ripple 32:\n"
-  //ignore <| runDirect (carryRippleAdder 32) Pebbled
+  ignore <| runDirect (carryRippleAdder 32) Pebbled
   Console.Out.Flush()
+  (*
   printf "\nCarry-Ripple 64:\n"
   //ignore <| runDirect (carryRippleAdder 64) Pebbled
   Console.Out.Flush()

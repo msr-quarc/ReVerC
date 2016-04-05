@@ -314,7 +314,7 @@ let rec factorAs_correct exp targ st = match exp with
     factorAs_correct y targ st
 
 val factorAs_vars : exp:BoolExp -> targ:int ->
-  Lemma (forall exp'. factorAs exp targ = Some exp' ==> ins targ (vars exp') = (vars exp))
+  Lemma (forall exp'. factorAs exp targ = Some exp' ==> subset (vars exp') (vars exp)) //ins targ (vars exp') = (vars exp))
 let rec factorAs_vars exp targ = match exp with
   | BFalse -> ()
   | BVar x -> ()
@@ -878,4 +878,7 @@ val compile_with_cleanup_oop : ah:AncHeap -> exp:BoolExp -> st:state ->
                      compileBexpEval_oop ah exp st))
 let compile_with_cleanup_oop ah exp st =
   let (ah', targ) = popMin ah in
+    pop_proper_subset ah;      // subset ah' ah & targ notin ah'
+    zeroHeap_subset st ah ah'; // zeroHeap st ah'
+    disjoint_subset (elts ah') (elts ah) (vars exp); // disjoint (elts ah') (vars exp)
     compile_with_cleanup ah' targ exp st

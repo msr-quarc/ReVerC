@@ -529,6 +529,7 @@ let rec compileCirc (gexp, cs) =
     | Val c' -> compileCirc c'
 
 // Garbage-collected circuit compilation
+(*
 type qubit =
   { id   : int;
     ival : BoolExp;
@@ -665,8 +666,8 @@ let rec compileGCCirc (gexp, cs) =
     | Err s -> Err s
     | Val c' -> compileGCCirc c'
 
+
 // Dependence graph interpretation
-(*
 type depGraphState = (int * int) * (depGraph * (map address rID))
 
 val depGraphInterp : interpretation depGraphState
@@ -712,18 +713,31 @@ let computeGraph gexp = eval_rec (gexp, [], ((0, 0), ([], []))) depGraphInterp
 type state_equiv (st:boolState) (st':BExpState) (init:state) =
   fst st = fst st' /\ (forall i. boolEval st init i = bexpEval st' init i)
 
+val state_equiv_impl : st:boolState -> st':BExpState -> init:state -> i:int ->
+  Lemma (requires (state_equiv st st' init))
+        (ensures  (boolEval st init i = bexpEval st' init i))
+let state_equiv_impl st st' init i = ()
+
 val eval_bexp_swap : st:boolState -> st':BExpState -> bexp:BoolExp -> init:state ->
   Lemma (requires (state_equiv st st' init))
         (ensures  (evalBexp (substBexp bexp (snd st')) init =
                    evalBexp bexp (snd st)))
 let rec eval_bexp_swap st st' bexp init = match bexp with
-  | BFalse -> ()
-  | BVar i -> ()
-  | BNot x -> eval_bexp_swap st st' x init
-  | BXor (x, y) | BAnd (x, y) ->
+  | BFalse -> admit()
+  | BVar i ->
+    state_equiv_impl st st' init i;
+    admitP(b2t(evalBexp (substBexp bexp (snd st')) init = evalBexp (lookup (snd st') i) init));
+    admitP(b2t(bexpEval st' init i = evalBexp (lookup (snd st') i) init));
+    //assert(evalBexp bexp (snd st) = lookup (snd st) i);
+    //assert(lookup (snd st) i = boolEval st init i);
+    admitP(b2t(evalBexp bexp (snd st) = boolEval st init i));
+      ()
+  | BNot x -> admit(); eval_bexp_swap st st' x init
+  | BXor (x, y) | BAnd (x, y) -> admit();
     eval_bexp_swap st st' x init;
     eval_bexp_swap st st' y init
 
+(*
 val state_equiv_alloc : st:boolState -> st':BExpState -> init:state -> bexp:BoolExp ->
   Lemma (requires (state_equiv st st' init))
         (ensures  (state_equiv (snd (boolAlloc st bexp)) (snd (bexpAlloc st' bexp)) init))
@@ -802,7 +816,6 @@ and state_equiv_step_lst lst st st' init = match lst with
     state_equiv_step_lst xs st st' init
 
 // Correctness of circuit compilation
-(*
 type circ_equiv (st:boolState) (cs:circState) (init:state) =
   fst st = cs.top /\
   zeroHeap (evalCirc cs.gates init) cs.ah /\
@@ -988,4 +1001,4 @@ and circ_equiv_step_lst lst st st' init = match lst with
   | [] -> ()
   | x::xs ->
     circ_equiv_step x st st' init;
-    circ_equiv_step_lst xs st st' init*)
+    circ_equiv_step_lst xs st st' init

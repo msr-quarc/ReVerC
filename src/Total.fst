@@ -25,6 +25,11 @@ let lemma_map_equal_refl m1 m2 = ()
 val lookup : #a:Type -> #b:Type -> map a b -> a -> Tot b
 let lookup map x = map x
 
+val lemma_lookup_inline : #a:Type -> #b:Type -> m:map a b -> i:a -> 
+  Lemma (requires true) (ensures (lookup m i = m i))
+  [SMTPat (lookup m i)]
+let lemma_lookup_inline m i = ()
+
 val update : #a:Type -> #b:Type -> map a b -> a -> b -> Tot (map a b)
 let update map x y = fun z -> if z = x then y else map z
 
