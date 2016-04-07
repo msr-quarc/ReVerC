@@ -1,7 +1,7 @@
+(** Program interpreter and domains *)
 module Interpreter
 
-(* Interpreter
-   the main compiler module. Defines two interpreters based on either big step
+(* The main compiler module. Defines two interpreters based on either big step
    or small step style reductions. The interpreters use an interpretation of
    the heap to handle allocation and assignment of new Boolean values.
    There are currently three main interpretations: Boolean values (i.e. program
@@ -11,19 +11,19 @@ module Interpreter
    given semantics (eval function) remain equal after an allocation or
    assignment. *)
 
+open Set
 open Util
 open BoolExp
-//open Dependence
 open ExprTypes
 open Total
 
-// A representation of program heap (which is Bool-typed)
+(* A representation of program heap (which is Bool-typed) *)
 type interpretation (state:Type) =
   { alloc  : state -> BoolExp -> Tot (int * state);
     assign : state -> int -> BoolExp -> Tot state;
     eval   : state -> Total.state -> int -> Tot bool }
 
-// Values of the language
+(* Values of the language *)
 val isVal : gexp:GExpr -> Tot bool (decreases %[gexp;1])
 val isVal_lst : lst:list GExpr -> Tot bool (decreases %[lst;0])
 let rec isVal tm = match tm with
@@ -54,7 +54,7 @@ let get_bexp gexp = match gexp with
   | BEXP bexp -> bexp
   | BOOL b    -> if b then BNot BFalse else BFalse
 
-// Small-step evaluator
+(* Small-step evaluator *)
 val step : #state:Type -> c:config state -> interpretation state ->
   Tot (result (config state)) (decreases %[(fst c);1])
 val step_lst : #state:Type -> c:listconfig state -> interpretation state ->
@@ -176,7 +176,7 @@ and step_lst (lst, st) interp = match lst with
     else
       bindT (step_lst (xs, st) interp) (fun (xs', st') -> Val (x::xs', st'))
 
-// Big-step evaluator. More efficient but not (proven) total
+(* Big-step evaluator. More efficient but not (proven) total *)
 val eval_rec : #state:Type -> config state -> interpretation state -> result (config state)
 val eval_to_bexp : #state:Type -> config state -> interpretation state -> result (config state)
 let rec eval_rec (tm, st) interp = match tm with
@@ -282,9 +282,9 @@ and eval_to_bexp (tm, st) interp = match tm with
       | LOC l -> Val (BEXP (BVar l), st')
       | _ -> Err (String.strcat "Could not reduce expression to boolean: " (show tm)))
 
-// ------------------------------------------------------------- Interpretations
-// Boolean (standard) interpretation
-open Total
+(** Interpretation domains *)
+
+(* Boolean (standard) interpretation -- for running a Revs program *)
 type boolState = int * (Total.t int bool)
 
 val boolInit   : boolState
@@ -323,8 +323,8 @@ let rec evalBool (gexp, st) =
 
 let eval gexp = evalBool (gexp, boolInit)
 
-// Boolean expression interpretation
-// Creates a list of Boolean expressions representing the program
+(* Boolean expression interpretation -- for generating the fully
+   inlined classical circuit of the Revs program *)
 type BExpState = int * (Total.t int BoolExp)
 
 val bexpInit   : BExpState
@@ -393,11 +393,11 @@ let foldBennett (ah, outs, anc, circ, ucirc) bexp =
   let (ah', res, anc', circ') = compileBexp_oop ah (simps bexp) in
     (ah', res::outs, anc'@anc, circ@circ', (List.rev (uncompute circ' res))@ucirc)
 
-// Compilation wrapper. The main point of interest is its action when the
-// program is a function. In that case it allocates some new free variables
-// corresponding to the inputs of the function, then evaluates the function
-// body. Note also that this wrapper is not verified currently. Eventually this
-// should be done.
+(* Compilation wrapper. The main point of interest is its action when the
+   program is a function. In that case it allocates some new free variables
+   corresponding to the inputs of the function, then evaluates the function
+   body. Note also that this wrapper is not verified currently. Eventually this
+   should be done. *)
 val compile : config BExpState -> CleanupStrategy -> Dv (result (list int * list Gate))
 let rec compile (gexp, st) strategy =
   if isVal gexp then match gexp with
@@ -441,7 +441,9 @@ let rec compile (gexp, st) strategy =
     | Err s -> Err s
     | Val c' -> compile c' strategy
 
-// Direct circuit compilation
+(* Reversible circuit interpretation -- compiles a Revs program
+   to a reversible circuit in a "natural" way. Specifically, 
+   the circuit reflects the structure of the program *)
 type circState =
   { top : int;
     ah : AncHeap;
@@ -468,7 +470,7 @@ let circAssign cs l bexp =
     | Some bexp'' -> compileBexp cs.ah l' bexp''
   in
   {top = cs.top; ah = ah'; gates = cs.gates @ circ'; subs = update cs.subs l res}
-let circEval cs ivals i = (evalCirc cs.gates ivals) (lookup cs.subs i)
+let circEval cs ivals i = lookup (evalCirc cs.gates ivals) (lookup cs.subs i)
 
 let circInterp = {
   alloc = circAlloc;
@@ -528,7 +530,7 @@ let rec compileCirc (gexp, cs) =
     | Err s -> Err s
     | Val c' -> compileCirc c'
 
-// Garbage-collected circuit compilation
+(* Garbage-collected reversible circuit compilation -- experimental *)
 (*
 type qubit =
   { id   : int;
@@ -668,7 +670,7 @@ let rec compileGCCirc (gexp, cs) =
     | Val c' -> compileGCCirc c'
 
 
-// Dependence graph interpretation
+(* Dependence graph interpretation -- unfinished *)
 type depGraphState = (int * int) * (depGraph * (Total.t address rID))
 
 val depGraphInterp : interpretation depGraphState
@@ -706,11 +708,12 @@ val computeGraph : GExpr -> result (valconfig depGraphState)
 let computeGraph gexp = eval_rec (gexp, [], ((0, 0), ([], []))) depGraphInterp
 *)
 
-// ---------------------------------------------------------------- Verification
-// Originally this was done polymorphically (using a general notion of
-// equivalence of states and a proof that the interpreter preserves equivalence
-// if alloc and assign do). Eventually this should be refactored that way, but
-// this was faster for the time being.
+(** Verification utilities *)
+
+(* Originally this was done polymorphically (using a general notion of
+   equivalence of states and a proof that the interpreter preserves equivalence
+   if alloc and assign do). Eventually this should be refactored that way, but
+   this was faster for the time being. *)
 type state_equiv (st:boolState) (st':BExpState) (init:state) =
   fst st = fst st' /\ (forall i. boolEval st init i = bexpEval st' init i)
 
@@ -724,21 +727,13 @@ val eval_bexp_swap : st:boolState -> st':BExpState -> bexp:BoolExp -> init:state
         (ensures  (evalBexp (substBexp bexp (snd st')) init =
                    evalBexp bexp (snd st)))
 let rec eval_bexp_swap st st' bexp init = match bexp with
-  | BFalse -> admit()
-  | BVar i ->
-    state_equiv_impl st st' init i;
-    admitP(b2t(evalBexp (substBexp bexp (snd st')) init = evalBexp (lookup (snd st') i) init));
-    admitP(b2t(bexpEval st' init i = evalBexp (lookup (snd st') i) init));
-    //assert(evalBexp bexp (snd st) = lookup (snd st) i);
-    //assert(lookup (snd st) i = boolEval st init i);
-    admitP(b2t(evalBexp bexp (snd st) = boolEval st init i));
-      ()
-  | BNot x -> admit(); eval_bexp_swap st st' x init
-  | BXor (x, y) | BAnd (x, y) -> admit();
+  | BFalse -> ()
+  | BVar i -> ()
+  | BNot x -> (); eval_bexp_swap st st' x init
+  | BXor (x, y) | BAnd (x, y) -> ();
     eval_bexp_swap st st' x init;
     eval_bexp_swap st st' y init
 
-(*
 val state_equiv_alloc : st:boolState -> st':BExpState -> init:state -> bexp:BoolExp ->
   Lemma (requires (state_equiv st st' init))
         (ensures  (state_equiv (snd (boolAlloc st bexp)) (snd (bexpAlloc st' bexp)) init))
@@ -754,10 +749,10 @@ val state_equiv_step : gexp:GExpr -> st:boolState -> st':BExpState -> init:state
         (ensures
           (is_Err (step (gexp, st) boolInterp) /\ is_Err (step (gexp, st') bexpInterp)) \/
           (is_Val (step (gexp, st) boolInterp) /\ is_Val (step (gexp, st') bexpInterp) /\
-          (fst (get_Val (step (gexp, st) boolInterp)) =
-           fst (get_Val (step (gexp, st') bexpInterp)) /\
-          state_equiv (snd (get_Val (step (gexp, st) boolInterp)))
-                      (snd (get_Val (step (gexp, st') bexpInterp)))
+          (fst (getVal (step (gexp, st) boolInterp)) =
+           fst (getVal (step (gexp, st') bexpInterp)) /\
+          state_equiv (snd (getVal (step (gexp, st) boolInterp)))
+                      (snd (getVal (step (gexp, st') bexpInterp)))
                       init)))
   (decreases %[gexp;1])
 val state_equiv_step_lst : lst:list GExpr -> st:boolState -> st':BExpState -> init:state ->
@@ -765,10 +760,10 @@ val state_equiv_step_lst : lst:list GExpr -> st:boolState -> st':BExpState -> in
         (ensures
           (is_Err (step_lst (lst, st) boolInterp) /\ is_Err (step_lst (lst, st') bexpInterp)) \/
           (is_Val (step_lst (lst, st) boolInterp) /\ is_Val (step_lst (lst, st') bexpInterp) /\
-          (fst (get_Val (step_lst (lst, st) boolInterp)) =
-           fst (get_Val (step_lst (lst, st') bexpInterp)) /\
-          state_equiv (snd (get_Val (step_lst (lst, st) boolInterp)))
-                      (snd (get_Val (step_lst (lst, st') bexpInterp)))
+          (fst (getVal (step_lst (lst, st) boolInterp)) =
+           fst (getVal (step_lst (lst, st') bexpInterp)) /\
+          state_equiv (snd (getVal (step_lst (lst, st) boolInterp)))
+                      (snd (getVal (step_lst (lst, st') bexpInterp)))
                       init)))
   (decreases %[lst;0])
 let rec state_equiv_step gexp st st' init = match gexp with
@@ -841,11 +836,12 @@ val eval_commutes_subst_circ : st:boolState -> cs:circState -> bexp:BoolExp ->
   Lemma (requires (circ_equiv st cs init /\
                    bexp' = substVar bexp cs.subs /\
                    targ' = lookup cs.subs targ /\
-                   not (Util.mem targ' (vars bexp')) /\
-                   not (Util.mem targ' (elts cs.ah)) /\
+                   not (Set.mem targ' (vars bexp')) /\
+                   not (Set.mem targ' (elts cs.ah)) /\
                    disjoint (elts cs.ah) (vars bexp')))
-        (ensures  ((evalCirc (last (compileBexp cs.ah targ' bexp'))
-                             (evalCirc cs.gates init)) targ' =
+        (ensures  (lookup (evalCirc (last (compileBexp cs.ah targ' bexp'))
+                                    (evalCirc cs.gates init)) targ' 
+                   =
                    lookup (snd st) targ <> evalBexp bexp (snd st)))
 let eval_commutes_subst_circ st cs bexp bexp' init targ targ' =
   let init' = evalCirc cs.gates init in
@@ -857,10 +853,10 @@ val eval_commutes_subst_circ_oop : st:boolState -> cs:circState ->
   Lemma (requires (circ_equiv st cs init /\
                    bexp' = substVar bexp cs.subs /\
                    disjoint (elts cs.ah) (vars bexp')))
-        (ensures  ((evalCirc (last (compileBexp_oop cs.ah bexp'))
-                             (evalCirc cs.gates init))
-                   (second (compileBexp_oop cs.ah bexp')) =
-                   evalBexp bexp (snd st)))
+        (ensures  (lookup (evalCirc (last (compileBexp_oop cs.ah bexp'))
+                                    (evalCirc cs.gates init))
+                          (second (compileBexp_oop cs.ah bexp')) 
+                   = evalBexp bexp (snd st)))
 let eval_commutes_subst_circ_oop st cs bexp bexp' init =
   let init' = evalCirc cs.gates init in
     compile_bexp_correct_oop cs.ah bexp' init';
@@ -931,7 +927,7 @@ let circ_equiv_assign st cs init l bexp =
         eval_mod init' circ'
       in
       let correctness =
-        admitP(b2t(lookup (snd st') l = (evalCirc circ' init') (lookup cs'.subs l)));
+        admitP(b2t(lookup (snd st') l = lookup (evalCirc circ' init') (lookup cs'.subs l)));
         factorAs_correct bexp' l' init';
         eval_commutes_subst_circ st cs bexp bexp' init l l'
       in
@@ -942,10 +938,10 @@ val circ_equiv_step : gexp:GExpr -> st:boolState -> st':circState -> init:state 
         (ensures
           (is_Err (step (gexp, st) boolInterp) /\ is_Err (step (gexp, st') circInterp)) \/
           (is_Val (step (gexp, st) boolInterp) /\ is_Val (step (gexp, st') circInterp) /\
-          (fst (get_Val (step (gexp, st) boolInterp)) =
-           fst (get_Val (step (gexp, st') circInterp)) /\
-          circ_equiv (snd (get_Val (step (gexp, st) boolInterp)))
-                      (snd (get_Val (step (gexp, st') circInterp)))
+          (fst (getVal (step (gexp, st) boolInterp)) =
+           fst (getVal (step (gexp, st') circInterp)) /\
+          circ_equiv (snd (getVal (step (gexp, st) boolInterp)))
+                      (snd (getVal (step (gexp, st') circInterp)))
                       init)))
   (decreases %[gexp;1])
 val circ_equiv_step_lst : lst:list GExpr -> st:boolState -> st':circState -> init:state ->
@@ -953,10 +949,10 @@ val circ_equiv_step_lst : lst:list GExpr -> st:boolState -> st':circState -> ini
         (ensures
           (is_Err (step_lst (lst, st) boolInterp) /\ is_Err (step_lst (lst, st') circInterp)) \/
           (is_Val (step_lst (lst, st) boolInterp) /\ is_Val (step_lst (lst, st') circInterp) /\
-          (fst (get_Val (step_lst (lst, st) boolInterp)) =
-           fst (get_Val (step_lst (lst, st') circInterp)) /\
-          circ_equiv (snd (get_Val (step_lst (lst, st) boolInterp)))
-                      (snd (get_Val (step_lst (lst, st') circInterp)))
+          (fst (getVal (step_lst (lst, st) boolInterp)) =
+           fst (getVal (step_lst (lst, st') circInterp)) /\
+          circ_equiv (snd (getVal (step_lst (lst, st) boolInterp)))
+                      (snd (getVal (step_lst (lst, st') circInterp)))
                       init)))
   (decreases %[lst;0])
 let rec circ_equiv_step gexp st st' init = match gexp with

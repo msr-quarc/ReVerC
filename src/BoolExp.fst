@@ -1,6 +1,5 @@
 ﻿(** Utilities and compilation for Boolean expressions *)
 module BoolExp
-#set-options "z3_timeout 15"
 
 (* Boolean expressions over false, not, and, xor, and free variables.
    This module also defines compilation to circuits in three ways:
@@ -579,7 +578,7 @@ and compile_partition_oop ah x = match x with
       pop_proper_subset ah;
       disjoint_subset (elts ah') (elts ah) (vars x);
       compile_partition ah' targ x
-(*
+
 (* Details which bits the compiled circuit may modify. In particular, it is
    gauranteed that the resulting circuit does not modify any bit outside of the
    target bit and the ancilla heap. *)

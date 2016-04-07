@@ -11,9 +11,11 @@ module TypeCheck
    are added *)
 
 open Partial
+open Util
+open BoolExp
 open ExprTypes
 
-type ctxt = Par.map string GType
+type ctxt = Partial.t string GType
 
 type wellTypedCtxt : ctxt -> string -> GType -> Type =
   | Ctxt_zero : s:string -> ty:GType -> xs:ctxt -> wellTypedCtxt ((s, ty)::xs) s ty
@@ -180,7 +182,7 @@ type Cons =
   | ICons of IExp * IExp
   | TCons of TyExp * TyExp
 
-type ctxt' = map string TyExp
+type ctxt' = Partial.t string TyExp
 
 val inferTypes : int -> ctxt' -> tm:GExpr -> Tot (int * list Cons * list Cons * TyExp) (decreases %[tm;0])
 val inferTypes_lst : int -> ctxt' -> l:list GExpr -> Tot (int * list Cons * list Cons) (decreases %[l;1])
@@ -217,7 +219,7 @@ let rec inferTypes top ctx gexp = match gexp with
     let e1 = TCons (ty1, TBool) in
     let e2 = TCons (ty2, TBool) in
       (top'', e1::e2::(ec1@ec2), lc1@lc2, TUnit)
-  | VAR x -> begin match Par.find ctx x with
+  | VAR x -> begin match find ctx x with
     | None -> (top, [], [], TUnit)
     | Some ty -> (top, [], [], ty)
   end
