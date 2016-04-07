@@ -1,19 +1,12 @@
-﻿module ExprTypes
+﻿(** Abstract syntax & general Revs utilities *)
+module ExprTypes
 
-(* ExprTypes - Abstract syntax of Revs, along with utilities for free variables,
-               type inferencing, etc. Type inference includes only the
-               simplified constraint system & solver now. In particular, this
-               means we can't actually infer subtype polymorphism. We could do
-               this using the "let-polymorphism" trick of the Hindley-Milner
-               type system, but it's not implemented at the moment.
-               Also, a relational big step semantics is defined, but it's
-               implementation is a bit out of date with respect to the current
-               semantics. Eventually we want to prove that the interpreter
-               aggrees with the relational semantic definition. *)
+(* Abstract syntax of Revs, along with utilities. Eventually a
+   relational definition of the semantics should go here *)
 
+open Set
 open Util
 open BoolExp
-//open Dependence
 
 type GType =
   | GUnit
@@ -45,9 +38,35 @@ type GExpr =
   | LOC        of int
   | BEXP       of BoolExp
 
-// Structural properties for helping with proofs
-val height : tm:GExpr -> Tot int (decreases %[tm;1])
-val height_lst : tlst:(list GExpr) -> Tot int (decreases %[tlst;0])
+val height       : tm:GExpr -> Tot int (decreases %[tm;1])
+val height_lst   : tlst:(list GExpr) -> Tot int (decreases %[tlst;0])
+val freeIn       : x:string -> tm:GExpr -> Tot bool (decreases %[tm;0])
+val freeIn_lst   : x:string -> lst:list GExpr -> Tot bool (decreases %[lst;1])
+val freeVars     : tm:GExpr -> Tot (set string) (decreases %[tm;0])
+val varMaxTy     : ty:GType -> Tot int (decreases ty)
+val varMaxTm     : tm:GExpr -> Tot int (decreases %[tm;0])
+val varMaxTm_lst : lst:list GExpr -> Tot int (decreases %[lst;1])
+
+val replicate       : int -> string -> Tot string
+val append'         : list string -> list string -> Tot (list string)
+val appFront        : string -> list string -> Tot (l:(list string){List.lengthT l > 0})
+val appBack         : string -> list string -> Tot (l:(list string){List.lengthT l > 0})
+val indent          : int -> list string -> Tot (list string)
+val brackets        : list string -> Tot (list string)
+val hdT             : l:(list 'a){List.lengthT l >= 1} -> Tot 'a
+val tlT             : l:(list 'a){List.lengthT l >= 1} -> Tot (list 'a)
+val prettyPrintTy   : GType -> Tot string
+val prettyPrint     : GExpr -> Tot (l:(list string){List.lengthT l > 0})
+val prettyPrint_lst : list GExpr -> Tot (list (list string))
+val show            : GExpr -> Tot string
+
+val substTy            : ty:GType -> int -> GType -> Tot GType (decreases ty)
+val substGExpr         : tm:GExpr -> string -> GExpr -> Tot GExpr (decreases %[tm;0])
+val substGExpr_lst     : l:list GExpr -> string -> GExpr -> Tot (list GExpr) (decreases %[l;1])
+val substTyInGExpr     : tm:GExpr -> int -> GType -> Tot GExpr (decreases %[tm;0])
+val substTyInGExpr_lst : l:list GExpr -> int -> GType -> Tot (list GExpr) (decreases %[l;1])
+
+(* Structural properties for helping with proofs *)
 let rec height tm = match tm with
   | LET (s, t1, t2) -> 1 + (height t1) + (height t2)
   | LAMBDA (s, ty, t) -> 1 + (height t)
@@ -73,8 +92,6 @@ and height_lst tlst = match tlst with
   | [] -> 0
   | x::xs -> max (height x) (height_lst xs)
 
-val freeIn : x:string -> tm:GExpr -> Tot bool (decreases %[tm;0])
-val freeIn_lst : x:string -> lst:list GExpr -> Tot bool (decreases %[lst;1])
 let rec freeIn x tm = match tm with
   | LET (s, t1, t2) -> freeIn x t1 || (not (x = s) && freeIn x t2)
   | LAMBDA (s, ty, t) -> not (x = s) && freeIn x t
@@ -100,17 +117,13 @@ and freeIn_lst x lst = match lst with
   | [] -> false
   | t::xs -> freeIn x t || freeIn_lst x xs
 
-val freeVars : tm:GExpr -> Tot (set string) (decreases %[tm;0])
 let freeVars tm = fun x -> freeIn x tm
 
-val varMaxTy : ty:GType -> Tot int (decreases ty)
 let rec varMaxTy ty = match ty with
   | GUnit | GBool | GArray _ -> 0
   | GVar i -> i
   | GFun (ty1, ty2) -> max (varMaxTy ty1) (varMaxTy ty2)
 
-val varMaxTm : tm:GExpr -> Tot int (decreases %[tm;0])
-val varMaxTm_lst : lst:list GExpr -> Tot int (decreases %[lst;1])
 let rec varMaxTm tm = match tm with
   | LET (s, t1, t2) -> max (varMaxTm t1) (varMaxTm t2)
   | LAMBDA (s, ty, t) -> max (varMaxTy ty) (varMaxTm t)
@@ -132,143 +145,138 @@ and varMaxTm_lst lst = match lst with
   | [] -> 0
   | x::xs -> max (varMaxTm x) (varMaxTm_lst xs)
 
-// Pretty printing
-val replicate : int -> string -> Tot string
-val append'   : list string -> list string -> Tot (list string)
-val appFront  : string -> list string -> Tot (list string)
-val appBack   : string -> list string -> Tot (list string)
-
+(* Pretty printing *)
 let rec replicate i s =
-  if i <= 0 then "" else FStar.String.strcat s (replicate (i-1) s)
+  if i <= 0 then "" else String.strcat s (replicate (i-1) s)
 let rec append' lst1 lst2 = match (lst1, lst2) with
   | ([], _)        -> lst2
   | (_, [])        -> lst1
-  | (x::[], y::ys) -> (FStar.String.strcat x y)::ys
+  | (x::[], y::ys) -> (String.strcat x y)::ys
   | (x::xs, _)     -> x::(append' xs lst2)
 let appFront s lst = match lst with
   | []    -> [s]
-  | x::xs -> (FStar.String.strcat s x)::xs
+  | x::xs -> (String.strcat s x)::xs
 let rec appBack s lst = match lst with
   | []    -> [s]
-  | x::[] -> (FStar.String.strcat x s)::[]
+  | x::[] -> (String.strcat x s)::[]
   | x::xs -> appBack s xs
+let indent i l = List.mapT (fun s -> String.strcat (replicate i " ") s) l
+let brackets s = appFront "(" (appBack ")" s)
 
-val hdT : l:(list 'a){FStar.List.lengthT l >= 1} -> Tot 'a
-val tlT : l:(list 'a){FStar.List.lengthT l >= 1} -> Tot (list 'a)
 let hdT l = match l with
   | x::xs -> x
 let tlT l = match l with
   | x::xs -> xs
 
-val prettyPrintTy : GType -> string
 let rec prettyPrintTy ty = match ty with
   | GUnit -> "unit"
   | GBool -> "bool"
   | GVar i -> Prims.string_of_int i
-  | GArray n -> FStar.String.strcat "vec " (Prims.string_of_int n)
+  | GArray n -> String.strcat "vec " (Prims.string_of_int n)
   | GFun (ty1, ty2) -> begin match ty1 with
-    | GFun _ -> FStar.String.strcat "("
-               (FStar.String.strcat (prettyPrintTy ty1)
-               (FStar.String.strcat ") -> " (prettyPrintTy ty2)))
-    | _ -> FStar.String.strcat (prettyPrintTy ty1)
-          (FStar.String.strcat " -> " (prettyPrintTy ty2))
+    | GFun _ -> String.strcat "("
+               (String.strcat (prettyPrintTy ty1)
+               (String.strcat ") -> " (prettyPrintTy ty2)))
+    | _ -> String.strcat (prettyPrintTy ty1)
+          (String.strcat " -> " (prettyPrintTy ty2))
     end
 
-val prettyPrint : GExpr -> list string
-let rec prettyPrint gexp =
-  let indent i l = FStar.List.map (fun s -> FStar.String.strcat (replicate i " ") s) l in
-  let brackets s = appFront "(" (appBack ")" s) in
-  let flatten s lst = FStar.String.concat s (FStar.List.map FStar.List.hd lst) in
-  match gexp with
-    | LET (s, t1, t2) ->
-        let st1 = prettyPrint t1 in
-        let st2 = prettyPrint t2 in
-          [FStar.String.strcat "let " (FStar.String.strcat s (FStar.String.strcat " = " (FStar.List.hd st1)))] @
-          ((indent 2 (FStar.List.tl st1)) @ st2)
-    | LAMBDA (s, ty, t) ->
-        let st = prettyPrint t in
-        let sty = prettyPrintTy ty in
-          [FStar.String.strcat "\ " (FStar.String.strcat s (FStar.String.strcat ":" (FStar.String.strcat sty (FStar.String.strcat " . " (FStar.List.hd st)))))] @
-          (indent 2 (FStar.List.tl st))
-    | APPLY (t1, t2) ->
-        let st1 = prettyPrint t1 in
-        let st2 = prettyPrint t2 in
-          if for_someT (fun l -> FStar.List.length l > 1) ([st1;st2])
-          then (brackets st1) @ (indent 2 st2)
-          else [FStar.String.strcat "(" (FStar.String.strcat (FStar.List.hd st1) (FStar.String.strcat ")" (flatten " " [st2])))]
-    | IFTHENELSE (t1, t2, t3) ->
-        let st1 = prettyPrint t1 in
-        let st2 = prettyPrint t2 in
-        let st3 = prettyPrint t3 in
-          (appFront "if " st1) @ (appFront "then " st2) @ (appFront "else " st3)
-    | SEQUENCE (t1, t2) ->
-        let st1 = prettyPrint t1 in
-        let st2 = prettyPrint t2 in
-          st1 @ st2
-    | ASSIGN (t1, t2) ->
-        let st1 = prettyPrint t1 in
-        let st2 = prettyPrint t2 in
-          append' st1 (appFront " <- " st2)
-    | VAR s -> [s]
-    | UNIT -> ["()"]
-    | BOOL b -> if b then ["true"] else ["false"]
-    | XOR (t1, t2) ->
-        let st1 = prettyPrint t1 in
-        let st2 = prettyPrint t2 in
-          brackets <| append' st1 (appFront " <> " st2)
-    | AND (t1, t2) ->
-        let st1 = prettyPrint t1 in
-        let st2 = prettyPrint t2 in
-          brackets <| append' st1 (appFront " && " st2)
-    | ARRAY tlst ->
-        let stlst = FStar.List.map prettyPrint tlst in
-          if for_someT (fun l -> FStar.List.length l > 1) stlst
-          then ["["] @ (FStar.List.fold_right (fun lst acc -> (appBack "," (indent 2 lst)) @ acc) stlst []) @ ["]"]
-          else [FStar.String.strcat "[" (FStar.String.strcat (flatten "," stlst) "]")]
-    | GET_ARRAY (t, i) ->
-        let st = prettyPrint t in
-          appBack (FStar.String.strcat ".[" (FStar.String.strcat (Prims.string_of_int i) "]")) st
-    | APPEND (t1, t2) ->
-        let st1 = prettyPrint t1 in
-        let st2 = prettyPrint t2 in
-          if for_someT (fun l -> FStar.List.lengthT l > 1) [st1;st2]
-          then ["append"] @ (indent 2 st1) @ (indent 2 st2)
-          else [FStar.String.strcat "append" (FStar.String.strcat (FStar.List.hd st1) (FStar.String.strcat " " (FStar.List.hd st2)))]
-    | ROT (i, t) ->
-        let st = prettyPrint t in
-          appFront (FStar.String.strcat "rot " (Prims.string_of_int i)) st
-    | SLICE (t, i, j) ->
-        let st = prettyPrint t in
-          appBack (FStar.String.strcat ".["
-                  (FStar.String.strcat (Prims.string_of_int i)
-                  (FStar.String.strcat ".."
-                  (FStar.String.strcat (Prims.string_of_int j) "]")))) st
-    | ASSERT t ->
-        let st = prettyPrint t in
-          appFront "allege " st
-    | LOC i -> [FStar.String.strcat "loc " (Prims.string_of_int i)]
-    | BEXP bexp -> [prettyPrintBexp bexp]
-    | _ -> []
+let rec prettyPrint gexp = match gexp with
+  | LET (s, t1, t2) ->
+      let st1 = prettyPrint t1 in
+      let st2 = prettyPrint t2 in
+        [String.strcat "let " (String.strcat s (String.strcat " = " (hdT st1)))] @
+        ((indent 2 (tlT st1)) @ st2)
+  | LAMBDA (s, ty, t) ->
+      let st = prettyPrint t in
+      let sty = prettyPrintTy ty in
+        [String.strcat "\ " (String.strcat s (String.strcat ":" (String.strcat sty (String.strcat " . " (hdT st)))))] @
+        (indent 2 (tlT st))
+  | APPLY (t1, t2) ->
+      let st1 = prettyPrint t1 in
+      let st2 = prettyPrint t2 in
+        if forSomeT (fun l -> List.lengthT l > 1) ([st1;st2])
+        then (brackets st1) @ (indent 2 st2)
+        else [String.strcat "(" (String.strcat (hdT st1) (String.strcat ")" (String.concat " " st2)))]
+  | IFTHENELSE (t1, t2, t3) ->
+      let st1 = prettyPrint t1 in
+      let st2 = prettyPrint t2 in
+      let st3 = prettyPrint t3 in
+        (appFront "if " st1) @ (appFront "then " st2) @ (appFront "else " st3)
+  | SEQUENCE (t1, t2) ->
+      let st1 = prettyPrint t1 in
+      let st2 = prettyPrint t2 in
+        st1 @ st2
+  | ASSIGN (t1, t2) ->
+      let st1 = prettyPrint t1 in
+      let st2 = prettyPrint t2 in
+        append' st1 (appFront " <- " st2)
+  | VAR s -> [s]
+  | UNIT -> ["()"]
+  | BOOL b -> if b then ["true"] else ["false"]
+  | XOR (t1, t2) ->
+      let st1 = prettyPrint t1 in
+      let st2 = prettyPrint t2 in
+        brackets (append' st1 (appFront " <> " st2))
+  | AND (t1, t2) ->
+      let st1 = prettyPrint t1 in
+      let st2 = prettyPrint t2 in
+        brackets (append' st1 (appFront " && " st2))
+  | ARRAY tlst ->
+      //let stlst = List.mapT prettyPrint tlst in -- Doesn't work with > 0 annotation
+      let stlst = prettyPrint_lst tlst in
+        if forSomeT (fun l -> List.lengthT l > 1) stlst
+        then
+          let f stlst lst = stlst @ (appBack "," (indent 2 lst)) in
+            ["["] @ (List.fold_leftT f [] stlst) @ ["]"]
+        else 
+          let f str lst = match lst with
+            | [] -> str
+            | x::xs -> String.strcat str (String.strcat "," x)
+          in
+            [String.strcat (List.fold_leftT f "[" stlst) "]"]
+  | GET_ARRAY (t, i) ->
+      let st = prettyPrint t in
+        appBack (String.strcat ".[" (String.strcat (Prims.string_of_int i) "]")) st
+  | APPEND (t1, t2) ->
+      let st1 = prettyPrint t1 in
+      let st2 = prettyPrint t2 in
+        if forSomeT (fun l -> List.lengthT l > 1) [st1;st2]
+        then ["append"] @ (indent 2 st1) @ (indent 2 st2)
+        else [String.strcat "append" (String.strcat (hdT st1) (String.strcat " " (hdT st2)))]
+  | ROT (i, t) ->
+      let st = prettyPrint t in
+        appFront (String.strcat "rot " (Prims.string_of_int i)) st
+  | SLICE (t, i, j) ->
+      let st = prettyPrint t in
+        appBack (String.strcat ".["
+                (String.strcat (Prims.string_of_int i)
+                (String.strcat ".."
+                (String.strcat (Prims.string_of_int j) "]")))) st
+  | ASSERT t ->
+      let st = prettyPrint t in
+        appFront "allege " st
+  | LOC i -> [String.strcat "loc " (Prims.string_of_int i)]
+  | BEXP bexp -> [prettyPrintBexp bexp]
+  | _ -> ["NOT SUPPORTED"]
+and prettyPrint_lst tlst =  match tlst with
+  | [] -> []
+  | x::xs -> (prettyPrint x)::(prettyPrint_lst xs)
 
-val show : GExpr -> Tot string
-let show gexp = ""
-//let show gexp =
-//  let str = prettyPrint gexp in
-//  FStar.String.concat "\n" str
+let show gexp =
+  let str = prettyPrint gexp in
+  String.concat "\n" str
 
 let print gexp =
   let str = prettyPrint gexp in
-  FStar.List.iter IO.print_string str
+  List.iter IO.print_string str
 
-// Substitutions
-val substTy : ty:GType -> int -> GType -> Tot GType (decreases ty)
+(* Substitutions *)
 let rec substTy ty i ty' = match ty with
   | GUnit | GBool | GArray _ -> ty
   | GVar j -> if i = j then ty' else ty
   | GFun (ty1, ty2) -> GFun (substTy ty1 i ty', substTy ty2 i ty')
 
-val substGExpr : tm:GExpr -> string -> GExpr -> Tot GExpr (decreases %[tm;0])
-val substGExpr_lst : l:list GExpr -> string -> GExpr -> Tot (list GExpr) (decreases %[l;1])
 let rec substGExpr tm s tm' = match tm with
   | LET (x, t1, t2) ->
     if x = s then LET (x, substGExpr t1 s tm', t2)
@@ -294,8 +302,6 @@ and substGExpr_lst lst s tm' = match lst with
   | [] -> []
   | x::xs -> (substGExpr x s tm')::(substGExpr_lst xs s tm')
 
-val substTyInGExpr : tm:GExpr -> int -> GType -> Tot GExpr (decreases %[tm;0])
-val substTyInGExpr_lst : l:list GExpr -> int -> GType -> Tot (list GExpr) (decreases %[l;1])
 let rec substTyInGExpr tm k ty = match tm with
   | LET (x, t1, t2) -> LET (x, substTyInGExpr t1 k ty, substTyInGExpr t2 k ty)
   | LAMBDA (x, ty', t) -> LAMBDA (x, substTy ty' k ty, substTyInGExpr t k ty)
@@ -316,390 +322,7 @@ and substTyInGExpr_lst lst k ty = match lst with
   | [] -> []
   | x::xs -> (substTyInGExpr x k ty)::(substTyInGExpr_lst xs k ty)
 
-// Typechecking
-open Par
-type ctxt = Par.map string GType
-
-type wellTypedCtxt : ctxt -> string -> GType -> Type =
-  | Ctxt_zero : s:string -> ty:GType -> xs:ctxt -> wellTypedCtxt ((s, ty)::xs) s ty
-  | Ctxt_succ : s:string -> ty:GType -> x:(string * GType){~(fst x = s)} -> xs:ctxt ->
-                wellTypedCtxt xs s ty ->
-                wellTypedCtxt (x::xs) s ty
-
-type subType : GType -> GType -> Type =
-  | Sub_refl : #t1:GType -> subType t1 t1
-  | Sub_arry : n:nat -> m:fin n -> subType (GArray n) (GArray m)
-  | Sub_lam  : #t1:GType -> #t2:GType -> #s1:GType -> #s2:GType ->
-               subType s1 t1 ->
-               subType t2 s2 ->
-               subType (GFun (t1, t2)) (GFun (s1, s2))
-
-type wellTyped : ctxt -> GExpr -> GType -> Type =
-  | Wt_let : #ctx:ctxt -> #s:string -> #t1:GExpr -> #t2:GExpr -> #ty1:GType -> #ty2:GType ->
-             wellTyped ctx t1 ty1 ->
-             wellTyped ((s, ty1)::ctx) t2 ty2 ->
-             wellTyped ctx (LET (s, t1, t2)) ty2
-  | Wt_lam : #ctx:ctxt -> #s:string -> #ty1:GType -> #t:GExpr -> #ty2:GType ->
-             wellTyped ((s, ty1)::ctx) t ty2 ->
-             wellTyped ctx (LAMBDA (s, ty1, t)) (GFun (ty1, ty2))
-  | Wt_apl : #ctx:ctxt -> #t1:GExpr -> #t2:GExpr -> #ty1:GType -> #ty2:GType -> #ty3:GType ->
-             wellTyped ctx t1 (GFun (ty1, ty2)) ->
-             wellTyped ctx t2 ty3 ->
-             subType ty3 ty1 ->
-             wellTyped ctx (APPLY (t1, t2)) ty2
-  | Wt_ite : #ctx:ctxt -> #t1:GExpr -> #t2:GExpr -> #t3:GExpr -> #ty1:GType -> #ty2:GType -> #ty3:GType ->
-             wellTyped ctx t1 GBool ->
-             wellTyped ctx t2 ty1 ->
-             wellTyped ctx t3 ty2 ->
-             subType ty1 ty3 ->
-             subType ty2 ty3 ->
-             wellTyped ctx (IFTHENELSE (t1, t2, t3)) ty3
-  | Wt_seq : #ctx:ctxt -> #t1:GExpr -> #t2:GExpr -> #ty:GType ->
-             wellTyped ctx t1 GUnit ->
-             wellTyped ctx t2 ty ->
-             wellTyped ctx (SEQUENCE (t1, t2)) ty
-  | Wt_ass : #ctx:ctxt -> #t1:GExpr -> #t2:GExpr ->
-             wellTyped ctx t1 GBool ->
-             wellTyped ctx t2 GBool ->
-             wellTyped ctx (ASSIGN (t1, t2)) GUnit
-  | Wt_unt : #ctx:ctxt -> wellTyped ctx UNIT GUnit
-  | Wt_xor : #ctx:ctxt -> #t1:GExpr -> #t2:GExpr ->
-             wellTyped ctx t1 GBool ->
-             wellTyped ctx t2 GBool ->
-             wellTyped ctx (XOR (t1, t2)) GBool
-  | Wt_and : #ctx:ctxt -> #t1:GExpr -> #t2:GExpr ->
-             wellTyped ctx t1 GBool ->
-             wellTyped ctx t2 GBool ->
-             wellTyped ctx (AND (t1, t2)) GBool
-  | Wt_bl  : #ctx:ctxt -> b:bool -> wellTyped ctx (BOOL b) GBool
-  | Wt_apn : #ctx:ctxt -> #t1:GExpr -> #t2:GExpr -> #n:nat -> #m:nat ->
-             wellTyped ctx t1 (GArray n) ->
-             wellTyped ctx t2 (GArray m) ->
-             wellTyped ctx (APPEND (t1, t2)) (GArray (n + m))
-  | Wt_rot : #ctx:ctxt -> #t:GExpr -> #n:nat -> i:fin n ->
-             wellTyped ctx t (GArray n) ->
-             wellTyped ctx (ROT (i, t)) (GArray n)
-  | Wt_slc : #ctx:ctxt -> #t:GExpr -> #n:nat -> i:nat -> j:nat{i <= j && j < n} ->
-             wellTyped ctx t (GArray n) ->
-             wellTyped ctx (SLICE (t, i, j)) (GArray (j - i))
-  | Wt_arz : #ctx:ctxt -> wellTyped ctx (ARRAY []) (GArray 0)
-  | Wt_ars : #ctx:ctxt -> #t:GExpr -> #ts:list GExpr -> #n:nat ->
-             wellTyped ctx t GBool ->
-             wellTyped ctx (ARRAY ts) (GArray n) ->
-             wellTyped ctx (ARRAY (t::ts)) (GArray (n+1))
-  | Wt_gta : #ctx:ctxt -> #t:GExpr -> #n:nat -> i:fin n ->
-             wellTyped ctx t (GArray n) ->
-             wellTyped ctx (GET_ARRAY (t, i)) GBool
-  | Wt_get : #ctx:ctxt -> #s:string -> #ty:GType ->
-             wellTypedCtxt ctx s ty ->
-             wellTyped ctx (VAR s) ty
-  | Wt_ast : #ctx:ctxt -> #t:GExpr ->
-             wellTyped ctx t GBool ->
-             wellTyped ctx (ASSERT t) GUnit
-  | Wt_loc : #ctx:ctxt -> i:int ->
-             wellTyped ctx (LOC i) GBool
-  | Wt_bex : #ctx:ctxt -> bexp:BoolExp ->
-             wellTyped ctx (BEXP bexp) GBool
-
-val subtype : t1:GType -> t2:GType -> Tot bool
-val suptype : t1:GType -> t2:GType -> Tot bool
-let rec subtype t1 t2 = if t1 = t2 then true else match (t1, t2) with
-  | (GArray i, GArray j) -> j <= i
-  | (GFun (t1, t2), GFun (s1, s2)) -> (suptype t1 s1) && (subtype t2 s2)
-  | _ -> false
-and suptype t1 t2 = if t1 = t2 then true else match (t1, t2) with
-  | (GArray i, GArray j) -> j >= i
-  | (GFun (t1, t2), GFun (s1, s2)) -> (subtype t1 s1) && (suptype t2 s2)
-  | _ -> false
-
-val welltyctx_imp_findctx : ctx:ctxt -> s:string -> ty:GType -> wellTypedCtxt ctx s ty ->
-  Lemma (find ctx s = Some ty)
-let rec welltyctx_imp_findctx ctx s ty h = match h with
-  | Ctxt_zero s ty xs -> ()
-  | Ctxt_succ s ty x xs h' -> welltyctx_imp_findctx xs s ty h'
-
-val findctx_imp_welltyctx : ctx:ctxt -> s:string -> ty:GType -> h:unit{find ctx s = Some ty} ->
-  wellTypedCtxt ctx s ty
-let rec findctx_imp_welltyctx ctx s ty h = match ctx with
-  | (x,y)::xs -> if x = s && y = ty
-    then Ctxt_zero s ty xs
-    else Ctxt_succ s ty (x,y) xs (findctx_imp_welltyctx xs s ty ())
-
-(* --------------------------- Type inference *)
-type IExp =
-  | ILit   of int
-  | IVar   of int
-  | IPlus  of IExp * IExp
-  | IMinus of IExp
-
-type TyExp =
-  | TUnit
-  | TBool
-  | TVar   of int
-  | TArray of IExp
-  | TArrow of TyExp * TyExp
-
-val normalize : IExp -> IExp
-let rec normalize iexp = match iexp with
-  | IMinus x ->
-    begin match normalize x with
-      | IMinus x'    -> x'
-      | ILit i       -> ILit (-i)
-      | IPlus (x, y) -> IPlus (normalize (IMinus x), normalize (IMinus y))
-      | x'           -> IMinus x'
-    end
-  | IPlus (x, y) ->
-    begin match (normalize x, normalize y) with
-      | (IVar i, y') | (y', IVar i)       -> IPlus (IVar i, y')
-      | (ILit i, ILit j)                  -> ILit (i+j)
-      | (IPlus (IVar i, x'), y')
-      | (y', IPlus (IVar i, x'))          -> IPlus (IVar i, IPlus (x', y'))
-      | (IPlus (IMinus (IVar i), x'), y')
-      | (y', IPlus (IMinus (IVar i), x')) -> IPlus (IMinus (IVar i), IPlus (x', y'))
-      | (x', y')                          -> IPlus (x', y')
-    end
-  | _ -> iexp
-
-val toTyExp : GType -> Tot TyExp
-let rec toTyExp ty = match ty with
-  | GUnit -> TUnit
-  | GBool -> TBool
-  | GVar i -> TVar i
-  | GArray n -> TArray (ILit n)
-  | GFun (ty1, ty2) -> TArrow (toTyExp ty1, toTyExp ty2)
-
-val toGType : TyExp -> GType
-let rec toGType texp = match texp with
-  | TUnit -> GUnit
-  | TBool -> GBool
-  | TVar i -> GVar i
-  | TArray iexp ->
-    begin match normalize iexp with
-      | ILit n -> GArray n
-      | _ -> GArray 0
-    end
-  | TArrow (texp1, texp2) -> GFun (toGType texp1, toGType texp2)
-
-// Constraints (equality or less than) over type expressions
-type Cons =
-  | ICons of IExp * IExp
-  | TCons of TyExp * TyExp
-
-type ctxt' = map string TyExp
-
-val inferTypes : int -> ctxt' -> tm:GExpr -> Tot (int * list Cons * list Cons * TyExp) (decreases %[tm;0])
-val inferTypes_lst : int -> ctxt' -> l:list GExpr -> Tot (int * list Cons * list Cons) (decreases %[l;1])
-let rec inferTypes top ctx gexp = match gexp with
-  | LET (x, t1, t2) ->
-    let (top', ec1, lc1, ty1) = inferTypes top ctx t1 in
-    let (top'', ec2, lc2, ty2) = inferTypes top' ((x, ty1)::ctx) t2 in
-        (top'', ec1@ec2, lc1@lc2, ty2)
-  | LAMBDA (x, ty, t) ->
-    let (top', ec1, lc1, ty1) = inferTypes top ((x, (toTyExp ty))::ctx) t in
-        (top', ec1, lc1, TArrow (toTyExp ty, ty1))
-  | APPLY (t1, t2) ->
-    let (top', ec1, lc1, ty1) = inferTypes top ctx t1 in
-    let (top'', ec2, lc2, ty2) = inferTypes top' ctx t2 in
-    let e = TCons (ty1, TArrow (TVar top'', TVar (top''+1))) in
-    let c = TCons (ty2, TVar top'') in
-      (top''+2, e::(ec1@ec2), c::(lc1@lc2), TVar (top''+1))
-  | IFTHENELSE (t1, t2, t3) ->
-    let (top', ec1, lc1, ty1) = inferTypes top ctx t1 in
-    let (top'', ec2, lc2, ty2) = inferTypes top' ctx t2 in
-    let (top''', ec3, lc3, ty3) = inferTypes top'' ctx t3 in
-    let e1 = TCons (ty1, TBool) in
-    let e2 = TCons (ty2, TVar top''') in
-    let e3 = TCons (ty3, TVar top''') in
-      (top'''+1, e1::e2::e3::(ec1@ec2@ec3), lc1@lc2, TVar top''')
-  | SEQUENCE (t1, t2) ->
-    let (top', ec1, lc1, ty1) = inferTypes top ctx t1 in
-    let (top'', ec2, lc2, ty2) = inferTypes top' ctx t2 in
-    let e1 = TCons (ty1, TUnit) in
-      (top'', e1::(ec1@ec2), lc1@lc2, ty2)
-  | ASSIGN (t1, t2) ->
-    let (top', ec1, lc1, ty1) = inferTypes top ctx t1 in
-    let (top'', ec2, lc2, ty2) = inferTypes top' ctx t2 in
-    let e1 = TCons (ty1, TBool) in
-    let e2 = TCons (ty2, TBool) in
-      (top'', e1::e2::(ec1@ec2), lc1@lc2, TUnit)
-  | VAR x -> begin match Par.find ctx x with
-    | None -> (top, [], [], TUnit)
-    | Some ty -> (top, [], [], ty)
-  end
-  | UNIT -> (top, [], [], TUnit)
-  | BOOL b -> (top, [], [], TBool)
-  | XOR (t1, t2) | AND (t1, t2) ->
-    let (top', ec1, lc1, ty1) = inferTypes top ctx t1 in
-    let (top'', ec2, lc2, ty2) = inferTypes top' ctx t2 in
-    let e1 = TCons (ty1, TBool) in
-    let e2 = TCons (ty2, TBool) in
-      (top'', e1::e2::(ec1@ec2), lc1@lc2, TBool)
-  | ARRAY tlst ->
-    let (top', ec, lc) = inferTypes_lst top ctx tlst in
-      (top', ec, lc, TArray (ILit (FStar.List.lengthT tlst)))
-  | GET_ARRAY (t, i) ->
-    let (top', ec1, lc1, ty1) = inferTypes top ctx t in
-    let e1 = TCons (ty1, TArray (IVar top')) in
-    let l1 = ICons (ILit i, IVar top') in
-      (top'+1, e1::ec1, l1::lc1, TBool)
-  | APPEND (t1, t2) ->
-    let (top', ec1, lc1, ty1) = inferTypes top ctx t1 in
-    let (top'', ec2, lc2, ty2) = inferTypes top' ctx t2 in
-    let e1 = TCons (ty1, TArray (IVar top'')) in
-    let e2 = TCons (ty2, TArray (IVar (top''+1))) in
-    let e3 = ICons (IVar (top''+2), IPlus (IVar top'', IVar (top''+1))) in
-      (top''+3, e1::e2::e3::(ec1@ec2), lc1@lc2, TArray (IVar (top''+2)))
-  | ROT (i, t) ->
-    let (top', ec1, lc1, ty1) = inferTypes top ctx t in
-    let e1 = TCons (ty1, TArray (IVar top')) in
-    let l1 = ICons (ILit (i+1), IVar top') in
-      (top'+1, e1::ec1, l1::lc1, TArray (IVar top'))
-  | SLICE (t, i, j) ->
-    let (top', ec1, lc1, ty1) = inferTypes top ctx t in
-    let e1 = TCons (ty1, TArray (IVar top')) in
-    let l1 = ICons (ILit (j+1), IVar top') in
-      (top'+1, e1::ec1, l1::lc1, TArray (ILit (j - i + 1)))
-  | ASSERT t ->
-    let (top', ec1, lc1, ty1) = inferTypes top ctx t in
-    let e1 = TCons (ty1, TBool) in
-      (top', e1::ec1, lc1, TUnit)
-  | LOC i -> (top, [], [], TBool)
-  | BEXP bexp -> (top, [], [], TBool)
-  | _ -> (top, [], [], TUnit)
-and inferTypes_lst top ctx lst = match lst with
-  | [] -> (top, [], [])
-  | x::xs ->
-    let (top', ec1, lc1, ty1) = inferTypes top ctx x in
-    let (top'', ec2, lc2) = inferTypes_lst top' ctx xs in
-    let e1 = TCons (ty1, TBool) in
-      (top'', e1::(ec1@ec2), lc1@lc2)
-
-
-let rec substIExp i iexp x = match x with
-  | ILit j -> ILit j
-  | IVar j -> if i = j then iexp else IVar j
-  | IMinus x -> substIExp i iexp x
-  | IPlus (x, y) -> IPlus (substIExp i iexp x, substIExp i iexp y)
-
-let rec substTExp i texp x = match x with
-  | TUnit -> TUnit
-  | TBool -> TBool
-  | TVar j -> if i = j then texp else TVar j
-  | TArray iexp -> TArray iexp
-  | TArrow (x, y) -> TArrow (substTExp i texp x, substTExp i texp y)
-
-let rec substIExpInTExp i iexp x = match x with
-  | TArray iexp' -> TArray (substIExp i iexp iexp')
-  | TArrow (x, y) -> TArrow (substIExpInTExp i iexp x, substIExpInTExp i iexp y)
-  | _ -> x
-
-let rec iSubst i iexp cons = match cons with
-  | [] -> []
-  | (ICons (c1, c2))::xs -> (ICons (substIExp i iexp c1, substIExp i iexp c2))::(iSubst i iexp xs)
-  | (TCons (c1, c2))::xs -> (TCons (substIExpInTExp i iexp c1, substIExpInTExp i iexp c2))::(iSubst i iexp xs)
-
-let rec tSubst i texp cons = match cons with
-  | [] -> []
-  | (TCons c)::xs -> (TCons (substTExp i texp (fst c), substTExp i texp (snd c)))::(tSubst i texp xs)
-  | x::xs -> x::(tSubst i texp xs)
-
-let rec mergeLower iexp j bnds = match bnds with
-  | [] -> Some iexp
-  | (ICons (iexp', IVar h))::xs -> 
-    if h = j then 
-      begin match (normalize iexp, normalize iexp') with
-        | (ILit x, ILit y) -> mergeLower (ILit (max x y)) j xs
-        | (IVar x, IVar y) -> if x = y then mergeLower (IVar x) j xs else None
-        | _ -> None
-      end
-    else 
-      mergeLower iexp j xs
-  | _::xs -> mergeLower iexp j xs
-
-let rec unify_bnds top bnds subs = 
-  match bnds with
-  | [] -> Some subs
-  | (ICons (i1, i2))::xs ->
-    begin match (normalize i1, normalize i2) with
-      | (iexp, IVar j) ->
-        begin match (mergeLower iexp j xs) with
-          | Some sub -> unify_bnds top (iSubst j sub xs) (iSubst j sub subs)
-          | None -> unify_bnds top (xs @ [ICons (iexp, IVar j)]) subs
-        end
-      | (ILit x, ILit y) -> if x <= y then unify_bnds top xs subs else None
-      | (iexp, iexp') -> unify_bnds top (xs @ [ICons (iexp, iexp')]) subs
-    end
-  | (TCons (t1, t2))::xs ->
-    begin match (t1, t2) with
-      | (TVar i, TUnit) | (TUnit, TVar i) -> unify_bnds top (tSubst i TUnit xs) (tSubst i TUnit subs)
-      | (TVar i, TBool) | (TBool, TVar i) -> unify_bnds top (tSubst i TBool xs) (tSubst i TBool subs)
-      | (TVar i, TArray iexp) -> 
-          let sub = TArray (IVar top) in
-            unify_bnds (top+1) 
-                       (tSubst i sub ((ICons (iexp, IVar top))::xs)) 
-                       ((TCons (TVar i, sub))::(tSubst i sub subs))
-      | (TArray iexp, TVar i) -> 
-          let sub = TArray (IVar top) in
-            unify_bnds (top+1) 
-                       (tSubst i sub ((ICons (IVar top, iexp))::xs)) 
-                       ((TCons (TVar i, sub))::(tSubst i sub subs))
-      | (TVar i, TArrow (t1, t2)) -> 
-          let sub = TArrow (TVar top, TVar (top+1)) in
-            unify_bnds (top+2) 
-                       (tSubst i sub ((TCons (t1, TVar top))::(TCons (TVar (top+1), t2))::xs)) 
-                       ((TCons (TVar i, sub))::(tSubst i sub subs))
-      | (TArrow (t1, t2), TVar i) -> 
-          let sub = TArrow (TVar top, TVar (top+1)) in
-            unify_bnds (top+2) 
-                       (tSubst i sub ((TCons (TVar top, t1))::(TCons (t2, TVar (top+1)))::xs)) 
-                       ((TCons (TVar i, sub))::(tSubst i sub subs))
-      | (TVar i, TVar j) -> unify_bnds top (xs @ [TCons (t1, t2)]) subs
-      | (TUnit, TUnit) -> unify_bnds top xs subs
-      | (TBool, TBool) -> unify_bnds top xs subs
-      | (TArray iexp, TArray iexp') -> unify_bnds top ((ICons (iexp', iexp))::xs) subs
-      | (TArrow (t1, t2), TArrow (s1, s2)) -> unify_bnds top ((TCons (s1, t1))::(TCons (t2, s2))::xs) subs
-      | _ -> None
-    end
-
-let rec unify_eq top eqs bnds subs = match eqs with
-  | [] -> unify_bnds top bnds subs
-  | (ICons (i1, i2))::xs ->
-    begin match (normalize i1, normalize i2) with
-      | (IVar i, iexp)
-      | (iexp, IVar i) -> unify_eq top (iSubst i iexp xs) (iSubst i iexp bnds) (iSubst i iexp subs)
-      | (ILit i, ILit j) -> if i = j then unify_eq top xs bnds subs else None
-      | (IPlus (IVar i, y), iexp) | (iexp, IPlus (IVar i, y)) ->
-        let sub = IPlus (IMinus y, iexp) in
-          unify_eq top (iSubst i sub eqs) (iSubst i sub bnds) (iSubst i sub subs)
-      | (IPlus (IMinus (IVar i), y), iexp) | (iexp, IPlus (IMinus (IVar i), y)) ->
-        let sub = IPlus (y, iexp) in
-          unify_eq top (iSubst i sub eqs) (iSubst i sub bnds) (iSubst i sub subs)
-      | _ -> None
-    end
-  | (TCons (t1, t2))::xs ->
-    begin match (t1, t2) with
-      | (TVar i, ty)
-      | (ty, TVar i) -> unify_eq top (tSubst i ty xs) (tSubst i ty bnds) ((TCons (TVar i, ty))::(tSubst i ty subs))
-      | (TUnit, TUnit) -> unify_eq top xs bnds subs
-      | (TBool, TBool) -> unify_eq top xs bnds subs
-      | (TArray iexp, TArray iexp') -> unify_eq top ((ICons (iexp, iexp'))::xs) bnds subs
-      | (TArrow (t1, t2), TArrow (s1, s2)) -> unify_eq top ((TCons (t1, s1))::(TCons (t2, s2))::xs) bnds subs
-      | _ -> None
-    end
-
-let rec applySubs subs tm = match subs with
-  | [] -> tm
-  | (TCons (TVar i, texp))::xs -> applySubs xs (substTyInGExpr tm i (toGType texp))
-  | _ -> failwith "impossible"
-
-let annotate tm =
-  let (top, eqs, bnds, typ) = inferTypes 0 [] tm in
-  let res = unify_eq top eqs bnds [] in
-    match res with
-      | None -> Err "Could not infer types"
-      | Some subs -> Val (applySubs subs tm)
-
-// (Relational) semantics -- Needs to be updated before using
+(* (Relational) semantics -- commented as it's no longer correct *)
 (*
 type env  = list (string * GExpr)
 type heap = list bool
@@ -739,7 +362,7 @@ let rec isVal_lst_append lst1 lst2 = match lst1 with
 type config = GExpr * env * heap
 type valconfig = c:(GExpr * heap){isVal (fst c)}
 
-// (Canonical) relational semantics
+(* (Canonical) relational semantics *)
 type evalR : config -> valconfig -> Type =
   | EvLet :
       #s:string -> #t1:GExpr -> #t2:GExpr -> #env:env -> #st:heap ->

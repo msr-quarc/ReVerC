@@ -285,14 +285,14 @@ and eval_to_bexp (tm, st) interp = match tm with
 // ------------------------------------------------------------- Interpretations
 // Boolean (standard) interpretation
 open Total
-type boolState = int * (Total.map int bool)
+type boolState = int * (Total.t int bool)
 
 val boolInit   : boolState
 val boolAlloc  : boolState -> BoolExp -> Tot (int * boolState)
 val boolAssign : boolState -> int -> BoolExp -> Tot boolState
 val boolEval   : boolState -> state -> int -> Tot bool
 
-let boolInit = (0, const_map false)
+let boolInit = (0, constMap false)
 let boolAlloc (top, st) bexp =
   (top, (top + 1, update st top (evalBexp bexp st)))
 let boolAssign (top, st) l bexp =
@@ -325,14 +325,14 @@ let eval gexp = evalBool (gexp, boolInit)
 
 // Boolean expression interpretation
 // Creates a list of Boolean expressions representing the program
-type BExpState = int * (map int BoolExp)
+type BExpState = int * (Total.t int BoolExp)
 
 val bexpInit   : BExpState
 val bexpAlloc  : BExpState -> BoolExp -> Tot (int * BExpState)
 val bexpAssign : BExpState -> int -> BoolExp -> Tot BExpState
 val bexpEval   : BExpState -> state -> int -> Tot bool
 
-let bexpInit = (0, const_map BFalse)
+let bexpInit = (0, constMap BFalse)
 let bexpAlloc (top, st) bexp =
   (top, (top + 1, update st top (substBexp bexp st)))
 let bexpAssign (top, st) l bexp =
@@ -446,14 +446,14 @@ type circState =
   { top : int;
     ah : AncHeap;
     gates : list Gate;
-    subs : map int int }
+    subs : Total.t int int }
 
 val circInit   : circState
 val circAlloc  : circState -> BoolExp -> Tot (int * circState)
 val circAssign : circState -> int -> BoolExp -> Tot circState
 val circEval   : circState -> state -> int -> Tot bool
 
-let circInit = {top = 0; ah = emptyHeap; gates = []; subs = const_map 0}
+let circInit = {top = 0; ah = emptyHeap; gates = []; subs = constMap 0}
 let circAlloc cs bexp =
   let (ah', res, ancs, circ') = compileBexp_oop cs.ah (substVar bexp cs.subs) in
   let top' = cs.top + 1 in
@@ -504,7 +504,7 @@ let allocTycirc ty cs = match ty with
       Val (ARRAY locs, st')
   | _ -> Err "Invalid parameter type for circuit generation"
 
-val lookup_Lst : st:map int int -> lst:(list GExpr){isVal_lst lst} -> Tot (list int)
+val lookup_Lst : st:Total.t int int -> lst:(list GExpr){isVal_lst lst} -> Tot (list int)
 let rec lookup_Lst st lst = match lst with
   | [] -> []
   | (LOC l)::xs -> (lookup st l)::(lookup_Lst st xs)
@@ -536,7 +536,7 @@ type qubit =
     cval : BoolExp }
 
 val null_q : qubit
-val get_subst : map int qubit -> int -> Tot int
+val get_subst : Total.t int qubit -> int -> Tot int
 val data_q : int -> Tot qubit
 val anc_q  : int -> Tot qubit
 
@@ -549,7 +549,7 @@ type circGCState =
   { top    : int;
     ah     : AncHeap;
     gates  : list Gate;
-    symtab : map int qubit }
+    symtab : Total.t int qubit }
 
 val circGC       : circGCState -> int -> Tot circGCState
 val circGCInit   : circGCState
@@ -569,10 +569,11 @@ let garbageCollect cs q =
     let subq = fun v -> if v = q.id then BXor (q.ival, q.cval) else BVar v in
       { id = q'.id; ival = q'.ival; cval = simplify (substBexp q'.cval subq) }
   in
-  let symtab' = map_mp f cs.symtab in
+  let symtab' = mapVal f cs.symtab in
     { top = cs.top; ah = ah''; gates = cs.gates @ circ; symtab = symtab' }
 
-let circGCInit = { top = 0; ah = emptyHeap; gates = []; subs = const_map nullq; symtab = const_map nullq }
+let circGCInit = { top = 0; ah = emptyHeap; gates = []; subs = constMap nullq;
+symtab = constMap nullq }
 let circGCAlloc cs bexp = 
   let bexp' = simplify (substVar bexp (get_subst cs.symtab)) in
   let (ah', bit) = popMin cs.ah in
@@ -599,7 +600,7 @@ let circGCAssign cs l bexp =
         let subq = fun v -> if v = q.id then BXor (BVar q.id, bexp'') else BVar v in
           { id = b.id; ival = b.ival; cval = simplify (substBexp b.cval subq) }
       in
-      let symtab' = update (map_mp f cs.symtab) l q' in
+      let symtab' = update (mapVal f cs.symtab) l q' in
         {top = cs.top; ah = ah'; gates = cs.gates @ circ'; symtab = update cs.symtab l q' }
     | _                -> // Compile out of place, clean q.id
       let (ah', res, ancs, circ') = compileBexp_oop cs.ah bexp' in
@@ -642,7 +643,7 @@ let allocTycircGC ty cs = match ty with
       Val (ARRAY locs, st')
   | _ -> Err "Invalid parameter type for circuit generation"
 
-val lookup_Lst_gc : map int qubit -> lst:(list GExpr){isVal_lst lst} -> Tot (list int)
+val lookup_Lst_gc : Total.t int qubit -> lst:(list GExpr){isVal_lst lst} -> Tot (list int)
 let rec lookup_Lst_gc symtab lst = match lst with
   | [] -> []
   | (LOC l)::xs -> ((lookup symtab l).id)::(lookup_Lst_gc symtab xs)
@@ -668,7 +669,7 @@ let rec compileGCCirc (gexp, cs) =
 
 
 // Dependence graph interpretation
-type depGraphState = (int * int) * (depGraph * (map address rID))
+type depGraphState = (int * int) * (depGraph * (Total.t address rID))
 
 val depGraphInterp : interpretation depGraphState
 let depGraphInterp fs ((atop, rtop), (nodes, dep)) = match fs with

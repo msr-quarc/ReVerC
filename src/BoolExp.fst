@@ -1,14 +1,17 @@
-﻿module BoolExp
+﻿(** Utilities and compilation for Boolean expressions *)
+module BoolExp
+#set-options "z3_timeout 15"
 
-(* BoolExp - Boolean expressions over false, not, and, xor, and free variables.
-             This module also defines compilation to circuits in three ways:
-             No cleanup of ancillas, cleanup of ancillas after compilation,
-             and intermittent cleanup during compilation. All three are proven
-             correct with respect to the output and the cleanliness of ancillas.
-             Boolean simplifications are also defined here and proven correct *)
+(* Boolean expressions over false, not, and, xor, and free variables.
+   This module also defines compilation to circuits in three ways:
+   No cleanup of ancillas, cleanup of ancillas after compilation,
+   and intermittent cleanup during compilation. All three are proven
+   correct with respect to the output and the cleanliness of ancillas.
+   Boolean simplifications are also defined here and proven correct *)
 
-open Util
+open Set
 open Total
+open Util
 open AncillaHeap
 open Circuit
 
@@ -19,8 +22,38 @@ type BoolExp =
   | BAnd of BoolExp * BoolExp
   | BXor of BoolExp * BoolExp
 
-// Printing
-val prettyPrintBexp : BoolExp -> string
+type compilerResult = AncHeap * int * (list int) * (Circuit)
+
+val prettyPrintBexp : exp:BoolExp -> Tot string (decreases exp)
+
+val occursInBexp : int -> exp:BoolExp -> Tot bool (decreases exp)
+val vars         : BoolExp -> Tot (set int)
+val getVars_acc  : list int -> exp:BoolExp -> Tot (list int) (decreases exp)
+val getVars      : BoolExp -> Tot (list int)
+val max          : int -> int -> Tot int
+val listMax      : (list int) -> Tot int
+val varCount     : BoolExp -> Tot int
+val varMax       : BoolExp -> Tot int
+val gtVars       : int -> BoolExp -> Tot bool
+
+val substBexp    : BoolExp -> Total.t int BoolExp -> Tot BoolExp
+val substVar     : BoolExp -> Total.t int int -> Tot BoolExp
+
+val evalBexp     : BoolExp -> state -> Tot bool
+
+val simplify         : BoolExp -> Tot BoolExp
+val factorAs         : BoolExp -> int -> Tot (option BoolExp)
+val distributeAnds   : BoolExp -> Tot BoolExp
+val undistributeAnds : BoolExp -> Tot BoolExp
+
+val compileBexp            : AncHeap -> int -> exp:BoolExp -> Tot compilerResult (decreases %[exp;0])
+val compileBexp_oop        : AncHeap -> exp:BoolExp -> Tot compilerResult (decreases %[exp;1])
+val compileBexpClean       : AncHeap -> int -> BoolExp -> Tot compilerResult
+val compileBexpClean_oop   : AncHeap -> BoolExp -> Tot compilerResult
+val compileBexpPebbled     : AncHeap -> int -> exp:BoolExp -> Tot compilerResult (decreases %[exp;0])
+val compileBexpPebbled_oop : AncHeap -> exp:BoolExp -> Tot compilerResult (decreases %[exp;1])
+
+(* Printing *)
 let rec prettyPrintBexp bexp = match bexp with
   | BFalse -> "false"
   | BVar i -> Prims.string_of_int i
@@ -34,8 +67,7 @@ let rec prettyPrintBexp bexp = match bexp with
                 (String.strcat " <> "
                 (String.strcat (prettyPrintBexp y) ")")))
 
-// Membership
-val occursInBexp : int -> exp:BoolExp -> Tot bool (decreases exp)
+(* Membership *)
 let rec occursInBexp i exp = match exp with
   | BFalse      -> false
   | BVar n      -> n = i
@@ -43,25 +75,22 @@ let rec occursInBexp i exp = match exp with
   | BXor (x, y) -> occursInBexp i x || occursInBexp i y
   | BNot x      -> occursInBexp i x
 
-val vars : BoolExp -> Tot (set int)
 let vars exp = fun i -> occursInBexp i exp
 
-// Use getVars for computational stuff
-val getVars_acc : list int -> exp:BoolExp -> Tot (list int) (decreases exp)
+(* Use getVars for computational stuff *)
 let rec getVars_acc acc exp = match exp with
   | BFalse   -> []
-  | BVar n   -> if FStar.List.memT n acc then acc else n::acc
+  | BVar n   -> if List.memT n acc then acc else n::acc
   | BAnd (x, y) -> getVars_acc (getVars_acc acc x) y
   | BXor (x, y) -> getVars_acc (getVars_acc acc x) y
   | BNot exp -> getVars_acc acc exp
 
-val getVars : BoolExp -> Tot (list int)
 let getVars exp = getVars_acc [] exp
 
-// Consistency of getVars -- finish this if needed later
+(* Consistency of getVars -- finish this if needed later *)
 (*
 val getVars_acc_eq_vars : l:list int -> exp:BoolExp ->
-  Lemma (forall i. vars exp i <==> FStar.List.mem i (getVars_acc l exp)) (decreases exp)
+  Lemma (forall i. vars exp i <==> List.mem i (getVars_acc l exp)) (decreases exp)
 let rec getVars_acc_eq_vars l exp = match exp with
   | BVar n   -> ()
   | BAnd (x, y)
@@ -69,60 +98,51 @@ let rec getVars_acc_eq_vars l exp = match exp with
   | BNot x   -> getVars_acc_eq_vars l x
 
 val getVars_eq_vars : exp:BoolExp ->
-  Lemma (forall i. vars exp i <==> FStar.List.mem i (getVars exp))
+  Lemma (forall i. vars exp i <==> List.mem i (getVars exp))
 let rec getVars_eq_vars exp = getVars_acc_eq_vars [] exp
 *)
 
-// Maximums, counting -- Replace this with a version defined directly on BoolExp
-val max : int -> int -> Tot int
+(* Maximums, counting -- Replace this with a version defined directly on BoolExp *)
 let max x y = if x > y then x else y
 
-val listMax : (list int) -> Tot int
 let rec listMax lst = match lst with
   | [] -> 0
   | x::xs -> max x (listMax xs)
 
-val varCount : BoolExp -> Tot int
-let varCount exp = FStar.List.lengthT (getVars exp)
+let varCount exp = List.lengthT (getVars exp)
 
-val varMax : BoolExp -> Tot int
 let varMax exp = listMax (getVars exp)
 
-val gtVars : int -> BoolExp -> Tot bool
 let rec gtVars i bexp = match bexp with
   | BFalse -> false
   | BVar j -> i > j
   | BNot x -> gtVars i x
   | BXor (x, y) | BAnd (x, y) -> gtVars i x && gtVars i y
 
-// Substitutions
-val substBexp : BoolExp -> Total.map int BoolExp -> Tot BoolExp
+(* Substitutions *)
 let rec substBexp bexp sub = match bexp with
   | BFalse   -> BFalse
-  | BVar i   -> sub i
+  | BVar i   -> lookup sub i
   | BNot x   -> BNot (substBexp x sub)
   | BAnd (x, y) -> BAnd ((substBexp x sub), (substBexp y sub))
   | BXor (x, y) -> BXor ((substBexp x sub), (substBexp y sub))
 
-val substVar : BoolExp -> Total.map int int -> Tot BoolExp
 let rec substVar bexp sub = match bexp with
   | BFalse   -> BFalse
-  | BVar i   -> BVar (sub i)
+  | BVar i   -> BVar (lookup sub i)
   | BNot x   -> BNot (substVar x sub)
   | BAnd (x, y) -> BAnd ((substVar x sub), (substVar y sub))
   | BXor (x, y) -> BXor ((substVar x sub), (substVar y sub))
 
-// Evaluation
-val evalBexp : bexp:BoolExp -> state -> Tot bool
+(* Evaluation *)
 let rec evalBexp bexp st = match bexp with
   | BFalse   -> false
-  | BVar i   -> st i
+  | BVar i   -> lookup st i
   | BNot x   -> not (evalBexp x st)
   | BAnd (x, y) -> (evalBexp x st) && (evalBexp y st)
   | BXor (x, y) -> (evalBexp x st) <> (evalBexp y st)
 
-// Optimizations
-val simplify : exp:BoolExp -> Tot BoolExp
+(* Optimizations *)
 let rec simplify exp = match exp with
   | BFalse -> BFalse
   | BVar x -> exp
@@ -146,7 +166,6 @@ let rec simplify exp = match exp with
       | _ -> BNot x'
     end
 
-val factorAs : exp:BoolExp -> targ:int -> Tot (option BoolExp)
 let rec factorAs exp targ = match exp with
   | BFalse -> None
   | BVar i -> if i = targ then Some BFalse else None
@@ -167,7 +186,6 @@ let rec factorAs exp targ = match exp with
         | Some y' -> Some (BXor (x, y'))
     ) else None
 
-val distributeAnds : exp:BoolExp -> Tot BoolExp
 let rec distributeAnds exp = match exp with
   | BFalse -> BFalse
   | BVar v -> BVar v
@@ -182,7 +200,6 @@ let rec distributeAnds exp = match exp with
     end
   | BXor (x, y) -> BXor (distributeAnds x, distributeAnds y)
 
-val undistributeAnds : exp:BoolExp -> Tot BoolExp
 let rec undistributeAnds exp = match exp with
   | BFalse -> BFalse
   | BVar v -> BVar v
@@ -199,11 +216,7 @@ let rec undistributeAnds exp = match exp with
       | (x', y') -> BXor (x', y')
     end
 
-// Compilation stuff
-type compilerResult = AncHeap * int * (list int) * (list Gate)
-
-val compileBexp : AncHeap -> int -> exp:BoolExp -> Tot compilerResult (decreases %[exp;0])
-val compileBexp_oop : AncHeap -> exp:BoolExp -> Tot compilerResult (decreases %[exp;1])
+(* Compilation *)
 let rec compileBexp ah targ exp = match exp with
   | BFalse   -> (ah, targ, [], [])
   | BVar v   -> (ah, targ, [], [RCNOT (v, targ)])
@@ -225,13 +238,11 @@ and compileBexp_oop ah exp = match exp with
     let (ah'', res, anc, gate) = compileBexp ah' targ exp in
       (ah'', res, targ::anc, gate)
 
-val compileBexpClean : AncHeap -> int -> BoolExp -> Tot compilerResult
-val compileBexpClean_oop : AncHeap -> BoolExp -> Tot compilerResult
 let compileBexpClean ah targ exp =
   let (ah', res, anc, circ) = compileBexp ah targ exp in
   let cleanup = uncompute circ res in
-  let ah'' = FStar.List.fold_leftT insert ah' anc in
-    (ah'', res, [], circ@(FStar.List.rev cleanup))
+  let ah'' = List.fold_leftT insert ah' anc in
+    (ah'', res, [], circ@(List.rev cleanup))
 let compileBexpClean_oop ah exp = match exp with
   | BVar v -> (ah, v, [], [])
   | _ ->
@@ -239,8 +250,6 @@ let compileBexpClean_oop ah exp = match exp with
     let (ah'', res, anc, gate) = compileBexpClean ah' targ exp in
       (ah'', res, targ::anc, gate)
 
-val compileBexpPebbled : AncHeap -> int -> exp:BoolExp -> Tot compilerResult (decreases %[exp;0])
-val compileBexpPebbled_oop : AncHeap -> exp:BoolExp -> Tot compilerResult (decreases %[exp;1])
 let rec compileBexpPebbled ah targ exp = match exp with
   | BFalse   -> (ah, targ, [], [])
   | BVar v   -> (ah, targ, [], [RCNOT (v, targ)])
@@ -248,8 +257,8 @@ let rec compileBexpPebbled ah targ exp = match exp with
     let (ah', xres, xanc, xgate) = compileBexpPebbled_oop ah x in
     let (ah'', yres, yanc, ygate) = compileBexpPebbled_oop ah' y in
     let cleanup = uncompute (xgate @ ygate) targ in
-    let ah''' = FStar.List.fold_leftT insert  ah'' (xanc@yanc) in
-      (ah''', targ, [], (xgate @ ygate) @ [RTOFF (xres, yres, targ)] @ (FStar.List.rev cleanup))
+    let ah''' = List.fold_leftT insert  ah'' (xanc@yanc) in
+      (ah''', targ, [], (xgate @ ygate) @ [RTOFF (xres, yres, targ)] @ (List.rev cleanup))
   | BXor (x, y) ->
     let (ah', xres, xanc, xgate) = compileBexpPebbled ah targ x in
     let (ah'', yres, yanc, ygate) = compileBexpPebbled ah' targ y in
@@ -264,8 +273,9 @@ and compileBexpPebbled_oop ah exp = match exp with
     let (ah'', res, anc, gate) = compileBexpPebbled ah' targ exp in
       (ah'', res, targ::anc, gate)
 
-// ---------------------------------------------------------- BoolExp properties
-// Shortcuts
+(** Verification utilities *)
+
+(* Shortcuts for convenience *)
 let first (x, _, _, _) = x
 let second (_, x, _, _) = x
 let third (_, _, x, _) = x
@@ -273,16 +283,16 @@ let last (_, _, _, x) = x
 
 let compileBexpEval ah targ exp st =
   let (ah', res, anc, circ) = compileBexp ah targ exp in
-    (evalCirc circ st) res
+    lookup (evalCirc circ st) res
 let compileBexpEval_oop ah exp st =
   let (ah', res, anc, circ) = compileBexp_oop ah exp in
-    (evalCirc circ st) res
+    lookup (evalCirc circ st) res
 let compileBexpCleanEval ah targ exp st =
   let (ah', res, anc, circ) = compileBexpClean ah targ exp in
-    (evalCirc circ st) res
+    lookup (evalCirc circ st) res
 let compileBexpCleanEval_oop ah exp st =
   let (ah', res, anc, circ) = compileBexpClean_oop ah exp in
-    (evalCirc circ st) res
+    lookup (evalCirc circ st) res
 let compileBexpCleanEvalSt ah targ exp st =
   let (ah', res, anc, circ) = compileBexpClean ah targ exp in
     evalCirc circ st
@@ -290,7 +300,7 @@ let compileBexpCleanEvalSt_oop ah exp st =
   let (ah', res, anc, circ) = compileBexpClean_oop ah exp in
     evalCirc circ st
 
-// ------------------------------ Simplify is semantics preserving: DONE
+(* Correctness of optimizations *)
 val simplify_preserves_semantics : exp:BoolExp ->
   Lemma (forall (st:state). (evalBexp exp st) = (evalBexp (simplify exp) st))
 let rec simplify_preserves_semantics exp = match exp with
@@ -303,7 +313,7 @@ let rec simplify_preserves_semantics exp = match exp with
 
 val factorAs_correct : exp:BoolExp -> targ:int -> st:state ->
   Lemma (forall exp'. factorAs exp targ = Some exp' ==>
-          not (occursInBexp targ exp') /\ evalBexp exp st = st targ <> evalBexp exp' st)
+          not (occursInBexp targ exp') /\ evalBexp exp st = (lookup st targ) <> evalBexp exp' st)
 let rec factorAs_correct exp targ st = match exp with
   | BFalse -> ()
   | BVar x -> ()
@@ -313,8 +323,9 @@ let rec factorAs_correct exp targ st = match exp with
     factorAs_correct x targ st;
     factorAs_correct y targ st
 
+(* Stronger version that used to go through: ins targ (vars exp') = (vars exp) *)
 val factorAs_vars : exp:BoolExp -> targ:int ->
-  Lemma (forall exp'. factorAs exp targ = Some exp' ==> subset (vars exp') (vars exp)) //ins targ (vars exp') = (vars exp))
+  Lemma (forall exp'. factorAs exp targ = Some exp' ==> subset (vars exp') (vars exp))
 let rec factorAs_vars exp targ = match exp with
   | BFalse -> ()
   | BVar x -> ()
@@ -324,6 +335,7 @@ let rec factorAs_vars exp targ = match exp with
     factorAs_vars x targ;
     factorAs_vars y targ
 
+(* Super low level proofs about Boolean algebra *)
 val idempotentAnd : x:BoolExp ->
   Lemma (forall st. evalBexp x st = evalBexp (BAnd (x, x)) st)
 val commutativityAnd : x:BoolExp -> y:BoolExp ->
@@ -396,36 +408,35 @@ let rec undistribute_preserves_semantics exp = match exp with
     end
 
 
-// ------------------------------ Compile produces the right output
-// What we want to say is that in any context in the larger compiler,
-// the output of the subcircuit compiled for the boolean expression is
-// semantically equivalent to the boolean expression. Practically speaking
-// this means we need to quantify over all calling contexts -- that is, ancilla
-// heaps and output bit. In the case of the output bit b, as far as I can discern
-// the compiler is really supposed to compute b <> bexp, so that's what we'll
-// verify. Fortunately is this is an incorrect assumption, it should show when
-// we try to verify the entire compilation process.
-//
-// The proof will hinge on the fact that we're using the ancilla properly: i.e.
-// when we grab something off the ancilla heap, it is assured to be zero. This
-// is the zeroHeap property.
+(* ------------------------------ Compile produces the right output
+   What we want to say is that in any context in the larger compiler,
+   the output of the subcircuit compiled for the boolean expression is
+   semantically equivalent to the boolean expression. Practically speaking
+   this means we need to quantify over all calling contexts -- that is, ancilla
+   heaps and output bit. In the case of the output bit b, as far as I can discern
+   the compiler is really supposed to compute b <> bexp, so that's what we'll
+   verify. Fortunately is this is an incorrect assumption, it should show when
+   we try to verify the entire compilation process.
 
-// It looks like the zero heap property isn't strong enough: if a circuit
-// modifies a qubit that's on the heap but initially zero, executing the circuit
-// can break the zero heap property. We have two choices: make states partial,
-// so the qubits the state is defined on are disjoint from the heap, or prove
-// that given a heap disjoint from the variables in exp, when we compile exp
-// the qubits are disjoint from the resulting heap. Let's try the second idea first.
+   The proof will hinge on the fact that we're using the ancilla properly: i.e.
+   when we grab something off the ancilla heap, it is assured to be zero. This
+   is the zeroHeap property.
+
+   It looks like the zero heap property isn't strong enough: if a circuit
+   modifies a qubit that's on the heap but initially zero, executing the circuit
+   can break the zero heap property. We have two choices: make states partial,
+   so the qubits the state is defined on are disjoint from the heap, or prove
+   that given a heap disjoint from the variables in exp, when we compile exp
+   the qubits are disjoint from the resulting heap. Let's try the second idea first. *)
 
 type partition = #a:Type -> s:set a -> s':set a -> s'':set a ->
   (disjoint s s' /\ disjoint s s'' /\ disjoint s' s'')
 
-// -------------------------------------------------------------------------DONE
-// Compile is strictly decreasing on the heap
-// This is a nice little proof because it's a very clean, simple proposition
-// with no precondition. The proof essentially boils down to transitivity of
-// the subset relation, but it's enlightening to see how to apply such a basic
-// proof method "by hand" in F*
+(* Compile is strictly decreasing on the heap
+   This is a nice little proof because it's a very clean, simple proposition
+   with no precondition. The proof essentially boils down to transitivity of
+   the subset relation, but it's enlightening to see how to apply such a basic
+   proof method "by hand" in F* *)
 
 val compile_decreases_heap : ah:AncHeap -> targ:int -> exp:BoolExp ->
   Lemma (subset (elts (first (compileBexp ah targ exp))) (elts ah)) (decreases %[exp;0])
@@ -487,8 +498,7 @@ and compileClean_decreases_heap_oop ah exp = match exp with
       compileClean_decreases_heap ah' targ exp;
       subset_trans (elts ah'') (elts ah') (elts ah)
 
-// -------------------------------------------------------------------------DONE
-// Lemma(s) about the output bit
+(* Lemma(s) about the output bit *)
 val compile_output : ah:AncHeap -> targ:int -> x:BoolExp ->
   Lemma (second (compileBexp ah targ x) = targ)
 let compile_output ah targ x = ()
@@ -504,22 +514,21 @@ let compile_output_oop ah x = match x with
       pop_proper_subset ah;
       compile_decreases_heap ah' targ x
 
-// -------------------------------------------------------------------------DONE
-// Compile maintains heap disjointness -- that is, if the heap is disjoint
-// from the variables in the boolean expression, then the heap will be disjoint
-// with the qubits used in the circuit. We need this to prove later that
-// evaluating sub-circuits doesn't destroy the integrity of the heap
+(* Compile maintains heap disjointness -- that is, if the heap is disjoint
+   from the variables in the boolean expression, then the heap will be disjoint
+   with the qubits used in the circuit. We need this to prove later that
+   evaluating sub-circuits doesn't destroy the integrity of the heap
 
-// If we make every potential heap allocation a member of the heap, then
-// this proof will only require showing that popMin, and therefore compileBexp is
-// strictly decreasing in the subset order.
+   If we make every potential heap allocation a member of the heap, then
+   this proof will only require showing that popMin, and therefore compileBexp is
+   strictly decreasing in the subset order. *)
 
-// Needed since we can't have local bindings in  types
+(* Needed since we can't have local bindings in types *)
 type postCond (c:compilerResult) =
   disjoint (elts (first c)) (uses (last c)) /\
   not (mem (second c) (first c))
 
-// These proofs are getting confusing enough that they need comments
+(* These proofs are getting big enough that they need comments *)
 val compile_partition : ah:AncHeap -> targ:int -> x:BoolExp ->
   Lemma (requires (disjoint (elts ah) (vars x) /\ not (mem targ ah)))
         (ensures  (postCond (compileBexp ah targ x))) (decreases %[x;0])
@@ -570,11 +579,10 @@ and compile_partition_oop ah x = match x with
       pop_proper_subset ah;
       disjoint_subset (elts ah') (elts ah) (vars x);
       compile_partition ah' targ x
-
-//--------------------------------------------------------------------------DONE
-// Details which bits the compiled circuit may modify. In particular, it is
-// gauranteed that the resulting circuit does not modify any bit outside of the
-// target bit and the ancilla heap.
+(*
+(* Details which bits the compiled circuit may modify. In particular, it is
+   gauranteed that the resulting circuit does not modify any bit outside of the
+   target bit and the ancilla heap. *)
 val compile_mods : ah:AncHeap -> targ:int -> x:BoolExp ->
   Lemma (subset (mods (last (compileBexp ah targ x))) (ins targ (elts ah)))
   (decreases %[x;0])
@@ -622,8 +630,7 @@ and compile_mods_oop ah x = match x with
       compile_mods ah' targ x;
       subset_trans (mods circ) (ins targ (elts ah')) (elts ah)
 
-//--------------------------------------------------------------------------DONE
-// Finally compiler correctness
+(* Compiler correctness *)
 val eval_state_swap : x:BoolExp -> st:state -> st':state ->
   Lemma (requires (agree_on st st' (vars x)))
         (ensures  (evalBexp x st = evalBexp x st'))
@@ -634,21 +641,21 @@ let rec eval_state_swap x st st' = match x with
   | BAnd (x, y) -> eval_state_swap x st st'; eval_state_swap y st st'
   | BXor (x, y) -> eval_state_swap x st st'; eval_state_swap y st st'
 
-val zeroHeap_st_impl : st:state -> ah:AncHeap -> gates:(list Gate) ->
+val zeroHeap_st_impl : st:state -> ah:AncHeap -> gates:(Circuit) ->
   Lemma (requires (zeroHeap st ah /\ disjoint (elts ah) (uses gates)))
         (ensures  (zeroHeap (evalCirc gates st) ah))
 let zeroHeap_st_impl st ah gates = ref_imp_use gates; eval_mod st gates
 
-// English-language preconditions: everything on the heap is in the 0 state, and
-// the heap, expression, and target bit are all mutually disjoint -- that is,
-// nothing on the heap is mentioned in either the target bit or the expression,
-// and the target bit is not in the expression
+(* English-language preconditions: everything on the heap is in the 0 state, and
+   the heap, expression, and target bit are all mutually disjoint -- that is,
+   nothing on the heap is mentioned in either the target bit or the expression,
+   and the target bit is not in the expression *)
 
 val compile_bexp_correct : ah:AncHeap -> targ:int -> exp:BoolExp -> st:state ->
   Lemma (requires (zeroHeap st ah /\ disjoint (elts ah) (vars exp) /\
-                   not (Util.mem targ (elts ah)) /\
-                   not (Util.mem targ (vars exp))))
-        (ensures  (compileBexpEval ah targ exp st = st targ <> evalBexp exp st))
+                   not (Set.mem targ (elts ah)) /\
+                   not (Set.mem targ (vars exp))))
+        (ensures  (compileBexpEval ah targ exp st = (lookup st targ) <> evalBexp exp st))
  (decreases %[exp;0])
 val compile_bexp_correct_oop : ah:AncHeap -> exp:BoolExp -> st:state ->
   Lemma (requires (zeroHeap st ah /\ disjoint (elts ah) (vars exp)))
@@ -718,16 +725,15 @@ and compile_bexp_correct_oop ah exp st = match exp with
       pop_elt ah;
       compile_bexp_correct ah' targ exp st
 
-//--------------------------------------------------------------------------DONE
-// Precondition for proving correctness of cleanup. CompileBexp produces a
-// well-formed circuit, the ancillas all come from the initial ancilla heap,
-// and the result qubit is not used as a control anywhere. These should
-// possibly be separate lemmas...
+(* Precondition for proving correctness of cleanup. CompileBexp produces a
+   well-formed circuit, the ancillas all come from the initial ancilla heap,
+   and the result qubit is not used as a control anywhere. These should
+   possibly be separate lemmas... *)
 
 val compileBexp_wf : ah:AncHeap -> targ:int -> exp:BoolExp ->
   Lemma (requires (disjoint (elts ah) (vars exp) /\
-                   not (Util.mem targ (elts ah)) /\
-                   not (Util.mem targ (vars exp))))
+                   not (Set.mem targ (elts ah)) /\
+                   not (Set.mem targ (vars exp))))
         (ensures  (wfCirc (last (compileBexp ah targ exp))))
   (decreases %[exp;0])
 val compileBexp_wf_oop : ah:AncHeap -> exp:BoolExp ->
@@ -779,14 +785,14 @@ let rec compile_anc ah targ exp = match exp with
       compile_anc ah targ x;
       compile_decreases_heap ah targ x;
       compile_anc ah' targ y;
-      FStar.ListProperties.append_mem_forall xanc yanc
+      ListProperties.append_mem_forall xanc yanc
   | BAnd (x, y) ->
     let (ah', xres, xanc, xgate) = compileBexp_oop ah x in
     let (ah'', yres, yanc, ygate) = compileBexp_oop ah' y in
       compile_anc_oop ah x;
       compile_decreases_heap_oop ah x;
       compile_anc_oop ah' y;
-      FStar.ListProperties.append_mem_forall xanc yanc
+      ListProperties.append_mem_forall xanc yanc
 and compile_anc_oop ah exp = match exp with
   | BVar v -> ()
   | _ ->
@@ -823,9 +829,8 @@ and compile_ctrls_oop ah x = match x with
       pop_subset ah;
       compile_ctrls ah' targ x
 
-//--------------------------------------------------------------------------DONE
-// Compiling with cleanup produces same result as the regular compile and
-// a zero heap.
+(* Compiling with cleanup produces same result as the regular compile and
+   a zero heap. *)
 
 
 type clean_heap_cond (ah:AncHeap) (targ:int) (exp:BoolExp) (st:state) =
@@ -837,16 +842,16 @@ type clean_corr_cond (ah:AncHeap) (targ:int) (exp:BoolExp) (st:state) =
 
 val compile_with_cleanup : ah:AncHeap -> targ:int -> exp:BoolExp -> st:state ->
   Lemma (requires (zeroHeap st ah /\ disjoint (elts ah) (vars exp) /\
-                   not (Util.mem targ (elts ah)) /\
-                   not (Util.mem targ (vars exp))))
+                   not (Set.mem targ (elts ah)) /\
+                   not (Set.mem targ (vars exp))))
         (ensures  (clean_heap_cond ah targ exp st /\
                    clean_corr_cond ah targ exp st))
 let compile_with_cleanup ah targ exp st =
   let (ah', res, anc, circ) = compileBexp ah targ exp in
   let cleanup = uncompute circ res in
-  let ah'' = FStar.List.fold_leftT insert ah' anc in
+  let ah'' = List.fold_leftT insert ah' anc in
   let st' = evalCirc circ st in
-  let st'' = evalCirc (circ@(FStar.List.rev cleanup)) st in
+  let st'' = evalCirc (circ@(List.rev cleanup)) st in
   let heap_cond =
     let lem1 = // zeroHeap st' ah'
       compile_decreases_heap ah targ exp;
@@ -857,7 +862,7 @@ let compile_with_cleanup ah targ exp st =
     let lem1 = // zeroHeap st'' ah'
       compileBexp_wf ah targ exp;
       uncompute_uses_subset circ res;
-      zeroHeap_st_impl st' ah' (FStar.List.rev cleanup)
+      zeroHeap_st_impl st' ah' (List.rev cleanup)
     in
       compile_ctrls ah targ exp;
       uncompute_mixed_inverse circ res st;
@@ -866,7 +871,7 @@ let compile_with_cleanup ah targ exp st =
   in
   let corr_cond =
     uncompute_targ circ res;
-    eval_mod st' (FStar.List.rev cleanup)
+    eval_mod st' (List.rev cleanup)
   in
     ()
 

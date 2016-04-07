@@ -29,6 +29,8 @@ let rec foldM f a lst = match lst with
   | x::xs -> bind (f a x) (fun res -> foldM f res xs)
 
 (** Auxiliary list operations *)
+val hdT       : #a:Type -> l:(list a){List.lengthT l > 0} -> Tot a
+val tlT       : #a:Type -> l:(list a){List.lengthT l > 0} -> Tot (list a)
 val mems      : #a:Type -> list a -> Tot (set a)
 val nthT      : l:list 'a -> i:int{i >= 0 && i < List.lengthT l} -> Tot 'a
 val forSomeT  : ('a -> Tot bool) -> list 'a -> Tot bool
@@ -38,6 +40,9 @@ val rotateRec : acc:list 'a -> l:list 'a -> i:nat{i < List.length l} -> Tot (lis
 val rotate    : l:list 'a -> i:nat{i < List.length l} -> Tot (list 'a) (decreases i)
 val slice     : l:list 'a -> i:nat -> j:nat{i <= j && j < List.length l} -> Tot (list 'a)
 val ofInt     : i:nat -> j:int -> Tot (list bool) (decreases j)
+
+let hdT l = match l with | x::xs -> x
+let tlT l = match l with | x::xs -> xs
 
 let mems l = fun i -> List.mem i l
 

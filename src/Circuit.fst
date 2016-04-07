@@ -113,7 +113,7 @@ val apply_mod : st:state -> x:Gate ->
 let apply_mod st x = ()
 
 val eval_mod : st:state -> gates:Circuit ->
-  Lemma (agree_on st (evalCirc gates st) (complement (mods gates)))
+  Lemma (agree_on st (evalCirc gates st) (complement (mods gates))) (decreases gates)
 let rec eval_mod st gates = match gates with
   | [] -> ()
   | x::xs -> apply_mod st x; eval_mod (applyGate st x) xs
@@ -221,18 +221,19 @@ let evalCirc_append_rev x y st = ListProperties.rev_append x y
 
 val rev_gate : gate:Gate -> st:state ->
   Lemma (requires (wfGate gate))
-        (ensures  (applyGate (applyGate st gate) gate = st))
+        (ensures  (Equal (applyGate (applyGate st gate) gate) st))
 let rev_gate gate st = lemma_map_equal_intro (applyGate (applyGate st gate) gate) st
 
 val rev_inverse : circ:Circuit -> st:state ->
   Lemma (requires (wfCirc circ))
-        (ensures  (evalCirc (circ@(List.rev circ)) st = st))
+        (ensures  (Equal (evalCirc (circ@(List.rev circ)) st) st))
 let rec rev_inverse circ st = match circ with
   | [] -> ()
   | x::xs ->
     rev_inverse xs (applyGate st x);
     evalCirc_append_rev [x] xs (evalCirc xs (applyGate st x));
-    rev_gate x st
+    rev_gate x st;
+    lemma_map_equal_intro (evalCirc (circ@(List.rev circ)) st) st
 
 val applyGate_state_swap : x:Gate -> st:state -> st':state -> dom:set int ->
   Lemma (requires (subset (ctrls [x]) dom /\ agree_on st st' dom))
@@ -320,3 +321,5 @@ let uncompute_mixed_inverse circ targ st =
                       (evalCirc (uncompute circ targ) st)
                       (complement (singleton targ));
   rev_inverse (uncompute circ targ) st
+
+//let tmp = assert(forall st x. Equal (applyGate st x) st)
