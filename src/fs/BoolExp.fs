@@ -1,7 +1,15 @@
-﻿module BoolExp
+﻿(** Utilities and compilation for Boolean expressions *)
+module BoolExp
 
+(* Boolean expressions over false, not, and, xor, and free variables.
+   This module also defines compilation to circuits in three ways:
+   No cleanup of ancillas, cleanup of ancillas after compilation,
+   and intermittent cleanup during compilation. All three are proven
+   correct with respect to the output and the cleanliness of ancillas.
+   Boolean simplifications are also defined here and proven correct *)
+
+open Total
 open Util
-open Maps.Total
 open AncillaHeap
 open Circuit
 
@@ -12,17 +20,17 @@ type BoolExp =
   | BAnd of BoolExp * BoolExp
   | BXor of BoolExp * BoolExp
 
-// Printing
-//val prettyPrintBexp : BoolExp -> string
+type compilerResult = AncHeap * int * (list<int>) * (Circuit)
+
+(* Printing *)
 let rec prettyPrintBexp bexp = match bexp with
   | BFalse -> "false"
-  | BVar i -> IO.string_of_int i
-  | BNot x -> "~" ^ (prettyPrintBexp x)
-  | BAnd (x, y) -> "(" ^ (prettyPrintBexp x) ^ " && " ^ (prettyPrintBexp y) ^ ")"
-  | BXor (x, y) -> "(" ^ (prettyPrintBexp x) ^ " <> " ^ (prettyPrintBexp y) ^ ")"
+  | BVar i -> Prims.string_of_int i
+  | BNot x -> FStar.String.strcat "~" (prettyPrintBexp x)
+  | BAnd (x, y) -> FStar.String.strcat "(" (FStar.String.strcat (prettyPrintBexp x) (FStar.String.strcat " && " (FStar.String.strcat (prettyPrintBexp y) ")")))
+  | BXor (x, y) -> FStar.String.strcat "(" (FStar.String.strcat (prettyPrintBexp x) (FStar.String.strcat " <> " (FStar.String.strcat (prettyPrintBexp y) ")")))
 
-// Membership
-//val occursInBexp : int -> exp:BoolExp -> Tot bool (decreases exp)
+(* Membership *)
 let rec occursInBexp i exp = match exp with
   | BFalse      -> false
   | BVar n      -> n = i
@@ -30,68 +38,58 @@ let rec occursInBexp i exp = match exp with
   | BXor (x, y) -> occursInBexp i x || occursInBexp i y
   | BNot x      -> occursInBexp i x
 
-//val vars : BoolExp -> Tot (set int)
-let vars exp = fun i -> occursInBexp i exp
-
-// Use getVars for computational stuff
-//val getVars_acc : list int -> exp:BoolExp -> Tot (list int) (decreases exp)
+(* Use getVars for computational stuff *)
 let rec getVars_acc acc exp = match exp with
-  | BFalse   -> []
-  | BVar n   -> if listmem n acc then acc else n::acc
+  | BFalse   -> acc
+  | BVar n   -> Set.add n acc
   | BAnd (x, y) -> getVars_acc (getVars_acc acc x) y
   | BXor (x, y) -> getVars_acc (getVars_acc acc x) y
   | BNot exp -> getVars_acc acc exp
 
-//val getVars : BoolExp -> Tot (list int)
-let getVars exp = getVars_acc [] exp
+let getVars exp = getVars_acc Set.empty exp
+let vars = getVars
 
-// Maximums, counting -- Replace this with a version defined directly on BoolExp
-//val listMax : (list int) -> Tot int
+(* Maximums, counting -- Replace this with a version defined directly on BoolExp *)
+let max x y = if x > y then x else y
+
 let rec listMax lst = match lst with
   | [] -> 0
   | x::xs -> max x (listMax xs)
 
-//val varCount : BoolExp -> Tot int
-let varCount exp = List.length (getVars exp)
+let varCount exp = Set.count (getVars exp)
 
-//val varMax : BoolExp -> Tot int
-let varMax exp = listMax (getVars exp)
+let varMax exp = listMax (Set.toList (getVars exp))
 
-//val gtVars : int -> BoolExp -> Tot bool
 let rec gtVars i bexp = match bexp with
   | BFalse -> false
   | BVar j -> i > j
   | BNot x -> gtVars i x
   | BXor (x, y) | BAnd (x, y) -> gtVars i x && gtVars i y
 
-// Substitutions
-//val substBexp : BoolExp -> Total.map int BoolExp -> Tot BoolExp
+(* Substitutions *)
 let rec substBexp bexp sub = match bexp with
   | BFalse   -> BFalse
-  | BVar i   -> sub i
+  | BVar i   -> lookup sub i
   | BNot x   -> BNot (substBexp x sub)
   | BAnd (x, y) -> BAnd ((substBexp x sub), (substBexp y sub))
   | BXor (x, y) -> BXor ((substBexp x sub), (substBexp y sub))
 
-//val substVar : BoolExp -> Total.map int int -> Tot BoolExp
 let rec substVar bexp sub = match bexp with
   | BFalse   -> BFalse
-  | BVar i   -> BVar (sub i)
+  | BVar i   -> BVar (lookup sub i)
   | BNot x   -> BNot (substVar x sub)
   | BAnd (x, y) -> BAnd ((substVar x sub), (substVar y sub))
   | BXor (x, y) -> BXor ((substVar x sub), (substVar y sub))
 
-// Evaluation
-//val evalBexp : bexp:BoolExp -> state -> Tot bool
+(* Evaluation *)
 let rec evalBexp bexp st = match bexp with
   | BFalse   -> false
-  | BVar i   -> st i
+  | BVar i   -> lookup st i
   | BNot x   -> not (evalBexp x st)
   | BAnd (x, y) -> (evalBexp x st) && (evalBexp y st)
   | BXor (x, y) -> (evalBexp x st) <> (evalBexp y st)
 
-// Optimizations
-//val simplify : exp:BoolExp -> Tot BoolExp
+(* Optimizations *)
 let rec simplify exp = match exp with
   | BFalse -> BFalse
   | BVar x -> exp
@@ -125,7 +123,6 @@ let rec simplify exp = match exp with
       | _ -> BNot x'
     end
 
-//val factorAs : exp:BoolExp -> targ:int -> Tot (option BoolExp)
 let rec factorAs exp targ = match exp with
   | BFalse -> None
   | BVar i -> if i = targ then Some BFalse else None
@@ -146,7 +143,6 @@ let rec factorAs exp targ = match exp with
         | Some y' -> Some (BXor (x, y'))
     ) else None
 
-//val distributeAnds : exp:BoolExp -> Tot BoolExp
 let rec distributeAnds exp = match exp with
   | BFalse -> BFalse
   | BVar v -> BVar v
@@ -161,7 +157,6 @@ let rec distributeAnds exp = match exp with
     end
   | BXor (x, y) -> BXor (distributeAnds x, distributeAnds y)
 
-//val undistributeAnds : exp:BoolExp -> Tot BoolExp
 let rec undistributeAnds exp = match exp with
   | BFalse -> BFalse
   | BVar v -> BVar v
@@ -178,11 +173,7 @@ let rec undistributeAnds exp = match exp with
       | (x', y') -> BXor (x', y')
     end
 
-// Compilation stuff
-type compilerResult = AncHeap * int * (list<int>) * (list<Gate>)
-
-//val compileBexp : AncHeap -> int -> exp:BoolExp -> Tot compilerResult (decreases %[exp;0])
-//val compileBexp_oop : AncHeap -> exp:BoolExp -> Tot compilerResult (decreases %[exp;1])
+(* Compilation *)
 let rec compileBexp ah targ exp = match exp with
   | BFalse   -> (ah, targ, [], [])
   | BVar v   -> (ah, targ, [], [RCNOT (v, targ)])
@@ -204,13 +195,11 @@ and compileBexp_oop ah exp = match exp with
     let (ah'', res, anc, gate) = compileBexp ah' targ exp in
       (ah'', res, targ::anc, gate)
 
-//val compileBexpClean : AncHeap -> int -> BoolExp -> Tot compilerResult
-//val compileBexpClean_oop : AncHeap -> BoolExp -> Tot compilerResult
 let compileBexpClean ah targ exp =
   let (ah', res, anc, circ) = compileBexp ah targ exp in
   let cleanup = uncompute circ res in
-  let ah'' = List.fold insert ah' anc in
-    (ah'', res, [], circ@(List.rev cleanup))
+  let ah'' = FStar.List.fold_left insert ah' anc in
+    (ah'', res, [], circ@(FStar.List.rev cleanup))
 let compileBexpClean_oop ah exp = match exp with
   | BVar v -> (ah, v, [], [])
   | _ ->
@@ -218,8 +207,6 @@ let compileBexpClean_oop ah exp = match exp with
     let (ah'', res, anc, gate) = compileBexpClean ah' targ exp in
       (ah'', res, targ::anc, gate)
 
-//val compileBexpPebbled : AncHeap -> int -> exp:BoolExp -> Tot compilerResult (decreases %[exp;0])
-//val compileBexpPebbled_oop : AncHeap -> exp:BoolExp -> Tot compilerResult (decreases %[exp;1])
 let rec compileBexpPebbled ah targ exp = match exp with
   | BFalse   -> (ah, targ, [], [])
   | BVar v   -> (ah, targ, [], [RCNOT (v, targ)])
@@ -227,8 +214,8 @@ let rec compileBexpPebbled ah targ exp = match exp with
     let (ah', xres, xanc, xgate) = compileBexpPebbled_oop ah x in
     let (ah'', yres, yanc, ygate) = compileBexpPebbled_oop ah' y in
     let cleanup = uncompute (xgate @ ygate) targ in
-    let ah''' = List.fold insert  ah'' (xanc@yanc) in
-      (ah''', targ, [], (xgate @ ygate) @ [RTOFF (xres, yres, targ)] @ (List.rev cleanup))
+    let ah''' = FStar.List.fold_left insert  ah'' (xanc@yanc) in
+      (ah''', targ, [], (xgate @ ygate) @ [RTOFF (xres, yres, targ)] @ (FStar.List.rev cleanup))
   | BXor (x, y) ->
     let (ah', xres, xanc, xgate) = compileBexpPebbled ah targ x in
     let (ah'', yres, yanc, ygate) = compileBexpPebbled ah' targ y in

@@ -496,12 +496,13 @@ let eval man gexp =
             | SET_VAR (x, t) -> maybe {
                 let! (v, _, st') = eval_rec (t, env, st)
                 return (Unit, env, update st' x 
-                match (lookup env x, v) with
+                begin match (lookup env x, v) with
                     | (Some (Bit l1), Bit l2) ->
                         let! _ = lookup st' l1 in
                         let! b = lookup st' l2 in
                             return (Unit, env, update st' l1 b)
                     | _ -> ignore <| printf "Set var: LHs not a valid location: \n"; show tm
+                end
                 }
             | SEQUENCE (t1, t2) -> maybe {
                 let! (_, _, st') = eval_rec (t1, env, st)

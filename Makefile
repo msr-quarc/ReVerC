@@ -5,7 +5,7 @@ FSHARP = fsharpc
 
 FILES = Set.fst Total.fst Partial.fst Util.fst PairHeap.fst AncillaHeap.fst Circuit.fst BoolExp.fst ExprTypes.fst TypeCheck.fst Interpreter.fst
 #FILES = Util.fst Maps.fst PairHeap.fst AncillaHeap.fst Circuit.fst BoolExp.fst ExprTypes.fst Interpreter.fst
-REVS  = GenOp.fs Examples.fs Program.fs
+REVS  = GenOp.fs buddy.fs Examples.fs Program.fs
 SUPPORT = FStar.Set FStar.Heap FStar.ST FStar.All FStar.List FStar.String FStar.IO
 
 FSFILES = FStar.FunctionalExtensionality.fs # FStar.Heap.fs FStar.ListProperties.fs FStar.Map.fs FStar.Util.fs
@@ -20,11 +20,11 @@ DLLS = $(FSTAR_HOME)/lib/fs/fstarlib.dll $(FSTAR_HOME)/bin/FSharp.PowerPack.dll 
 FSOPS = $(addprefix -r , $(DLLS))
 
 verify: $(FSTSRC)
-	$(FSTAR) --z3timeout 30 $^
+	$(FSTAR) --z3timeout 160 $^
 
 fs: $(FSTSRC)
 	$(FSTAR) --admit_smt_queries true --codegen FSharp $(EXCL) $^
 #	mv *.fs src/fs/
 
-all: $(FSSRC)
+revs: $(FSSRC)
 	$(FSHARP) --mlcompatibility $(FSOPS) -o rever.exe $^

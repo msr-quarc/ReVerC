@@ -171,7 +171,7 @@ let parseAST expr =
             | x -> failwith <| sprintf "Unsupported Call to: %A" x
     | VarSet(var, exp) -> ASSIGN(VAR var.Name, gExpr exp)
     | Var x -> VAR x.Name
-    | Int32 x -> ARRAY (List.map (fun b -> BOOL b) (Util.of_int x 32))
+    | Int32 x -> ARRAY (List.map (fun b -> BOOL b) (Util.ofInt x 32))
     //This is not implemented yet.  Want to make my own types for everything so I can do operator overloading
     | NewObject(RBit, Bool x :: _) -> BOOL x  
     | Bool x -> BOOL x

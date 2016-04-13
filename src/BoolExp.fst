@@ -142,6 +142,7 @@ let rec evalBexp bexp st = match bexp with
   | BXor (x, y) -> (evalBexp x st) <> (evalBexp y st)
 
 (* Optimizations *)
+(*
 let rec simplify exp = match exp with
   | BFalse -> BFalse
   | BVar x -> exp
@@ -157,6 +158,39 @@ let rec simplify exp = match exp with
     let y' = simplify y in (
       match (x', y') with
         | (BFalse, z) | (z, BFalse) -> z
+        | _ -> BXor (x', y')
+    )
+  | BNot x ->
+    let x' = simplify x in begin match x' with
+      | BNot y -> y
+      | _ -> BNot x'
+    end
+*)
+let rec simplify exp = match exp with
+  | BFalse -> BFalse
+  | BVar x -> exp
+  | BAnd (x, y) ->
+    let x' = simplify x in
+    let y' = simplify y in (
+      match (x', y') with
+        | (BFalse, _) | (_, BFalse) -> BFalse
+        | (BVar x, BAnd (BVar y, z))
+        | (BVar x, BAnd (z, BVar y))
+        | (BAnd (BVar y, z), BVar x)
+        | (BAnd (z, BVar y), BVar x) -> 
+            if x = y then BAnd (BVar x, z) else BAnd (x', y')
+        | _ -> BAnd (x', y')
+    )
+  | BXor (x, y) ->
+    let x' = simplify x in
+    let y' = simplify y in (
+      match (x', y') with
+        | (BFalse, z) | (z, BFalse) -> z
+        | (BVar x, BXor (BVar y, z))
+        | (BVar x, BXor (z, BVar y))
+        | (BXor (BVar y, z), BVar x)
+        | (BXor (z, BVar y), BVar x) -> 
+            if x = y then z else BXor (x', y')
         | _ -> BXor (x', y')
     )
   | BNot x ->

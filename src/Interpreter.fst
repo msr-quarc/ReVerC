@@ -710,6 +710,78 @@ let computeGraph gexp = eval_rec (gexp, [], ((0, 0), ([], []))) depGraphInterp
 
 (** Verification utilities *)
 
+val step_preservation : 
+  #state:Type -> #state':Type -> 
+  gexp:GExpr -> st:state -> st':state' -> init:Total.t int bool ->
+  pred:(state -> state' -> Total.t int bool -> Type) ->
+  h1:(forall st st' init. pred st st' init ==> 
+                        
+  Lemma (requires (state_equiv st st' init))
+        (ensures
+          (is_Err (step (gexp, st) boolInterp) /\ is_Err (step (gexp, st') bexpInterp)) \/
+          (is_Val (step (gexp, st) boolInterp) /\ is_Val (step (gexp, st') bexpInterp) /\
+          (fst (getVal (step (gexp, st) boolInterp)) =
+           fst (getVal (step (gexp, st') bexpInterp)) /\
+          state_equiv (snd (getVal (step (gexp, st) boolInterp)))
+                      (snd (getVal (step (gexp, st') bexpInterp)))
+                      init)))
+  (decreases %[gexp;1])
+val step_preservation_lst : lst:list GExpr -> st:boolState -> st':BExpState -> init:state ->
+  Lemma (requires (state_equiv st st' init))
+        (ensures
+          (is_Err (step_lst (lst, st) boolInterp) /\ is_Err (step_lst (lst, st') bexpInterp)) \/
+          (is_Val (step_lst (lst, st) boolInterp) /\ is_Val (step_lst (lst, st') bexpInterp) /\
+          (fst (getVal (step_lst (lst, st) boolInterp)) =
+           fst (getVal (step_lst (lst, st') bexpInterp)) /\
+          state_equiv (snd (getVal (step_lst (lst, st) boolInterp)))
+                      (snd (getVal (step_lst (lst, st') bexpInterp)))
+                      init)))
+  (decreases %[lst;0])
+let rec state_equiv_step gexp st st' init = match gexp with
+  | LET (x, t1, t2) ->
+    state_equiv_step t1 st st' init
+  | LAMBDA (x, ty, t) -> ()
+  | APPLY (t1, t2) ->
+    state_equiv_step t1 st st' init;
+    state_equiv_step t2 st st' init
+  | SEQUENCE (t1, t2) ->
+    state_equiv_step t1 st st' init
+  | ASSIGN (t1, t2) ->
+    state_equiv_step t1 st st' init;
+    state_equiv_step t2 st st' init;
+    if (isVal t1 && isBexp t2) then
+      begin match t1 with
+        | LOC l -> state_equiv_assign st st' init l (get_bexp t2)
+        | _ -> ()
+      end
+  | XOR (t1, t2) ->
+    state_equiv_step t1 st st' init;
+    state_equiv_step t2 st st' init
+  | AND (t1, t2) ->
+    state_equiv_step t1 st st' init;
+    state_equiv_step t2 st st' init
+  | BOOL b -> ()
+  | APPEND (t1, t2) ->
+    state_equiv_step t1 st st' init;
+    state_equiv_step t2 st st' init
+  | ROT (i, t) ->
+    state_equiv_step t st st' init
+  | SLICE (t, i, j) ->
+    state_equiv_step t st st' init
+  | ARRAY lst ->
+    state_equiv_step_lst lst st st' init
+  | GET_ARRAY (t, i) ->
+    state_equiv_step t st st' init
+  | ASSERT t ->
+    state_equiv_step t st st' init
+  | BEXP bexp -> state_equiv_alloc st st' init bexp
+  | _ -> ()
+and state_equiv_step_lst lst st st' init = match lst with
+  | [] -> ()
+  | x::xs ->
+    state_equiv_step x st st' init;
+    state_equiv_step_lst xs st st' init
+
 (* Originally this was done polymorphically (using a general notion of
    equivalence of states and a proof that the interpreter preserves equivalence
    if alloc and assign do). Eventually this should be refactored that way, but
@@ -872,6 +944,7 @@ let circ_equiv_alloc st cs init bexp =
   let st' = snd (boolAlloc st bexp) in
   let cs' = snd (circAlloc cs bexp) in
   let zeroHeap_lem =
+    admitP(disjoint (elts cs.ah) (vars bexp')); // Implied by circ_equiv proposition 3
     compile_decreases_heap_oop cs.ah bexp';
     compile_partition_oop cs.ah bexp';
     zeroHeap_subset init' cs.ah cs'.ah;
@@ -899,6 +972,7 @@ let circ_equiv_assign st cs init l bexp =
     | None ->
       let (ah', res, ancs, circ') = compileBexp_oop cs.ah bexp' in
       let zeroHeap_lem =
+        admitP(disjoint (elts cs.ah) (vars bexp')); // Implied by circ_equiv proposition 3
         compile_decreases_heap_oop cs.ah bexp';
         compile_partition_oop cs.ah bexp';
         zeroHeap_subset init' cs.ah cs'.ah;
@@ -913,6 +987,8 @@ let circ_equiv_assign st cs init l bexp =
       in
       ()
     | Some bexp'' ->
+      admit(); // Need to redo
+      (*
       let (ah', res, ancs, circ') = compileBexp cs.ah l' bexp'' in
       let zeroHeap_lem =
         factorAs_correct bexp' l' init';
@@ -929,8 +1005,8 @@ let circ_equiv_assign st cs init l bexp =
       let correctness =
         admitP(b2t(lookup (snd st') l = lookup (evalCirc circ' init') (lookup cs'.subs l)));
         factorAs_correct bexp' l' init';
-        eval_commutes_subst_circ st cs bexp bexp' init l l'
-      in
+        eval_commutes_subst_circ st cs bexp bexp'' init l l'
+      in *)
       ()
 
 val circ_equiv_step : gexp:GExpr -> st:boolState -> st':circState -> init:state ->
@@ -963,15 +1039,18 @@ let rec circ_equiv_step gexp st st' init = match gexp with
     circ_equiv_step t1 st st' init;
     circ_equiv_step t2 st st' init
   | SEQUENCE (t1, t2) ->
-    circ_equiv_step t1 st st' init
-  | ASSIGN (t1, t2) -> admit ();
     circ_equiv_step t1 st st' init;
-    circ_equiv_step t2 st st' init;
-    if (isVal t1 && isBexp t2) then
+    circ_equiv_step t2 st st' init
+(*
+  | ASSIGN (t1, t2) -> admit ()
+    if      not (isVal t1)  then admit() //circ_equiv_step t1 st st' init
+    else if not (isBexp t2) then admit() //circ_equiv_step t2 st st' init
+    else
       begin match t1 with
-        | LOC l -> admit (); circ_equiv_assign st st' init l (get_bexp t2)
-        | _ -> ()
-      end
+        | LOC l -> admit()//; circ_equiv_assign st st' init l (get_bexp t2)
+        | _ -> admit ()
+      end *)
+(*
   | XOR (t1, t2) ->
     circ_equiv_step t1 st st' init;
     circ_equiv_step t2 st st' init
@@ -992,8 +1071,8 @@ let rec circ_equiv_step gexp st st' init = match gexp with
     circ_equiv_step t st st' init
   | ASSERT t ->
     circ_equiv_step t st st' init
-  | BEXP bexp -> admit (); circ_equiv_alloc st st' init bexp
-  | _ -> ()
+  | BEXP bexp -> circ_equiv_alloc st st' init bexp *)
+  | _ -> admit ()
 and circ_equiv_step_lst lst st st' init = match lst with
   | [] -> ()
   | x::xs ->

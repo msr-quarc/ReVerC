@@ -1,18 +1,29 @@
-// Interpreting compiler
+(** Program interpreter and domains *)
 module Interpreter
+
+(* The main compiler module. Defines two interpreters based on either big step
+   or small step style reductions. The interpreters use an interpretation of
+   the heap to handle allocation and assignment of new Boolean values.
+   There are currently three main interpretations: Boolean values (i.e. program
+   evaluation), Boolean expressions (classical Boolean circuits), and
+   reversible circuits.
+   Correctness is proven by proving that two states which are equal under the
+   given semantics (eval function) remain equal after an allocation or
+   assignment. *)
+
 open Util
 open BoolExp
 open ExprTypes
-open Maps
+open Total
 
+(* A representation of program heap (which is Bool-typed) *)
 type interpretation<'state> =
   { alloc  : 'state -> BoolExp -> (int * 'state);
     assign : 'state -> int -> BoolExp -> 'state;
     clean  : 'state -> int -> 'state;
     eval   : 'state -> Total.state -> int -> bool }
 
-//val isVal : gexp:GExpr -> Tot bool (decreases %[gexp;1])
-//val isVal_lst : lst:list GExpr -> Tot bool (decreases %[lst;0])
+(* Values of the language *)
 let rec isVal tm = match tm with
   | UNIT          -> true
   | LAMBDA (s, ty, t) -> true
@@ -24,7 +35,6 @@ and isVal_lst lst = match lst with
   | (LOC l)::xs -> isVal_lst xs
   | _ -> false
 
-//val isBexp : GExpr -> Tot bool
 let isBexp tm = match tm with
   | LOC i     -> true
   | BEXP bexp -> true
@@ -32,19 +42,15 @@ let isBexp tm = match tm with
   | _         -> false
 
 type config<'state> = GExpr * 'state
-type valconfig<'state> = GExpr * 'state //c:(config state){isVal (fst c)}
+type valconfig<'state> = GExpr * 'state
 type listconfig<'state> = (list<GExpr>) * 'state
 
-//val get_bexp : gexp:GExpr{isBexp gexp} -> Tot BoolExp
 let get_bexp gexp = match gexp with
   | LOC i     -> BVar i
   | BEXP bexp -> bexp
   | BOOL b    -> if b then BNot BFalse else BFalse
 
-//val step : #state:Type -> c:config state -> interpretation state ->
-//  Tot (result (config state)) (decreases %[(fst c);1])
-//val step_lst : #state:Type -> c:listconfig state -> interpretation state ->
-//  Tot (result (listconfig state)) (decreases %[(fst c);0])
+(* Small-step evaluator *)
 let rec step (tm, st) interp = match tm with
   | LET (x, t1, t2) ->
     if isVal t1
@@ -58,7 +64,7 @@ let rec step (tm, st) interp = match tm with
     else
       begin match t1 with
         | LAMBDA (x, ty, t) -> Val (substGExpr t x t2, st)
-        | _ -> Err ("Cannot reduce application: " ^ (show tm))
+        | _ -> Err (FStar.String.strcat "Cannot reduce application: " (show tm))
       end
   | SEQUENCE (t1, t2) ->
     if not (isVal t1) then
@@ -66,7 +72,7 @@ let rec step (tm, st) interp = match tm with
     else
       begin match t1 with
         | UNIT -> Val (t2, st)
-        | _ -> Err ("Cannot reduce sequence: " ^ (show tm))
+        | _ -> Err (FStar.String.strcat "Cannot reduce sequence: " (show tm))
       end
   | ASSIGN (t1, t2) ->
     if not (isVal t1) then
@@ -76,7 +82,7 @@ let rec step (tm, st) interp = match tm with
     else
       begin match t1 with
         | LOC l -> Val (UNIT, interp.assign st l (get_bexp t2))
-        | _ -> Err ("Cannot reduce assignment: " ^ (show tm))
+        | _ -> Err (FStar.String.strcat "Cannot reduce assignment: " (show tm))
       end
   | XOR (t1, t2) ->
     if not (isBexp t1) then
@@ -103,7 +109,7 @@ let rec step (tm, st) interp = match tm with
     else
       begin match (t1, t2) with
         | (ARRAY l, ARRAY l') -> Val (ARRAY (l@l'), st)
-        | _ -> Err ("Cannot reduce append: " ^ (show tm))
+        | _ -> Err (FStar.String.strcat "Cannot reduce append: " (show tm))
       end
   | ROT (i, t) ->
     if not (isVal t) then
@@ -111,11 +117,11 @@ let rec step (tm, st) interp = match tm with
     else
       begin match t with
         | ARRAY lst ->
-          if (0 <= i && i < List.length lst) then
+          if (0 <= i && i < FStar.List.length lst) then
             Val (ARRAY (rotate lst i), st)
           else
-            Err ("Array out of bounds: " ^ (show tm))
-        | _ -> Err ("Cannot reduce rotation: " ^ (show tm))
+            Err (FStar.String.strcat "Array out of bounds: " (show tm))
+        | _ -> Err (FStar.String.strcat "Cannot reduce rotation: " (show tm))
       end
   | SLICE (t, i, j) ->
     if not (isVal t) then
@@ -123,11 +129,11 @@ let rec step (tm, st) interp = match tm with
     else
       begin match t with
         | ARRAY lst ->
-          if (0 <= i && i <= j && j < List.length lst) then
+          if (0 <= i && i <= j && j < FStar.List.length lst) then
             Val (ARRAY (slice lst i j), st)
           else
-            Err ("Array out of bounds: " ^ (show tm))
-        | _ -> Err ("Cannot reduce slice: " ^ (show tm))
+            Err (FStar.String.strcat "Array out of bounds: " (show tm))
+        | _ -> Err (FStar.String.strcat "Cannot reduce slice: " (show tm))
       end
   | ARRAY lst ->
     bindT (step_lst (lst, st) interp) (fun (lst, st') -> Val (ARRAY lst, st'))
@@ -137,11 +143,11 @@ let rec step (tm, st) interp = match tm with
     else
       begin match t with
         | ARRAY lst ->
-          if (0 <= i && i < List.length lst) then
-            Val (List.nth lst i, st)
+          if (0 <= i && i < FStar.List.length lst) then
+            Val (FStar.List.nth lst i, st)
           else
-            Err ("Array out of bounds: " ^ (show tm))
-        | _ -> Err ("Cannot reduce array index: " ^ (show tm))
+            Err (FStar.String.strcat "Array out of bounds: " (show tm))
+        | _ -> Err (FStar.String.strcat "Cannot reduce array index: " (show tm))
       end
   | CLEAN t ->
     if not (isVal t) then
@@ -157,11 +163,11 @@ let rec step (tm, st) interp = match tm with
     else
       begin match t with
         | LOC l -> Val (UNIT, st)
-        | _ -> Err ("Cannot reduce assertion: " ^ (show tm))
+        | _ -> Err (FStar.String.strcat "Cannot reduce assertion: " (show tm))
       end
   | BEXP bexp ->
     let (l, st') = interp.alloc st bexp in Val (LOC l, st')
-  | _ -> Err ("No rule applies: " ^ (show tm))
+  | _ -> Err (FStar.String.strcat "No rule applies: " (show tm))
 and step_lst (lst, st) interp = match lst with
   | [] -> Val ([], st)
   | x::xs ->
@@ -170,9 +176,7 @@ and step_lst (lst, st) interp = match lst with
     else
       bindT (step_lst (xs, st) interp) (fun (xs', st') -> Val (x::xs', st'))
 
-// Big-step
-//val eval_rec : #state:Type -> config state -> interpretation state -> result (config state)
-//val eval_to_bexp : #state:Type -> config state -> interpretation state -> result (config state)
+(* Big-step evaluator. More efficient but not (proven) total *)
 let rec eval_rec (tm, st) interp = match tm with
   | LET (x, t1, t2) ->
     bind (eval_rec (t1, st) interp) (fun (v1, st') ->
@@ -281,19 +285,12 @@ and eval_to_bexp (tm, st) interp = match tm with
       | LOC l -> Val (BEXP (BVar l), st')
       | _ -> Err ("Could not reduce expression to boolean: " ^ (show tm)))
 
-// Interpretations
-// Boolean (standard) interpretation
-open Maps.Total
-type boolState = int * (Total.map<int, bool>)
+(** Interpretation domains *)
 
-//val boolInit   : boolState
-//val boolDom    : boolState -> Tot (set int)
-//val boolAlloc  : boolState -> BoolExp -> Tot (int * boolState)
-//val boolAssign : boolState -> int -> BoolExp -> Tot boolState
-//val boolEval   : boolState -> state -> int -> Tot bool
+(* Boolean (standard) interpretation -- for running a Revs program *)
+type boolState = int * (Total.t<int, bool>)
 
-let boolInit = (0, constant false)
-let boolDom (top, st) = fun i -> i < top
+let boolInit = (0, constMap false)
 let boolAlloc (top, st) bexp = (top, (top + 1, update st top (evalBexp bexp st)))
 let boolAssign (top, st) l bexp = (top, update st l (evalBexp bexp st))
 let boolEval (top, st) ivals i = lookup st i
@@ -305,8 +302,6 @@ let boolInterp = {
   eval = boolEval
 }
 
-//val substVal : v:GExpr{isVal v} -> st:boolState -> Tot GExpr
-//val substVal_lst : v:(list GExpr){isVal_lst v} -> st:boolState -> Tot (list GExpr)
 let rec substVal v st = match v with
   | UNIT | LAMBDA _ -> v
   | LOC l -> BOOL (lookup (snd st) l)
@@ -323,17 +318,11 @@ let rec evalBool (gexp, st) =
 
 let eval gexp = evalBool (gexp, boolInit)
 
-// Boolean expression interpretation
-type BExpState = int * (Total.map<int, BoolExp>)
+(* Boolean expression interpretation -- for generating the fully
+   inlined classical circuit of the Revs program *)
+type BExpState = int * (Total.t<int, BoolExp>)
 
-//val bexpInit   : BExpState
-//val bexpDom    : BExpState -> Tot (set int)
-//val bexpAlloc  : BExpState -> BoolExp -> Tot (int * BExpState)
-//val bexpAssign : BExpState -> int -> BoolExp -> Tot BExpState
-//val bexpEval   : BExpState -> state -> int -> Tot bool
-
-let bexpInit : BExpState = (0, constant BFalse)
-let bexpDom (top, st) = fun i -> i < top
+let bexpInit : BExpState = (0, constMap BFalse)
 let bexpAlloc (top, st) bexp = (top, (top + 1, update st top (substBexp bexp st)))
 let bexpAssign (top, st) l bexp = (top, update st l (substBexp bexp st))
 let bexpEval (top, st) ivals i = evalBexp (lookup st i) ivals
@@ -350,20 +339,16 @@ type CleanupStrategy =
   | Boundaries
   | Bennett
 
-//val simps : BoolExp -> Tot BoolExp
 let simps bexp = distributeAnds (simplify bexp)
 
 let rec simploop bexp = 
   let bexp' = simps bexp
   if bexp' = bexp then bexp' else simploop bexp'
 
-//val allocN : list GExpr * BExpState -> i:int ->
-//  Tot (list GExpr * BExpState) (decreases i)
 let rec allocN (locs, (top, st)) i =
   if i <= 0 then (List.rev locs, (top, st))
   else allocN (((LOC top)::locs), (top+1, update st top (BVar top))) (i-1)
 
-//val allocTy : GType -> BExpState -> Tot (result (GExpr * BExpState))
 let allocTy ty (top, st) = match ty with
   | GBool -> Val (LOC top, (top + 1, update st top (BVar top)))
   | GArray n ->
@@ -371,7 +356,6 @@ let allocTy ty (top, st) = match ty with
       Val (ARRAY locs, st')
   | _ -> Err "Invalid parameter type for circuit generation"
 
-//val lookupLst : lst:(list GExpr){isVal_lst lst} -> st:BExpState -> Tot (list BoolExp)
 let rec lookupLst lst st = match lst with
   | [] -> []
   | (LOC l)::xs -> (lookup (snd st) l)::(lookupLst xs st)
@@ -379,25 +363,23 @@ let rec lookupLst lst st = match lst with
 open AncillaHeap
 open Circuit
 
-//val foldPebble : (AncHeap * list int * list int * list Gate) ->
-//  BoolExp -> Tot (AncHeap * list int * list int * list Gate)
 let foldPebble (ah, outs, anc, circ) bexp =
   let (ah', res, anc', circ') = compileBexpPebbled_oop ah (simps bexp) in
     (ah', res::outs, anc'@anc, circ@circ')
 
-//val foldClean : (AncHeap * list int * list int * list Gate) ->
-//  BoolExp -> Tot (AncHeap * list int * list int * list Gate)
 let foldClean (ah, outs, anc, circ) bexp =
   let (ah', res, anc', circ') = compileBexpClean_oop ah (simps bexp) in
     (ah', res::outs, anc'@anc, circ@circ')
 
-//val foldBennett : (AncHeap * list int * list int * list Gate * list Gate) ->
-//  BoolExp -> Tot (AncHeap * list int * list int * list Gate * list Gate)
 let foldBennett (ah, outs, anc, circ, ucirc) bexp =
   let (ah', res, anc', circ') = compileBexp_oop ah (simps bexp) in
     (ah', res::outs, anc'@anc, circ@circ', (List.rev (uncompute circ' res))@ucirc)
 
-//val compile : config BExpState -> CleanupStrategy -> Dv (result (list int * list Gate))
+(* Compilation wrapper. The main point of interest is its action when the
+   program is a function. In that case it allocates some new free variables
+   corresponding to the inputs of the function, then evaluates the function
+   body. Note also that this wrapper is not verified currently. Eventually this
+   should be done. *)
 let rec compile (gexp, st) strategy =
   if isVal gexp then match gexp with
     | UNIT -> Val ([], [])
@@ -416,8 +398,7 @@ let rec compile (gexp, st) strategy =
       in
         Val ([res], circ)
     | ARRAY lst ->
-      let blst = List.map (*(simplify << distributeAnds)*) simploop (lookupLst lst st) in
-      List.iter (fun b -> printf "Output:\n    %s\n" (prettyPrintBexp b)) blst;
+      let blst = List.map simploop (lookupLst lst st) in
       let max = listMax (List.map varMax blst) in
       let (ah, outs, anc, circ) = match strategy with
         | Pebbled ->
@@ -441,28 +422,22 @@ let rec compile (gexp, st) strategy =
     | Err s -> Err s
     | Val c' -> compile c' strategy
 
-// Direct circuit compilation
-type circState = int * AncHeap * (list<Gate>) * (map<int, int>) * (map<int, bool>)
+(* Reversible circuit interpretation -- compiles a Revs program
+   to a reversible circuit in a "natural" way. Specifically, 
+   the circuit reflects the structure of the program *)
+type circState = int * AncHeap * (list<Gate>) * (Total.t<int, int>) * (Total.t<int, bool>)
 
-//val circInit   : circState
-//val circAlloc  : circState -> BoolExp -> Tot (int * circState)
-//val circAssign : circState -> int -> BoolExp -> Tot circState
-//val circEval   : circState -> state -> int -> Tot bool
-
-let circInit : circState = (0, emptyHeap, [], constant 0, constant true)
-let circAlloc (top, ah, circ, st, cl) bexp = match substVar bexp st with //simplify (substVar bexp st) with
+let circInit : circState = (0, emptyHeap, [], constMap 0, constMap true)
+let circAlloc (top, ah, circ, st, cl) bexp = match simplify (substVar bexp st) with
     | BFalse ->
         let (ah', bit) = popMin ah in
         (top, (top+1, ah', circ, update st top bit, update cl bit true))
     | _ ->
-        let (ah', res, ancs, circ') = compileBexpPebbled_oop ah (substVar bexp st) in//(simplify (substVar bexp st)) in
+        let (ah', res, ancs, circ') = compileBexpPebbled_oop ah (simplify (substVar bexp st)) in
         (top, (top+1, ah', circ@circ', update st top res, update cl res false))
 let circAssign (top, ah, circ, st, cl) l bexp =
   let l' = lookup st l in
-  let bexp' = substVar bexp st in //simplify (substVar bexp st) in
-        let (ah', res, ancs, circ') = compileBexpPebbled_oop ah bexp' in
-        (top, ah', circ@circ', update st l res, update cl res false)
-  (*
+  let bexp' = simplify (substVar bexp st) in
   match factorAs bexp' l' with
     | Some bexp'' ->
       let (ah', res, ancs, circ') = compileBexpPebbled ah l' (simplify bexp'') in
@@ -474,11 +449,10 @@ let circAssign (top, ah, circ, st, cl) l bexp =
       else 
         let (ah', res, ancs, circ') = compileBexpPebbled_oop ah bexp' in
         (top, ah', circ@circ', update st l res, update cl res false)
-*)
 let circClean (top, ah, circ, st, cl) l = 
     let bit = lookup st l in
     (top, insert ah bit, circ, st, update cl bit true)
-let circEval (top, ah, circ, st, cl) ivals i = (evalCirc circ ivals) (lookup st i)
+let circEval (top, ah, circ, st, cl) ivals i = lookup (evalCirc circ ivals) (lookup st i)
 
 let circInterp = {
   alloc = circAlloc;
@@ -487,15 +461,12 @@ let circInterp = {
   eval = circEval
 }
 
-//val allocNcirc : list GExpr * circState -> i:int ->
-//  Tot (list GExpr * circState) (decreases i)
 let rec allocNcirc (locs, (top, ah, circ, st, cl)) i =
   if i <= 0 then (List.rev locs, (top, ah, circ, st, cl))
   else
     let (ah', res) = popMin ah in
       allocNcirc (((LOC top)::locs), (top+1, ah', circ, update st top res, update cl res false)) (i-1)
 
-//val allocTycirc : GType -> circState -> Tot (result (GExpr * circState))
 let allocTycirc ty (top, ah, circ, st, cl) = match ty with
   | GBool ->
     let (ah', res) = popMin ah in
@@ -505,12 +476,10 @@ let allocTycirc ty (top, ah, circ, st, cl) = match ty with
       Val (ARRAY locs, st')
   | _ -> Err "Invalid parameter type for circuit generation"
 
-//val lookup_Lst : st:map int int -> lst:(list GExpr){isVal_lst lst} -> Tot (list int)
 let rec lookup_Lst st lst = match lst with
   | [] -> []
   | (LOC l)::xs -> (lookup st l)::(lookup_Lst st xs)
 
-//val compileCirc : config circState -> Dv (result (list int * list Gate))
 let rec compileCirc (gexp, (top, ah, circ, st, cl)) =
   if isVal gexp then match gexp with
     | UNIT -> Val ([], [])
@@ -528,133 +497,3 @@ let rec compileCirc (gexp, (top, ah, circ, st, cl)) =
   else match (step (gexp, (top, ah, circ, st, cl)) circInterp) with
     | Err s -> Err s
     | Val c' -> compileCirc c'
-
-// Garbage-collected circuit compilation
-type qubit =
-  { id   : int;
-    ival : BoolExp;
-    cval : BoolExp }
-
-let nullq = { id = 0; ival = BFalse; cval = BFalse }
-let get_subst m = fun i -> (Par.lookup m i).id
-let data_q i = { id = i; ival = BVar i; cval = BFalse }
-let anc_q i  = { id = i; ival = BFalse; cval = BFalse }
-
-type circGCState =
-  { top    : int;
-    ah     : AncHeap;
-    gates  : list<Gate>;
-    symtab : Par.map<int, qubit> }
-
-// The garbage collector needs to:
-//  -compile the current value in place (i.e. ival + cval + cval = ival),
-//  -if the qubit is an ancilla, push it back onto the heap, and
-//  -update the current value of all other bits by substituting q.id with ival + cval
-let garbageCollect cs q = 
-  { top = cs.top; ah = insert cs.ah q.id; gates = cs.gates; symtab = cs.symtab }
-  (*
-  let (ah', res, ancs, circ) = compileBexp cs.ah q.id q.cval in
-  let ah'' = if q.ival = BFalse then insert ah' q.id else ah' in
-  let f q' = 
-    let subq = fun v -> if v = q.id then BXor (q.ival, q.cval) else BVar v in
-      { id = q'.id; ival = q'.ival; cval = simplify (substBexp q'.cval subq) }
-  in
-  let symtab' = Par.map_mp f cs.symtab in
-    { top = cs.top; ah = ah''; gates = cs.gates @ circ; symtab = symtab' }
-*)
-
-let circGCInit = { top = 0; ah = emptyHeap; gates = []; symtab = Par.empty }
-let circGCAlloc cs bexp = 
-  let bexp' = simplify (substVar bexp (get_subst cs.symtab)) in
-  let (ah', bit) = popMin cs.ah in
-  let (ah'', res, ancs, circ') = compileBexp ah' bit bexp' in
-  let q = { id = bit; ival = BFalse; cval = bexp' } in
-  let top' = cs.top + 1 in
-  let gates' = cs.gates @ circ' in
-  let symtab' = Par.update cs.symtab cs.top q in
-  (cs.top, {top = top'; ah = ah''; gates = gates'; symtab = symtab'})
-let circGCAssign cs l bexp =
-  let q = Par.lookup cs.symtab l in
-  let bexp' = simplify (substVar bexp (get_subst cs.symtab)) in
-  let bexpfac = factorAs bexp' q.id in
-  match (q.cval, bexpfac) with
-    | (BFalse, _)      -> // substitute q.id with BFalse, compile in place
-      let bexp'' = substBexp bexp' (fun v -> if v = q.id then BFalse else BVar v) in
-      let (ah', res, ancs, circ) = compileBexp cs.ah q.id bexp'' in
-      let q' = { id = q.id; ival = q.ival; cval = bexp'' } in
-        {top = cs.top; ah = ah'; gates = cs.gates @ circ; symtab = Par.update cs.symtab l q' }
-    | (_, Some bexp'') -> // compile in place, substitute q.id with q.id \oplus bexp''
-      let (ah', res, ancs, circ') = compileBexp cs.ah q.id bexp'' in
-      let q' = { id = q.id; ival = q.ival; cval = simplify (BXor (q.cval, bexp'')) } in
-      let f b = 
-        let subq = fun v -> if v = q.id then BXor (BVar q.id, bexp'') else BVar v in
-          { id = b.id; ival = b.ival; cval = simplify (substBexp b.cval subq) }
-      in
-      let symtab' = Par.update (Par.map_mp f cs.symtab) l q' in
-        {top = cs.top; ah = ah'; gates = cs.gates @ circ'; symtab = Par.update cs.symtab l q' }
-    | _                -> // Compile out of place, clean q.id
-      let (ah', res, ancs, circ') = compileBexp_oop cs.ah bexp' in
-      let q' = { id = res; ival = BFalse; cval = bexp' } in
-      let cs' = { top = cs.top; ah = ah'; gates = cs.gates @ circ'; symtab = Par.update cs.symtab l q' } in
-        garbageCollect cs' q
-let circGCEval cs st i = false
-let circGCClean cs l = 
-  let q = Par.lookup cs.symtab l in
-  { top = cs.top; ah = insert cs.ah q.id; gates = cs.gates; symtab = Par.update cs.symtab l nullq }
-  
-//  let q = Par.lookup cs.symtab l in
-//    garbageCollect cs q
-
-let circGCInterp = {
-  alloc = circGCAlloc;
-  assign = circGCAssign;
-  eval = circGCEval
-  clean = circGCClean;
-}
-
-let rec allocNcircGC (locs, cs) i =
-  if i <= 0 then (List.rev locs, cs)
-  else
-    let (ah', res) = popMin cs.ah in
-    let cs' = { top = cs.top + 1;
-                ah = ah';
-                gates = cs.gates;
-                symtab = Par.update cs.symtab cs.top (data_q res) }
-    in
-      allocNcircGC (((LOC cs.top)::locs), cs') (i-1)
-
-let allocTycircGC ty cs = match ty with
-  | GBool ->
-    let (ah', res) = popMin cs.ah in
-    let cs' = { top = cs.top + 1;
-                ah = ah';
-                gates = cs.gates;
-                symtab = Par.update cs.symtab cs.top (data_q res) }
-    in
-      Val (LOC cs.top, cs')
-  | GArray n ->
-    let (locs, st') = allocNcircGC ([], cs) n in
-      Val (ARRAY locs, st')
-  | _ -> Err "Invalid parameter type for circuit generation"
-
-let rec lookup_Lst_gc symtab lst = match lst with
-  | [] -> []
-  | (LOC l)::xs -> ((Par.lookup symtab l).id)::(lookup_Lst_gc symtab xs)
-
-let rec compileGCCirc (gexp, cs) =
-  if isVal gexp then match gexp with
-    | UNIT -> Val ([], [])
-    | LAMBDA (x, ty, t) ->
-      begin match allocTycircGC ty cs with
-        | Err s -> Err s
-        | Val (v, cs') -> compileGCCirc (substGExpr t x v, cs')
-      end
-    | LOC l ->
-      let res = Par.lookup cs.symtab l in
-        Val ([res.id], cs.gates)
-    | ARRAY lst ->
-      let res = lookup_Lst_gc cs.symtab lst in
-        Val (res, cs.gates)
-  else match (step (gexp, cs) circGCInterp) with
-    | Err s -> Err s
-    | Val c' -> compileGCCirc c'

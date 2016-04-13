@@ -1,45 +1,30 @@
-#light "off"
+(** Total maps, implemented as assoc lists with default values *)
 module Total
-open Prims
 
-type ('Aa, 'Ab) map =
-'Aa  ->  'Ab
+type t<'key,'value> = 
+  { elts : list<'key * 'value>;
+    dval : 'value }
 
+(* type synonym for Boolean-valued states *)
+type state = t<int,bool>
 
-let lemma_map_equal_intro = (fun ( m1  :  ('Aa, 'Ab) map ) ( m2  :  ('Aa, 'Ab) map ) -> ())
+let lookup m k = match (List.tryFind (fun (k', v') -> k = k') m.elts) with
+  | None   -> m.dval
+  | Some (_, v) -> v
 
+let update m k v =
+  { elts = (k, v)::(List.filter (fun (k', _) -> not (k = k')) m.elts);
+    dval = m.dval }
 
-let lemma_map_equal_elim = (fun ( m1  :  ('Aa, 'Ab) map ) ( m2  :  ('Aa, 'Ab) map ) -> ())
+let constMap v =
+  { elts = [];
+    dval = v }
 
+let compose m m' = 
+  { elts = List.map (fun (k, v) -> (k, lookup m' v)) m.elts;
+    dval = lookup m' m.dval }
 
-let lemma_map_equal_refl = (fun ( m1  :  ('Aa, 'Ab) map ) ( m2  :  ('Aa, 'Ab) map ) -> ())
-
-
-let lookup = (fun ( map  :  ('Aa, 'Ab) map ) ( x  :  'Aa ) -> (map x))
-
-
-let update = (fun ( map  :  ('Aa, 'Ab) map ) ( x  :  'Aa ) ( y  :  'Ab ) ( z  :  'Aa ) -> if (z = x) then begin
-y
-end else begin
-(map z)
-end)
-
-
-let compose = (fun ( m  :  ('Aa, 'Ab) map ) ( m'  :  ('Ab, 'Ac) map ) ( i  :  'Aa ) -> (m' (m i)))
-
-
-let const_map = (fun ( v  :  'Ab ) ( _10_45  :  'Aa ) -> v)
-
-
-type state =
-(Prims.int, Prims.bool) map
-
-
-let agree_on_trans = (fun ( mp  :  ('Aa, 'Ab) map ) ( mp'  :  ('Aa, 'Ab) map ) ( mp''  :  ('Aa, 'Ab) map ) ( s  :  'Aa Util.set ) -> ())
-
-
-let map_mp = (fun ( f  :  'Ab  ->  'Ab ) ( m  :  ('Aa, 'Ab) map ) -> m)
-
-
-
+let mapVals f m = 
+  { elts = List.map (fun (k, v) -> (k, f v)) m.elts;
+    dval = f m.dval }
 

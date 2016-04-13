@@ -10,6 +10,7 @@ open Circuit
 open AncillaHeap
 open GenOp
 open ExprTypes
+open TypeCheck
 open Interpreter
 open Examples
 //open Tests
@@ -37,7 +38,7 @@ let runDirect program cleanupStrategy =
           match res with
             | Err s -> printf "%s\n" s
             | Val (_, circ) -> printf "Circuit:\n%s\n" (String.concat "\n" (prettyPrintCircuit circ));
-                               printf "Bits used: %d\n" (Set.count (getUses circ));
+                               printf "Bits used: %d\n" (Set.count (uses circ));
                                printf "Gates: %d\n" (List.length circ);
                                printf "Toffolis: %d\n" (List.length (List.filter (fun x -> match x with RTOFF _ -> true | _ -> false) circ))
 
@@ -62,7 +63,7 @@ let runBool program cleanupStrategy =
           match res with
             | Err s -> printf "%s\n" s
             | Val (_, circ) -> printf "Circuit:\n%s\n" (String.concat "\n" (prettyPrintCircuit circ))
-                               printf "Bits used: %d\n" (Set.count (getUses circ));
+                               printf "Bits used: %d\n" (Set.count (uses circ));
                                printf "Gates: %d\n" (List.length circ);
                                printf "Toffolis: %d\n" (List.length (List.filter (fun x -> match x with RTOFF _ -> true | _ -> false) circ))
 

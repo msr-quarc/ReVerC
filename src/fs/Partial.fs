@@ -1,23 +1,25 @@
-#light "off"
+(** Partial maps, implemented as assoc lists *)
 module Partial
-open Prims
 
-type ('Aa, 'Ad, 'Ab) map =
-'Aa  ->  'Ab
+type t<'key,'value> = list<'key * 'value>
 
+let defined m k = List.exists (fun (k', _) -> k = k') m
 
-let update = (fun ( d  :  'Aa Util.set ) ( b  :  Prims.unit ) ( map  :  ('Aa, Prims.unit, obj) map ) ( x  :  'Aa ) ( y  :  obj ) ( z  :  'Aa ) -> if (z = x) then begin
-y
-end else begin
-(map z)
-end)
+let empty = []
 
+let rec find m k = match (List.tryFind (fun (k', v') -> k = k') m) with
+  | None -> None
+  | Some (_, v) -> Some v
 
-let lookup = (fun ( d  :  'Aa Util.set ) ( b  :  Prims.unit ) ( map  :  ('Aa, Prims.unit, obj) map ) ( x  :  'Aa ) -> (map x))
+let rec find_def m k dval = match find m k with
+  | None -> dval 
+  | Some v -> v
 
+let rec update m k v = match m with
+    | [] -> [(k, v)]
+    | (k', v')::xs -> if k = k' then (k, v)::xs else (k', v')::(update xs k v)
 
-let dom = (fun ( d  :  'Aa Util.set ) ( b  :  Prims.unit ) ( m  :  ('Aa, Prims.unit, obj) map ) -> d)
-
-
-
+let totalize m dval =
+  { Total.elts = m;
+    Total.dval = dval }
 

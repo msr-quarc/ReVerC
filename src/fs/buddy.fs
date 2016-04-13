@@ -6,79 +6,79 @@ open Microsoft.FSharp.NativeInterop
 
 type BDD = int
 
-let path = @"C:\Users\t-maamy\Documents\Visual Studio 2013\Projects\BuDDy\x64\Release\BuDDy.dll"
+//let path = @"/home/meamy/Programming/ReVer/bdd"
 
 // Imports
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_init")>]
+[<DllImport(@"bdd", EntryPoint="bdd_init")>]
 extern int bdd_init(int,int);
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_true")>]
+[<DllImport(@"bdd", EntryPoint="bdd_true")>]
 extern BDD bdd_true();
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_false")>]
+[<DllImport(@"bdd", EntryPoint="bdd_false")>]
 extern BDD bdd_false();
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_ithvar")>]
+[<DllImport(@"bdd", EntryPoint="bdd_ithvar")>]
 extern BDD bdd_ithvar(int);
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_nithvar")>]
+[<DllImport(@"bdd", EntryPoint="bdd_nithvar")>]
 extern BDD bdd_nithvar(int);
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_var")>]
+[<DllImport(@"bdd", EntryPoint="bdd_var")>]
 extern int bdd_var(BDD);
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_low")>]
+[<DllImport(@"bdd", EntryPoint="bdd_low")>]
 extern BDD bdd_low(BDD);
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_high")>]
+[<DllImport(@"bdd", EntryPoint="bdd_high")>]
 extern BDD bdd_high(BDD);
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_printall")>]
+[<DllImport(@"bdd", EntryPoint="bdd_printall")>]
 extern void bdd_printall();
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_printtable")>]
+[<DllImport(@"bdd", EntryPoint="bdd_printtable")>]
 extern void bdd_printtable(BDD);
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_and")>]
+[<DllImport(@"bdd", EntryPoint="bdd_and")>]
 extern BDD bdd_and(BDD, BDD);
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_xor")>]
+[<DllImport(@"bdd", EntryPoint="bdd_xor")>]
 extern BDD bdd_xor(BDD, BDD);
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_biimp")>]
+[<DllImport(@"bdd", EntryPoint="bdd_biimp")>]
 extern BDD bdd_biimp(BDD, BDD);
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_or")>]
+[<DllImport(@"bdd", EntryPoint="bdd_or")>]
 extern BDD bdd_or(BDD, BDD);
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_imp")>]
+[<DllImport(@"bdd", EntryPoint="bdd_imp")>]
 extern BDD bdd_imp(BDD, BDD);
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_not")>]
+[<DllImport(@"bdd", EntryPoint="bdd_not")>]
 extern BDD bdd_not(BDD);
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_ite")>]
+[<DllImport(@"bdd", EntryPoint="bdd_ite")>]
 extern BDD bdd_ite(BDD, BDD);
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_setvarnum")>]
+[<DllImport(@"bdd", EntryPoint="bdd_setvarnum")>]
 extern int bdd_setvarnum(int);
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_addref")>]
+[<DllImport(@"bdd", EntryPoint="bdd_addref")>]
 extern BDD bdd_addref(BDD);
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_setmaxincrease")>]
+[<DllImport(@"bdd", EntryPoint="bdd_setmaxincrease")>]
 extern int bdd_setmaxincrease(int);
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_fnprintdot")>]
+[<DllImport(@"bdd", EntryPoint="bdd_fnprintdot")>]
 extern int bdd_fnprintdot(nativeint, BDD)
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_printdotprogHack")>]
+[<DllImport(@"bdd", EntryPoint="bdd_printdotprogHack")>]
 extern int bdd_printdotprogHack(int, BDD)
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_printdotcircHack")>]
+[<DllImport(@"bdd", EntryPoint="bdd_printdotcircHack")>]
 extern int bdd_printdotcircHack(int, BDD)
 
-[<DllImport(@"BuDDy.dll", EntryPoint="bdd_setcacheratio")>]
+[<DllImport(@"bdd", EntryPoint="bdd_setcacheratio")>]
 extern int bdd_setcacheratio(int)
 
 // F# interface to match MLBDD
