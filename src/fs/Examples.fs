@@ -20,9 +20,11 @@ let carryRippleAdder n =
         let mutable carry = false
         carry <- a.[0] <> b.[0]
         result.[1] <- a.[1] <> b.[1] <> carry
+        allege (result.[1] = (a.[0] <> b.[0] <> a.[1] <> b.[1]))
         for i in 2 .. n-1 do
             carry <- (a.[i-1] && (b.[i-1] <> carry)) <> (carry && b.[i-1])
             result.[i]  <-  a.[i] <> b.[i] <> carry
+        clean carry
         result           
     @@>
 (*

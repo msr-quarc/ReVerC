@@ -32,8 +32,8 @@ type GExpr =
   | APPEND     of GExpr * GExpr
   | ROT        of int * GExpr
   | SLICE      of GExpr * int * int
-  | CLEAN      of GExpr
-  | ASSERT     of GExpr
+  | CLEAN      of (GExpr * GExpr) // temporary hack for reporting failed assertions
+  | ASSERT     of (GExpr * GExpr) // temporary hack for reporting failed assertions
   // Compiler use only
   | LOC        of int
   | BEXP       of BoolExp
@@ -55,8 +55,8 @@ let rec freeIn x tm = match tm with
   | APPEND (t1, t2) -> freeIn x t1 || freeIn x t2
   | ROT (i, t) -> freeIn x t
   | SLICE (t, i, j) -> freeIn x t
-  | CLEAN t -> freeIn x t
-  | ASSERT t -> freeIn x t
+  | CLEAN (t, _) -> freeIn x t
+  | ASSERT (t, _) -> freeIn x t
   | LOC i -> false
   | BEXP bexp -> false
   | _ -> false
@@ -86,7 +86,7 @@ let rec varMaxTm tm = match tm with
   | APPEND (t1, t2) -> max (varMaxTm t1) (varMaxTm t2)
   | ROT (i, t) -> varMaxTm t
   | SLICE (t, i, j) -> varMaxTm t
-  | ASSERT t -> varMaxTm t
+  | ASSERT (t, _) -> varMaxTm t
   | _ -> 0
 and varMaxTm_lst lst = match lst with
   | [] -> 0
@@ -193,10 +193,10 @@ let rec prettyPrint gexp = match gexp with
   | SLICE (t, i, j) ->
       let st = prettyPrint t in
         appBack (FStar.String.strcat ".[" (FStar.String.strcat (Prims.string_of_int i) (FStar.String.strcat ".." (FStar.String.strcat (Prims.string_of_int j) "]")))) st
-  | CLEAN t ->
+  | CLEAN (t, _) ->
       let st = prettyPrint t in
         appFront "clean " st
-  | ASSERT t ->
+  | ASSERT (t, _) ->
       let st = prettyPrint t in
         appFront "allege " st
   | LOC i -> [FStar.String.strcat "loc " (Prims.string_of_int i)]
@@ -239,8 +239,8 @@ let rec substGExpr tm s tm' = match tm with
   | APPEND (t1, t2) -> APPEND (substGExpr t1 s tm', substGExpr t2 s tm')
   | ROT (i, t) -> ROT (i, substGExpr t s tm')
   | SLICE (t, i, j) -> SLICE (substGExpr t s tm', i, j)
-  | CLEAN t -> CLEAN (substGExpr t s tm')
-  | ASSERT t -> ASSERT (substGExpr t s tm')
+  | CLEAN (t, t') -> CLEAN (substGExpr t s tm', t')
+  | ASSERT (t, t') -> ASSERT (substGExpr t s tm', t')
   | _ -> tm
 and substGExpr_lst lst s tm' = match lst with
   | [] -> []
@@ -260,8 +260,8 @@ let rec substTyInGExpr tm k ty = match tm with
   | APPEND (t1, t2) -> APPEND (substTyInGExpr t1 k ty, substTyInGExpr t2 k ty)
   | ROT (i, t) -> ROT (i, substTyInGExpr t k ty)
   | SLICE (t, i, j) -> SLICE (substTyInGExpr t k ty, i, j)
-  | CLEAN t -> CLEAN (substTyInGExpr t k ty)
-  | ASSERT t -> ASSERT (substTyInGExpr t k ty)
+  | CLEAN (t, t') -> CLEAN (substTyInGExpr t k ty, t')
+  | ASSERT (t, t') -> ASSERT (substTyInGExpr t k ty, t')
   | _ -> tm
 and substTyInGExpr_lst lst k ty = match lst with
   | [] -> []

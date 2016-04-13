@@ -157,10 +157,10 @@ let parseAST expr =
                 ROT(dist, exp)
             | "clean" ->
                 let exp = gExpr exps.Head
-                CLEAN exp
+                CLEAN (exp, exp)
             | "allege" ->
                 let exp = gExpr exps.Head
-                ASSERT exp
+                ASSERT (exp, exp)
             | "op_Equality" ->
                 let exp1 = gExpr exps.Head
                 let exp2 = gExpr exps.Tail.Head

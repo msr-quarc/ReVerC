@@ -18,10 +18,11 @@ open Total
 
 (* A representation of program heap (which is Bool-typed) *)
 type interpretation<'state> =
-  { alloc  : 'state -> BoolExp -> (int * 'state);
-    assign : 'state -> int -> BoolExp -> 'state;
-    clean  : 'state -> int -> 'state;
-    eval   : 'state -> Total.state -> int -> bool }
+  { alloc      : 'state -> BoolExp -> (int * 'state);
+    assign     : 'state -> int -> BoolExp -> 'state;
+    clean      : 'state -> GExpr -> int -> 'state;
+    assertion  : 'state -> GExpr -> int -> 'state;
+    eval       : 'state -> Total.state -> int -> bool }
 
 (* Values of the language *)
 let rec isVal tm = match tm with
@@ -149,20 +150,20 @@ let rec step (tm, st) interp = match tm with
             Err (FStar.String.strcat "Array out of bounds: " (show tm))
         | _ -> Err (FStar.String.strcat "Cannot reduce array index: " (show tm))
       end
-  | CLEAN t ->
+  | CLEAN (t, torig) ->
     if not (isVal t) then
-      bindT (step (t, st) interp) (fun (t', st') -> Val (CLEAN t', st'))
+      bindT (step (t, st) interp) (fun (t', st') -> Val (CLEAN (t', torig), st'))
     else
       begin match t with
-        | LOC l -> Val (UNIT, interp.clean st l)
-        | ARRAY lst -> Val (UNIT, List.fold interp.clean st (List.map (fun v -> match v with | LOC l -> l | _ -> 0) lst))
+        | LOC l -> Val (UNIT, interp.clean st torig l)
+        | ARRAY lst -> Val (UNIT, List.fold (fun st l -> interp.clean st torig l) st (List.map (fun v -> match v with | LOC l -> l | _ -> 0) lst))
       end
-  | ASSERT t ->
+  | ASSERT (t, torig) ->
     if not (isVal t) then
-      bindT (step (t, st) interp) (fun (t', st') -> Val (ASSERT t', st'))
+      bindT (step (t, st) interp) (fun (t', st') -> Val (ASSERT (t', torig), st'))
     else
       begin match t with
-        | LOC l -> Val (UNIT, st)
+        | LOC l -> Val (UNIT, interp.assertion st torig l)
         | _ -> Err (FStar.String.strcat "Cannot reduce assertion: " (show tm))
       end
   | BEXP bexp ->
@@ -248,13 +249,13 @@ let rec eval_rec (tm, st) interp = match tm with
       | _ -> Err ("Invalid parameters: " ^ (show tm))
     end)
   | VAR x -> Val (tm, st)
-  | CLEAN t ->
+  | CLEAN (t, t') ->
       bind (eval_rec (t, st) interp) (fun (v, st') ->
       begin match t with
-        | LOC l -> Val (UNIT, interp.clean st l)
-        | ARRAY lst -> Val (UNIT, List.fold interp.clean st (List.map (fun v -> match v with | LOC l -> l | _ -> 0) lst))
+        | LOC l -> Val (UNIT, interp.clean st t' l)
+        | ARRAY lst -> Val (UNIT, List.fold (fun st l -> interp.clean st t' l) st (List.map (fun v -> match v with | LOC l -> l | _ -> 0) lst))
       end)
-  | ASSERT t ->
+  | ASSERT (t, t') ->
     bind (eval_rec (t, st) interp) (fun (v, st') ->
     begin match v with
       | LOC l -> Val (UNIT, st')
@@ -298,7 +299,8 @@ let boolEval (top, st) ivals i = lookup st i
 let boolInterp = {
   alloc = boolAlloc;
   assign = boolAssign;
-  clean = fun st l -> st;
+  clean = fun st t l -> st;
+  assertion = fun st t l -> st;
   eval = boolEval
 }
 
@@ -330,7 +332,8 @@ let bexpEval (top, st) ivals i = evalBexp (lookup st i) ivals
 let bexpInterp = {
   alloc = bexpAlloc;
   assign = bexpAssign;
-  clean = fun st l -> st;
+  clean = fun st t l -> st;
+  assertion = fun st t l -> st;
   eval = bexpEval
 }
 
@@ -449,7 +452,7 @@ let circAssign (top, ah, circ, st, cl) l bexp =
       else 
         let (ah', res, ancs, circ') = compileBexpPebbled_oop ah bexp' in
         (top, ah', circ@circ', update st l res, update cl res false)
-let circClean (top, ah, circ, st, cl) l = 
+let circClean (top, ah, circ, st, cl) _ l = 
     let bit = lookup st l in
     (top, insert ah bit, circ, st, update cl bit true)
 let circEval (top, ah, circ, st, cl) ivals i = lookup (evalCirc circ ivals) (lookup st i)
@@ -458,6 +461,7 @@ let circInterp = {
   alloc = circAlloc;
   assign = circAssign;
   clean = circClean;
+  assertion = fun st t l -> st;
   eval = circEval
 }
 

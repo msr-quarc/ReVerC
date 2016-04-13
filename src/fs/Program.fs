@@ -13,8 +13,7 @@ open ExprTypes
 open TypeCheck
 open Interpreter
 open Examples
-//open Tests
-//open Buddy
+open Equiv
 
 let runDirect program cleanupStrategy = 
     let (top, gexp) = parseAST program
@@ -35,6 +34,7 @@ let runDirect program cleanupStrategy =
           let gexp' = applySubs subs gexp
           printf "Annotated gExp:\n%s\n" (show gexp');
           let res = compileCirc (gexp', circInit)
+          let ver = compileBDD (gexp', bddInit)
           match res with
             | Err s -> printf "%s\n" s
             | Val (_, circ) -> printf "Circuit:\n%s\n" (String.concat "\n" (prettyPrintCircuit circ));
@@ -70,13 +70,16 @@ let runBool program cleanupStrategy =
 
 [<EntryPoint>]
 let __main _ = 
+  printf "Carry-Ripple 8:\n"
+  ignore <| runDirect (carryRippleAdder 8) Pebbled
+  Console.Out.Flush()
+  (*
   printf "\nSHA (2 rounds):\n"
   ignore <| runDirect (exprSha 2) Pebbled
   Console.Out.Flush()
   printf "Carry-Ripple 32:\n"
   ignore <| runDirect (carryRippleAdder 32) Pebbled
   Console.Out.Flush()
-  (*
   printf "\nCarry-Ripple 64:\n"
   //ignore <| runDirect (carryRippleAdder 64) Pebbled
   Console.Out.Flush()

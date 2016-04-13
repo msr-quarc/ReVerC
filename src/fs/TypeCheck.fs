@@ -138,10 +138,10 @@ let rec inferTypes top ctx gexp = match gexp with
     let e1 = TCons (ty1, TArray (IVar top')) in
     let l1 = ICons (ILit (j+1), IVar top') in
       (top'+1, e1::ec1, l1::lc1, TArray (ILit (j - i + 1)))
-  | CLEAN t ->
+  | CLEAN (t, _) ->
     let (top', ec1, lc1, ty1) = inferTypes top ctx t in
       (top', ec1, lc1, TUnit)
-  | ASSERT t ->
+  | ASSERT (t, _) ->
     let (top', ec1, lc1, ty1) = inferTypes top ctx t in
     let e1 = TCons (ty1, TBool) in
       (top', e1::ec1, lc1, TUnit)

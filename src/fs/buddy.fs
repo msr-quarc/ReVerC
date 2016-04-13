@@ -86,13 +86,13 @@ type t = BDD
 
 let init op = 
     let tmp = match op with
-        | None -> bdd_init(100000000, 100000)
-        | Some n -> bdd_init(n, 10000);
+        | None -> bdd_init(1000000, 1000)
+        | Some n -> bdd_init(n, 100);
     if tmp < 0 
     then failwith "Could not initialize bdd"
-    else ignore <| bdd_setvarnum(512);
+    else ignore <| bdd_setvarnum(256);
          ignore <| bdd_setcacheratio(10);
-         bdd_setmaxincrease(400000000)
+         bdd_setmaxincrease(4000000)
 let dtrue  _ = bdd_true()
 let dfalse _ = bdd_false()
 let ithvar _ i = bdd_ithvar(i)
