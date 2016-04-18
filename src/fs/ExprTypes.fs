@@ -141,7 +141,7 @@ let rec prettyPrint gexp = match gexp with
       let st2 = prettyPrint t2 in
         if forSomeT (fun l -> List.length l > 1) ([st1;st2])
         then (brackets st1) @ (indent 2 st2)
-        else [FStar.String.strcat "(" (FStar.String.strcat (hdT st1) (FStar.String.strcat ")" (FStar.String.concat " " st2)))]
+        else [FStar.String.strcat (hdT st1) (FStar.String.strcat " " (hdT st2))]
   | IFTHENELSE (t1, t2, t3) ->
       let st1 = prettyPrint t1 in
       let st2 = prettyPrint t2 in

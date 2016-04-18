@@ -48,11 +48,14 @@ let rec used i lst = match lst with
   | (RCNOT (a, b))::xs    -> a = i || b = i || used i xs
   | (RTOFF (a, b, c))::xs -> a = i || b = i || c = i || used i xs
   | (RNOT a)::xs          -> a = i || used i xs
-let rec uses gates = match gates with
-  | [] -> Set.empty
-  | (RCNOT (a, b))::xs    -> Set.add a (Set.add b (uses xs))
-  | (RTOFF (a, b, c))::xs -> Set.add a (Set.add b (Set.add c (uses xs)))
-  | (RNOT a)::xs          -> Set.add a (uses xs)
+let uses gates = 
+  let rec uses_acc gates acc = match gates with
+    | []                    -> acc
+    | (RCNOT (a, b))::xs    -> uses_acc xs (Set.add a (Set.add b acc))
+    | (RTOFF (a, b, c))::xs -> uses_acc xs (Set.add a (Set.add b (Set.add c acc)))
+    | (RNOT a)::xs          -> uses_acc xs (Set.add a acc)
+  in
+    uses_acc gates Set.empty
 
 let rec modded i gates = match gates with
   | [] -> false

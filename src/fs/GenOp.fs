@@ -184,7 +184,8 @@ let parseAST expr =
             seq <- SEQUENCE(gExpr (substituteVar fexp var.Name i), seq) // build up the sequence
         seq
     | Sequential(first, second) -> SEQUENCE(gExpr first, gExpr second)
-    | Sequential(first, Unit ) -> gExpr first
+    | Sequential(first, unit)   -> gExpr first
+    | Value (value, typ) -> failwith <| sprintf "Unsupported value %s : %A" (value.ToString()) typ
     | x -> failwith <| sprintf "Unsupported: %A" x
   let res = gExpr expr
   (inc (), res)
@@ -933,6 +934,7 @@ let nodesToDot (nodes : rNode array) =
         | None -> ()
     "digraph  {\nedge [color=grey41,arrowhead=vee];\nnode [fontcolor=grey19,color=grey41];\n" + nodesStr + arrowsStr + "}"
 
+*)
 /// <summary>
 /// Takes a list of gates and a circuit size and outputs a .qc representation.
 /// </summary>
@@ -951,7 +953,7 @@ let printQCV gs n =
     let mutable gateStr = String.concat "" gsStrs
     header + "\nBEGIN\n" + gateStr + "\nEND"
 
-
+(*
 /// <summary>
 /// Produces a tuple containing a list of gates and the number of gates in the circuit 
 /// </summary>

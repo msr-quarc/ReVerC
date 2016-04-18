@@ -709,7 +709,7 @@ let computeGraph gexp = eval_rec (gexp, [], ((0, 0), ([], []))) depGraphInterp
 *)
 
 (** Verification utilities *)
-
+(*
 val step_preservation : 
   #state:Type -> #state':Type -> 
   gexp:GExpr -> st:state -> st':state' -> init:Total.t int bool ->
@@ -781,6 +781,7 @@ and state_equiv_step_lst lst st st' init = match lst with
   | x::xs ->
     state_equiv_step x st st' init;
     state_equiv_step_lst xs st st' init
+*)
 
 (* Originally this was done polymorphically (using a general notion of
    equivalence of states and a proof that the interpreter preserves equivalence
@@ -890,6 +891,18 @@ type circ_equiv (st:boolState) (cs:circState) (init:state) =
   (forall i. not (mem (lookup cs.subs i) cs.ah)) /\
   (forall i. boolEval st init i = circEval cs init i)
 
+(* Needed for disjointness after applying substitution *)
+val substVar_disjoint : bexp:BoolExp -> subs:Total.t int int -> s:set int ->
+  Lemma (requires (forall i. not (Set.mem (lookup subs i) s)))
+        (ensures  (disjoint s (vars (substVar bexp subs))))
+let rec substVar_disjoint bexp subs s = match bexp with
+  | BFalse -> ()
+  | BVar i -> ()
+  | BNot x -> substVar_disjoint x subs s
+  | BAnd (x, y) | BXor (x, y) -> 
+    substVar_disjoint x subs s; 
+    substVar_disjoint y subs s
+
 val eval_bexp_swap2 : st:boolState -> cs:circState -> bexp:BoolExp -> bexp':BoolExp -> init:state ->
   Lemma (requires (circ_equiv st cs init /\
                    bexp' = substVar bexp cs.subs /\
@@ -944,7 +957,7 @@ let circ_equiv_alloc st cs init bexp =
   let st' = snd (boolAlloc st bexp) in
   let cs' = snd (circAlloc cs bexp) in
   let zeroHeap_lem =
-    admitP(disjoint (elts cs.ah) (vars bexp')); // Implied by circ_equiv proposition 3
+    substVar_disjoint bexp cs.subs (elts cs.ah);
     compile_decreases_heap_oop cs.ah bexp';
     compile_partition_oop cs.ah bexp';
     zeroHeap_subset init' cs.ah cs'.ah;
@@ -972,7 +985,7 @@ let circ_equiv_assign st cs init l bexp =
     | None ->
       let (ah', res, ancs, circ') = compileBexp_oop cs.ah bexp' in
       let zeroHeap_lem =
-        admitP(disjoint (elts cs.ah) (vars bexp')); // Implied by circ_equiv proposition 3
+        substVar_disjoint bexp cs.subs (elts cs.ah);
         compile_decreases_heap_oop cs.ah bexp';
         compile_partition_oop cs.ah bexp';
         zeroHeap_subset init' cs.ah cs'.ah;
@@ -987,26 +1000,29 @@ let circ_equiv_assign st cs init l bexp =
       in
       ()
     | Some bexp'' ->
-      admit(); // Need to redo
-      (*
       let (ah', res, ancs, circ') = compileBexp cs.ah l' bexp'' in
       let zeroHeap_lem =
         factorAs_correct bexp' l' init';
         factorAs_vars bexp' l';
+        substVar_disjoint bexp cs.subs (elts cs.ah);
+        disjoint_subset (vars bexp'') (vars bexp') (elts cs.ah);
         compile_decreases_heap cs.ah l' bexp'';
         compile_partition cs.ah l' bexp'';
         zeroHeap_subset init' cs.ah cs'.ah;
         zeroHeap_st_impl init' cs'.ah circ'
       in
       let preservation =
+        //admitP(forall i. not (i = l) ==> boolEval st' init i = circEval cs' init i);
         compile_mods cs.ah l' bexp'';
         eval_mod init' circ'
       in
       let correctness =
-        admitP(b2t(lookup (snd st') l = lookup (evalCirc circ' init') (lookup cs'.subs l)));
-        factorAs_correct bexp' l' init';
+        admitP(b2t(boolEval st' init l = circEval cs' init l));
         eval_commutes_subst_circ st cs bexp bexp'' init l l'
-      in *)
+        //admitP(b2t(lookup (snd st') l = lookup (evalCirc circ' init') (lookup cs'.subs l)))
+        //factorAs_correct bexp' l' init'
+      in
+        //admitP(forall i. boolEval st' init i = circEval cs' init i);
       ()
 
 val circ_equiv_step : gexp:GExpr -> st:boolState -> st':circState -> init:state ->
@@ -1041,16 +1057,14 @@ let rec circ_equiv_step gexp st st' init = match gexp with
   | SEQUENCE (t1, t2) ->
     circ_equiv_step t1 st st' init;
     circ_equiv_step t2 st st' init
-(*
-  | ASSIGN (t1, t2) -> admit ()
+  | ASSIGN (t1, t2) -> admit () (*
     if      not (isVal t1)  then admit() //circ_equiv_step t1 st st' init
     else if not (isBexp t2) then admit() //circ_equiv_step t2 st st' init
     else
       begin match t1 with
         | LOC l -> admit()//; circ_equiv_assign st st' init l (get_bexp t2)
         | _ -> admit ()
-      end *)
-(*
+      end
   | XOR (t1, t2) ->
     circ_equiv_step t1 st st' init;
     circ_equiv_step t2 st st' init
