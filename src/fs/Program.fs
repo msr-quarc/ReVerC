@@ -27,6 +27,9 @@ let isToff = function
   | RTOFF _ -> true
   | _       -> false
 
+let printIt (top, gexp) = printf "%s\n" (show gexp)
+registerCmd "print" "Print the AST of the program" printIt
+
 let typecheck (top, gexp) = 
   // Type inference
   let (top', eqs, bnds, typ) = inferTypes top [] gexp
@@ -79,29 +82,10 @@ let comp (top, gexp) =
         match res with
           | Err s -> printf "%s\n" s
           | Val (_, circ) -> 
-              printf "%s" (printQCV circ (Set.count (uses circ)))
+              let qcv = printQCV circ (Set.count (uses circ))
+              File.WriteAllText("output.qc", qcv)
+              printf "%s" qcv
 registerCmd "compile" "Compile the program in default mode" comp
-
-let crush (top, gexp) = 
-  // Type inference
-  let (top', eqs, bnds, typ) = inferTypes top [] gexp
-  let eqs =
-    let f c = match c with
-      | TCons (x, y) -> not (x = y)
-      | ICons (x, y) -> not (x = y)
-    List.filter f eqs
-  let res = unify_eq top' eqs bnds []
-  match res with
-    | None -> printf "Error: could not infer types\n"
-    | Some subs -> 
-        let gexp' = applySubs subs gexp
-        // Compilation
-        let res = compile (gexp', bexpInit) Pebbled
-        match res with
-          | Err s -> printf "%s\n" s
-          | Val (_, circ) -> 
-              printf "%s" (printQCV circ (Set.count (uses circ)))
-registerCmd "compile-crush" "Compile the program in space saving mode" crush
 
 let compStats (top, gexp) = 
   // Type inference
@@ -125,6 +109,53 @@ let compStats (top, gexp) =
               printf "Gates: %d\n" (List.length circ)
               printf "Toffolis: %d\n" (List.length (List.filter isToff circ))
 registerCmd "compile-stats" "Compile the program in default mode, printing just circuit statistics" compStats
+
+
+let crush (top, gexp) = 
+  // Type inference
+  let (top', eqs, bnds, typ) = inferTypes top [] gexp
+  let eqs =
+    let f c = match c with
+      | TCons (x, y) -> not (x = y)
+      | ICons (x, y) -> not (x = y)
+    List.filter f eqs
+  let res = unify_eq top' eqs bnds []
+  match res with
+    | None -> printf "Error: could not infer types\n"
+    | Some subs -> 
+        let gexp' = applySubs subs gexp
+        // Compilation
+        let res = compile (gexp', bexpInit) Pebbled
+        match res with
+          | Err s -> printf "%s\n" s
+          | Val (_, circ) -> 
+              let qcv = printQCV circ (Set.count (uses circ))
+              File.WriteAllText("output.qc", qcv)
+              printf "%s" qcv
+registerCmd "crush" "Compile the program in space saving mode" crush
+
+let crushStats (top, gexp) = 
+  // Type inference
+  let (top', eqs, bnds, typ) = inferTypes top [] gexp
+  let eqs =
+    let f c = match c with
+      | TCons (x, y) -> not (x = y)
+      | ICons (x, y) -> not (x = y)
+    List.filter f eqs
+  let res = unify_eq top' eqs bnds []
+  match res with
+    | None -> printf "Error: could not infer types\n"
+    | Some subs -> 
+        let gexp' = applySubs subs gexp
+        // Compilation
+        let res = compile (gexp', bexpInit) Pebbled
+        match res with
+          | Err s -> printf "%s\n" s
+          | Val (_, circ) -> 
+              printf "Bits used: %d\n" (Set.count (uses circ))
+              printf "Gates: %d\n" (List.length circ)
+              printf "Toffolis: %d\n" (List.length (List.filter isToff circ))
+registerCmd "crush-stats" "Compile the program in space saving mode, printing just circuit statistics" crushStats
 
 let run program mode cleanupStrategy = 
   // Parsing
@@ -190,53 +221,8 @@ let __main _ =
   while (not exit) do
     Console.WriteLine "Enter a command: "
     line <- Console.ReadLine()
+    printf "\n"
     if line = "exit" then exit <- true
     else parseLine line
-
-(*
-  ignore <| run polyEx Default Pebbled
-  printHelp ()
-  printf "Carry-Ripple 32:\n"
-  ignore <| run (carryRippleAdder 32) Default Pebbled
-  Console.Out.Flush()
-
-  printf "\nModular adder 32:\n"
-  ignore <| run (addMod 32) Default Pebbled
-  Console.Out.Flush()
-
-  printf "\nCucarro adder 32:\n"
-  ignore <| run (cucarro 32) Default Pebbled
-  Console.Out.Flush()
-
-  printf "\nMult 32:\n"
-  ignore <| run (mult 32) Default Pebbled
-  Console.Out.Flush()
-
-  printf "\nCarry-Lookahead 32:\n"
-  ignore <| run (carryLookaheadAdder 32) Default Pebbled
-  Console.Out.Flush()
-
-  printf "\nma4:\n"
-  ignore <| run (ma4) Default Pebbled
-  Console.Out.Flush()
-
-  printf "\nSHA (64 rounds):\n"
-  ignore <| run (SHA2 64) Default Pebbled
-  Console.Out.Flush()
-
-  printf "\nSHA (64 rounds) -- manual cleanup:\n"
-  ignore <| run (SHA2Efficient 64) Default Pebbled
-  Console.Out.Flush()
-
-  printf "\nMD5 (64 rounds):\n"
-  ignore <| run (MD5 64) Default Pebbled
-  Console.Out.Flush()
-
-  printf "\nKeccak (64 bit lanes):\n"
-  ignore <| run (keccakf 64) Default Pebbled
-  Console.Out.Flush()
-
-  printf "\nKeccak (64 bit lanes) -- in place:\n"
-  ignore <| run (keccakfInPlace 64) Default Pebbled
-  Console.Out.Flush()*)
+    printf "\n"
   0

@@ -18,6 +18,23 @@ registerProg "poly-ex"
              false 
              (fun _ -> parseAST polyEx)
 
+let verEx =
+  <@
+  fun (a : bool array) (b : bool array) ->
+    let mutable c = false
+    c <- a.[1] && (b.[0] <> b.[1])
+    b.[0] <- b.[0] <> (a.[0] && b.[3])
+    allege (c = (a.[1] && (b.[0] <> b.[1])))
+    allege (c = (a.[1] && (b.[0] <> (a.[0] && b.[3]) <> b.[1])))
+    c <- c <> ((a.[1] && (b.[0] <> (a.[0] && b.[3]))) <> (a.[1] && b.[1]))
+    clean a.[0]
+    clean c
+  @>
+registerProg "ver-ex" 
+             "An example program illustrating ReVer's verification facilities" 
+             false 
+             (fun _ -> parseAST verEx)
+
 let carryRippleAdder n =
     <@
     fun (a : bool array) (b : bool array) (result : bool array) ->
