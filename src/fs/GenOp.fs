@@ -951,7 +951,7 @@ let printQCV gs n =
     let header = ".v " + varlist + "\n.i" + varlist + "\n.o" + varlist
     let gsStrs = List.map printPrim gs
     let mutable gateStr = String.concat "" gsStrs
-    header + "\nBEGIN\n" + gateStr + "\nEND"
+    header + "\nBEGIN\n" + gateStr + "\nEND\n"
 
 (*
 /// <summary>

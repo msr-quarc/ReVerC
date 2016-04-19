@@ -1,6 +1,7 @@
 ﻿module Examples
 
 open GenOp
+open Cmd
 
 let polyEx =
   <@
@@ -12,6 +13,10 @@ let polyEx =
     foo a b
     b
   @>
+registerProg "poly-ex" 
+             "An example program illustrating subtype polymorphism" 
+             false 
+             (fun _ -> parseAST polyEx)
 
 let carryRippleAdder n =
     <@
@@ -28,6 +33,10 @@ let carryRippleAdder n =
         allege (result.[i] = (a.[i] <> b.[i] <> carry))
       result           
     @>
+registerProg "carryRipple" 
+             "Standard carry-ripple adder" 
+             true 
+             (fun n -> parseAST (carryRippleAdder n))
 
 let addMod n =
     <@
@@ -51,6 +60,10 @@ let addMod n =
       b.[0] <- b.[0] <> c
       clean c
     @>
+registerProg "addMod" 
+             "Adder mod n, in place" 
+             true 
+             (fun n -> parseAST (addMod n))
 
 let cucarro n =
     <@ 
@@ -71,6 +84,10 @@ let cucarro n =
       clean c
       b
     @>
+registerProg "cucarro" 
+             "Cucarro adder" 
+             true 
+             (fun n -> parseAST (cucarro n))
 
 
 let mult n = 
@@ -101,6 +118,10 @@ let mult n =
         ctrlAddModn a.[i] b result.[i..i+n-1]
       result 
     @>
+registerProg "mult" 
+             "Out of place multiplier" 
+             true 
+             (fun n -> parseAST (mult n))
 
 let mult2 n = 
     <@
@@ -150,6 +171,10 @@ let carryLookaheadAdder n =
                  ((true <> carry) && intermediateResults.[i*imSpacing+2*adderSize+1])
       Array.concat [a0b0.[0..adderSize-1]; result]
     @>
+registerProg "carryLookahead" 
+             "A carry-lookahead adder" 
+             true 
+             (fun n -> parseAST (carryLookaheadAdder n))
 
 let ma4 =
     <@
@@ -161,6 +186,10 @@ let ma4 =
             t
         ma4 a b c
     @>
+registerProg "ma4" 
+             "???" 
+             false
+             (fun _ -> parseAST ma4)
     
 let SHA2 n = 
   <@
@@ -212,6 +241,10 @@ let SHA2 n =
       hsh (rot (32*i % 256) x)
     x
   @>
+registerProg "sha2" 
+             "The 256-bit Secure Hash Algorithm 2. n gives the number of rounds to perform" 
+             true 
+             (fun n -> parseAST (SHA2 n))
 
 let SHA2Efficient n = 
   <@
@@ -265,6 +298,10 @@ let SHA2Efficient n =
         hsh (rot (32*i % 256) x)
       x
   @>
+registerProg "sha2-alt" 
+             "An alternate, eagerly cleaned implementation of SHA2" 
+             true 
+             (fun n -> parseAST (SHA2Efficient n))
 
 
 let MD5 n = 
@@ -331,6 +368,10 @@ let MD5 n =
         addMod (rot s.[i] t) X.[32..63]
       X
     @>
+registerProg "md5" 
+             "The MD5 message-digest algorithm" 
+             true 
+             (fun n -> parseAST (MD5 n))
 
 let keccakf l =
   let w = 1<<<l
@@ -393,6 +434,10 @@ let keccakf l =
 
       iota (chi (rhopi (theta A)))
   @>
+registerProg "keccak" 
+             "The keccak permutation underlying the SHA3 algorithm. n<7 gives a lane width of 2^n" 
+             true 
+             (fun n -> parseAST (keccakf n))
 
 let keccakfInPlace l =
   let w = 1<<<l
@@ -508,6 +553,10 @@ let keccakfInPlace l =
 
       iota (chi (rhopi (theta A)))
   @>
+registerProg "keccak-alt" 
+             "An alternate, in-place implementation of keccak" 
+             true 
+             (fun n -> parseAST (keccakfInPlace n))
 
 (*
 let chifun l = 
