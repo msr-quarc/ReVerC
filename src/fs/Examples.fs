@@ -2,6 +2,17 @@
 
 open GenOp
 
+let polyEx =
+  <@
+  fun (a : bool array) (b : bool array) ->
+    let foo (c : bool array) (d : bool array) =
+      d.[1] <- c.[0] <> d.[0]
+    a.[4] <- a.[3] && a.[2]
+    b.[8] <- a.[4]
+    foo a b
+    b
+  @>
+
 let carryRippleAdder n =
     <@
     fun (a : bool array) (b : bool array) (result : bool array) ->

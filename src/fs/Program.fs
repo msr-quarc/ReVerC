@@ -62,6 +62,10 @@ let run program mode cleanupStrategy =
 
 [<EntryPoint>]
 let __main _ = 
+  printf "polymorphism example:\n"
+  ignore <| run polyEx Default Pebbled
+  Console.Out.Flush()
+(*
   printf "Carry-Ripple 32:\n"
   ignore <| run (carryRippleAdder 32) Default Pebbled
   Console.Out.Flush()
@@ -104,5 +108,5 @@ let __main _ =
 
   printf "\nKeccak (64 bit lanes) -- in place:\n"
   ignore <| run (keccakfInPlace 64) Default Pebbled
-  Console.Out.Flush()
+  Console.Out.Flush()*)
   0
