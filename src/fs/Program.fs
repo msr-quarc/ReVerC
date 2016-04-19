@@ -62,7 +62,6 @@ let run program mode cleanupStrategy =
 
 [<EntryPoint>]
 let __main _ = 
-  (*
   printf "Carry-Ripple 32:\n"
   ignore <| run (carryRippleAdder 32) Default Pebbled
   Console.Out.Flush()
@@ -88,22 +87,22 @@ let __main _ =
   Console.Out.Flush()
 
   printf "\nSHA (64 rounds):\n"
-  ignore <| run (SHA2 2) Default Pebbled
+  ignore <| run (SHA2 64) Default Pebbled
   Console.Out.Flush()
 
   printf "\nSHA (64 rounds) -- manual cleanup:\n"
-  ignore <| run (SHA2Efficient 2) Default Pebbled
+  ignore <| run (SHA2Efficient 64) Default Pebbled
   Console.Out.Flush()
 
   printf "\nMD5 (64 rounds):\n"
-  ignore <| run (MD5 2) Default Pebbled
+  ignore <| run (MD5 64) Default Pebbled
   Console.Out.Flush()
-*)
+
   printf "\nKeccak (64 bit lanes):\n"
-  ignore <| run (keccakf 4) Default Pebbled
+  ignore <| run (keccakf 64) Default Pebbled
   Console.Out.Flush()
 
   printf "\nKeccak (64 bit lanes) -- in place:\n"
-  ignore <| run (keccakfInPlace 4) Default Pebbled
+  ignore <| run (keccakfInPlace 64) Default Pebbled
   Console.Out.Flush()
   0
