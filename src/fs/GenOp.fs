@@ -940,15 +940,14 @@ let nodesToDot (nodes : rNode array) =
 /// </summary>
 /// <param name="gs">Gates</param>
 /// <param name="n">The size of the circuit</param>
-let printQCV gs n = 
+let printQCV gs varlist = 
     let printPrim = 
         function 
         | RCNOT(x, y) -> sprintf "tof %d %d\n" x y
         | RTOFF(x, y, z) -> sprintf "tof %d %d %d\n" x y z
         | RNOT x-> sprintf "not %d\n" x
-    
-    let varlist = List.fold (+) "" (List.map (sprintf " %d ") [ 0..n ])
-    let header = ".v " + varlist + "\n.i" + varlist + "\n.o" + varlist
+    let varstr = FStar.String.concat " " (List.map (fun i -> i.ToString()) varlist)
+    let header = ".v " + varstr + "\n.i " + varstr + "\n.o " + varstr
     let gsStrs = List.map printPrim gs
     let mutable gateStr = String.concat "" gsStrs
     header + "\nBEGIN\n" + gateStr + "\nEND\n"

@@ -82,7 +82,7 @@ let comp (top, gexp) =
         match res with
           | Err s -> printf "%s\n" s
           | Val (_, circ) -> 
-              let qcv = printQCV circ (Set.count (uses circ))
+              let qcv = printQCV circ (Set.toList (uses circ))
               File.WriteAllText("output.qc", qcv)
               printf "%s" qcv
 registerCmd "compile" "Compile the program in default mode" comp
@@ -129,7 +129,7 @@ let crush (top, gexp) =
         match res with
           | Err s -> printf "%s\n" s
           | Val (_, circ) -> 
-              let qcv = printQCV circ (Set.count (uses circ))
+              let qcv = printQCV circ (Set.toList (uses circ))
               File.WriteAllText("output.qc", qcv)
               printf "%s" qcv
 registerCmd "crush" "Compile the program in space saving mode" crush
@@ -189,7 +189,7 @@ let run program mode cleanupStrategy =
                 printf "Bits used: %d\n" (Set.count (uses circ))
                 printf "Gates: %d\n" (List.length circ)
                 printf "Toffolis: %d\n" (List.length (List.filter isToff circ))
-              printf "%s" (printQCV circ (Set.count (uses circ)))
+              printf "%s" (printQCV circ (Set.toList (uses circ)))
 
 let runHack program mode cleanupStrategy = 
   // Parsing

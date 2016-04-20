@@ -43,11 +43,9 @@ let carryRippleAdder n =
 
       let mutable carry = false
       result.[0] <- a.[0] <> b.[0]
-      allege (carry = (a.[0] && b.[0]))
       for i in 1 .. n-1 do
         carry <- compute_carry a.[i-1] b.[i-1] carry
         result.[i]  <-  a.[i] <> b.[i] <> carry
-        allege (result.[i] = (a.[i] <> b.[i] <> carry))
       result           
     @>
 registerProg "carryRipple" 
