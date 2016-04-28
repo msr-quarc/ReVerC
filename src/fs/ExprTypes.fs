@@ -171,13 +171,13 @@ let rec prettyPrint gexp = match gexp with
         if forSomeT (fun l -> List.length l > 1) stlst
         then
           let f stlst lst = stlst @ (appBack "," (indent 2 lst)) in
-            ["["] @ (List.fold_left f [] stlst) @ ["]"]
+            ["["] @ (FStar.List.fold_left f [] stlst) @ ["]"]
         else 
           let f str lst = match lst with
             | [] -> str
             | x::xs -> FStar.String.strcat str (FStar.String.strcat "," x)
           in
-            [FStar.String.strcat (List.fold_left f "[" stlst) "]"]
+            [FStar.String.strcat (FStar.List.fold_left f "[" stlst) "]"]
   | GET_ARRAY (t, i) ->
       let st = prettyPrint t in
         appBack (FStar.String.strcat ".[" (FStar.String.strcat (Prims.string_of_int i) "]")) st

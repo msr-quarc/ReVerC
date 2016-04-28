@@ -24,7 +24,7 @@ let rec foldM f a lst = match lst with
 let hdT l = match l with | x::xs -> x
 let tlT l = match l with | x::xs -> xs
 
-let mems l = fun i -> List.mem i l
+let mems l = fun i -> FStar.List.mem i l
 
 let rec nthT l i = match l with
   | x::xs -> if i = 0 then x else nthT xs (i-1)
