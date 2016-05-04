@@ -74,7 +74,7 @@ let addMod n =
       c <- c <> a.[0]
       b.[0] <- b.[0] <> c
       clean c
-      b
+//      b
     @>
 registerProg "addMod" 
              "Adder mod n, in place" 

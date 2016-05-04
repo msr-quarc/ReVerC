@@ -67,6 +67,30 @@ and freeIn_lst x lst = match lst with
 
 let freeVars tm = fun x -> freeIn x tm
 
+let rec locsAcc lset tm = match tm with
+  | LET (s, t1, t2) -> locsAcc (locsAcc lset t1) t2
+  | LAMBDA (s, ty, t) -> locsAcc lset t
+  | APPLY (t1, t2) -> locsAcc (locsAcc lset t1) t2
+  | IFTHENELSE (t1, t2, t3) -> locsAcc (locsAcc lset t1) t2
+  | SEQUENCE (t1, t2) -> locsAcc (locsAcc lset t1) t2
+  | ASSIGN (t1, t2) -> locsAcc (locsAcc lset t1) t2
+  | XOR (t1, t2) -> locsAcc (locsAcc lset t1) t2
+  | AND (t1, t2) -> locsAcc (locsAcc lset t1) t2
+  | ARRAY tlst -> locsAcc_lst lset tlst
+  | GET_ARRAY (t, i) -> locsAcc lset t
+  | APPEND (t1, t2) -> locsAcc (locsAcc lset t1) t2
+  | ROT (i, t) -> locsAcc lset t
+  | SLICE (t, i, j) -> locsAcc lset t
+  | CLEAN (t, _) -> locsAcc lset t
+  | ASSERT (t, _) -> locsAcc lset t
+  | LOC i -> Set.ins i lset
+  | _ -> lset
+and locsAcc_lst lset lst = match lst with
+  | [] -> lset
+  | t::xs -> locsAcc_lst (locsAcc lset t) xs
+
+let locs tm = locsAcc Set.empty tm
+
 let rec varMaxTy ty = match ty with
   | GUnit | GBool | GArray _ -> 0
   | GVar i -> i
