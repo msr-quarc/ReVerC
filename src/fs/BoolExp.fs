@@ -75,14 +75,14 @@ let rec andDepth bexp = match bexp with
 (* Substitutions *)
 let rec substBexp bexp sub = match bexp with
   | BFalse   -> BFalse
-  | BVar i   -> lookup sub i
+  | BVar i   -> sub i
   | BNot x   -> BNot (substBexp x sub)
   | BAnd (x, y) -> BAnd ((substBexp x sub), (substBexp y sub))
   | BXor (x, y) -> BXor ((substBexp x sub), (substBexp y sub))
 
 let rec substVar bexp sub = match bexp with
   | BFalse   -> BFalse
-  | BVar i   -> BVar (lookup sub i)
+  | BVar i   -> BVar (sub i)
   | BNot x   -> BNot (substVar x sub)
   | BAnd (x, y) -> BAnd ((substVar x sub), (substVar y sub))
   | BXor (x, y) -> BXor ((substVar x sub), (substVar y sub))

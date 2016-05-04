@@ -110,6 +110,51 @@ let compStats (top, gexp) =
               printf "Toffolis: %d\n" (List.length (List.filter isToff circ))
 registerCmd "compile-stats" "Compile the program in default mode, printing just circuit statistics" compStats
 
+let compGC (top, gexp) = 
+  // Type inference
+  let (top', eqs, bnds, typ) = inferTypes top [] gexp
+  let eqs =
+    let f c = match c with
+      | TCons (x, y) -> not (x = y)
+      | ICons (x, y) -> not (x = y)
+    List.filter f eqs
+  let res = unify_eq top' eqs bnds []
+  match res with
+    | None -> printf "Error: could not infer types\n"
+    | Some subs -> 
+        let gexp' = applySubs subs gexp
+        // Compilation
+        let res = compileGCCirc (gexp', circGCInit)
+        match res with
+          | Err s -> printf "%s\n" s
+          | Val (_, circ) -> 
+              let qcv = printQCV circ (Set.toList (uses circ))
+              File.WriteAllText("output.qc", qcv)
+              printf "%s" qcv
+registerCmd "compileGC" "Compile the program with garbage collection" compGC
+
+let compGCStats (top, gexp) = 
+  // Type inference
+  let (top', eqs, bnds, typ) = inferTypes top [] gexp
+  let eqs =
+    let f c = match c with
+      | TCons (x, y) -> not (x = y)
+      | ICons (x, y) -> not (x = y)
+    List.filter f eqs
+  let res = unify_eq top' eqs bnds []
+  match res with
+    | None -> printf "Error: could not infer types\n"
+    | Some subs -> 
+        let gexp' = applySubs subs gexp
+        // Compilation
+        let res = compileGCCirc (gexp', circGCInit)
+        match res with
+          | Err s -> printf "%s\n" s
+          | Val (_, circ) -> 
+              printf "Bits used: %d\n" (Set.count (uses circ))
+              printf "Gates: %d\n" (List.length circ)
+              printf "Toffolis: %d\n" (List.length (List.filter isToff circ))
+registerCmd "compileGC-stats" "Compile the program with garbage collection, printing just circuit statistics" compGCStats
 
 let crush (top, gexp) = 
   // Type inference

@@ -8,7 +8,7 @@ FILES = Set.fst Total.fst Partial.fst Util.fst PairHeap.fst AncillaHeap.fst Circ
 REVS  = GenOp.fs buddy.fs Equiv.fs Cmd.fs Examples.fs Program.fs
 SUPPORT = FStar.Set FStar.Heap FStar.ST FStar.All FStar.List FStar.String FStar.IO
 
-FSFILES = FStar.FunctionalExtensionality.fs # FStar.Heap.fs FStar.ListProperties.fs FStar.Map.fs FStar.Util.fs
+FSFILES = #FStar.FunctionalExtensionality.fs # FStar.Heap.fs FStar.ListProperties.fs FStar.Map.fs FStar.Util.fs
 
 FSTSRC = $(addprefix src/, $(FILES))
 FSSRC  = $(addprefix src/fs/, $(STDLIB:.fst=.fs) $(EX:.fst=.fs)  $(FSFILES) $(FILES:.fst=.fs) $(REVS))
