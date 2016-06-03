@@ -282,6 +282,22 @@ and eval_to_bexp (tm, st) interp = match tm with
       | LOC l -> Val (BEXP (BVar l), st')
       | _ -> Err (String.strcat "Could not reduce expression to boolean: " (show tm)))
 
+(* Allocating initial values for a given type *)
+val allocN : #state:Type -> list GExpr * BExpState -> i:int ->
+  Tot (list GExpr * BExpState) (decreases i)
+let rec allocN (locs, (top, st)) i =
+  if i <= 0 then (List.rev locs, (top, st))
+  else allocN (((LOC top)::locs), (top+1, update st top (BVar top))) (i-1)
+
+val allocTy : #state:Type -> GType -> state -> Tot (result (config state))
+let allocTy ty (top, st) = match ty with
+  | GBool -> Val (LOC top, (top + 1, update st top (BVar top)))
+  | GArray n ->
+    let (locs, st') = allocN ([], (top, st)) n in
+      Val (ARRAY locs, st')
+  | _ -> Err "Invalid parameter type for circuit generation"
+
+
 (** Interpretation domains *)
 
 (* Boolean (standard) interpretation -- for running a Revs program *)

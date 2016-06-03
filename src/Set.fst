@@ -28,7 +28,7 @@ let ins a b          = union (singleton a) b
 
 (** Verification utilities *)
 
-(* Extensionality-based equaltiy *)
+(* Extensionality-based equality *)
 open FStar.FunctionalExtensionality
 type Equal (#a:Type) (s1:set a) (s2:set a) = FEq s1 s2
 val lemma_equal_intro: #a:Type -> s1:set a -> s2:set a -> Lemma

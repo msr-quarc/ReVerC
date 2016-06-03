@@ -512,12 +512,13 @@ let rec compileCirc (gexp, (top, ah, circ, st, cl)) =
 type qubit =
   { id   : int;
     ival : BoolExp;
-    cval : BoolExp }
+    cval : BoolExp;
+    modi : bool }
 
-let nullq = { id = 0; ival = BFalse; cval = BFalse }
+let nullq = { id = 0; ival = BFalse; cval = BFalse; modi = false }
 let get_subst m = fun i -> (Partial.find_def m i nullq).id
-let data_q i = { id = i; ival = BVar i; cval = BFalse }
-let anc_q i  = { id = i; ival = BFalse; cval = BFalse }
+let data_q i = { id = i; ival = BVar i; cval = BFalse; modi = false }
+let anc_q i  = { id = i; ival = BFalse; cval = BFalse; modi = false }
 
 type circGCState =
   { top    : int;
@@ -529,22 +530,29 @@ type circGCState =
 //  -compile the current value in place (i.e. ival + cval + cval = ival),
 //  -if the qubit is an ancilla, push it back onto the heap, and
 //  -update the current value of all other bits by substituting q.id with ival + cval
-let garbageCollect cs q = 
+let garbageCollect cs q =
+  if q.modi = true then cs else
   let (ah', res, ancs, circ) = compileBexp cs.ah q.id q.cval in
   let ah'' = if q.ival = BFalse then insert ah' q.id else ah' in
   let f q' = 
     let subq = fun v -> if v = q.id then BXor (q.ival, q.cval) else BVar v in
-      { id = q'.id; ival = q'.ival; cval = simplify (substBexp q'.cval subq) }
+    { id = q'.id; 
+      ival = q'.ival; 
+      cval = q'.cval; //simplify (substBexp q'.cval subq); 
+      modi = q'.modi || occursInBexp q.id q'.cval }
   in
   let symtab' = Partial.mapVals f cs.symtab in
-    { top = cs.top; ah = ah''; gates = cs.gates @ circ; symtab = symtab' }
+  { top = cs.top; 
+    ah = ah''; 
+    gates = cs.gates @ circ; 
+    symtab = symtab' }
 
 let circGCInit = { top = 0; ah = emptyHeap; gates = []; symtab = Partial.empty }
 let circGCAlloc cs bexp = 
   let bexp' = simplify (substVar bexp (get_subst cs.symtab)) in
   let (ah', bit) = popMin cs.ah in
   let (ah'', res, ancs, circ') = compileBexp ah' bit bexp' in
-  let q = { id = bit; ival = BFalse; cval = bexp' } in
+  let q = { id = bit; ival = BFalse; cval = bexp'; modi = false } in
   let top' = cs.top + 1 in
   let gates' = cs.gates @ circ' in
   let symtab' = Partial.update cs.symtab cs.top q in
@@ -557,25 +565,36 @@ let circGCAssign cs l bexp =
     | (BFalse, _)      -> // substitute q.id with BFalse, compile in place
       let bexp'' = substBexp bexp' (fun v -> if v = q.id then BFalse else BVar v) in
       let (ah', res, ancs, circ) = compileBexp cs.ah q.id bexp'' in
-      let q' = { id = q.id; ival = q.ival; cval = bexp'' } in
-        {top = cs.top; ah = ah'; gates = cs.gates @ circ; symtab = Partial.update cs.symtab l q' }
-    | (_, Some bexp'') -> // compile in place, substitute q.id with q.id \oplus bexp''
-      let (ah', res, ancs, circ') = compileBexp cs.ah q.id bexp'' in
-      let q' = { id = q.id; ival = q.ival; cval = simplify (BXor (q.cval, bexp'')) } in
+      let q' = { id = q.id; ival = q.ival; cval = bexp''; modi = false } in
       let f b = 
-        let subq = fun v -> if v = q.id then BXor (BVar q.id, bexp'') else BVar v in
-          { id = b.id; ival = b.ival; cval = simplify (substBexp b.cval subq) }
+        let subq = fun v -> if v = q.id then bexp'' else BVar v in
+        { id = b.id; 
+          ival = b.ival; 
+          cval = b.cval; //simplify (substBexp b.cval subq); 
+          modi = b.modi || occursInBexp q.id b.cval }
       in
       let symtab' = Partial.update (Partial.mapVals f cs.symtab) l q' in
-        {top = cs.top; ah = ah'; gates = cs.gates @ circ'; symtab = Partial.update cs.symtab l q' }
+        {top = cs.top; ah = ah'; gates = cs.gates @ circ; symtab = symtab' }
+    | (_, Some bexp'') -> // compile in place, substitute q.id with q.id \oplus bexp''
+      let (ah', res, ancs, circ') = compileBexp cs.ah q.id bexp'' in
+      let q' = { id = q.id; ival = q.ival; cval = simplify (BXor (q.cval, bexp'')); modi = false } in
+      let f b = 
+        let subq = fun v -> if v = q.id then BXor (BVar q.id, bexp'') else BVar v in
+        { id = b.id; 
+          ival = b.ival; 
+          cval = b.cval; //simplify (substBexp b.cval subq); 
+          modi = b.modi || occursInBexp q.id b.cval }
+      in
+      let symtab' = Partial.update (Partial.mapVals f cs.symtab) l q' in
+        {top = cs.top; ah = ah'; gates = cs.gates @ circ'; symtab = symtab' }
     | _                -> // Compile out of place, clean q.id
       let (ah', res, ancs, circ') = compileBexp_oop cs.ah bexp' in
-      let q' = { id = res; ival = BFalse; cval = bexp' } in
+      let q' = { id = res; ival = BFalse; cval = bexp'; modi = false } in
       let cs' = { top = cs.top; ah = ah'; gates = cs.gates @ circ'; symtab = Partial.update cs.symtab l q' } in
         garbageCollect cs' q
 let circGCClean cs _ l = 
     let bit = Partial.find_def cs.symtab l nullq in
-    let q' = { id = bit.id; ival = BFalse; cval = BFalse } in
+    let q' = { id = bit.id; ival = BFalse; cval = BFalse; modi = false } in
     { top = cs.top; ah = insert cs.ah bit.id; gates = cs.gates; symtab = Partial.update cs.symtab l q' }
 let circGCEval cs st i = false
 
