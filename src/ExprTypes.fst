@@ -13,6 +13,7 @@ type GType =
   | GBool
   | GArray of int
   | GFun of GType * GType
+  | GConst of GType
   // Compiler use only
   | GVar of int
 
@@ -122,6 +123,7 @@ let freeVars tm = fun x -> freeIn x tm
 let rec varMaxTy ty = match ty with
   | GUnit | GBool | GArray _ -> 0
   | GVar i -> i
+  | GConst ty -> varMaxTy ty
   | GFun (ty1, ty2) -> max (varMaxTy ty1) (varMaxTy ty2)
 
 let rec varMaxTm tm = match tm with
@@ -173,6 +175,7 @@ let rec prettyPrintTy ty = match ty with
   | GBool -> "bool"
   | GVar i -> Prims.string_of_int i
   | GArray n -> String.strcat "vec " (Prims.string_of_int n)
+  | GConst ty -> String.strcat "const " (prettyPrintTy ty)
   | GFun (ty1, ty2) -> begin match ty1 with
     | GFun _ -> String.strcat "("
                (String.strcat (prettyPrintTy ty1)
@@ -275,6 +278,7 @@ let print gexp =
 let rec substTy ty i ty' = match ty with
   | GUnit | GBool | GArray _ -> ty
   | GVar j -> if i = j then ty' else ty
+  | GConst ty -> GConst (substTy ty i ty')
   | GFun (ty1, ty2) -> GFun (substTy ty1 i ty', substTy ty2 i ty')
 
 let rec substGExpr tm s tm' = match tm with

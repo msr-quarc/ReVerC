@@ -16,6 +16,18 @@ let clean x = ()
 let allege x = if x then () else failwith "Assertion failed"
 let not x = if x then false else true
 
+type constArray<'T> = 
+  { data : array<'T> }
+  member this.Item with get i = this.data.[i]
+                    and set i v = this.data.[i] <- v
+  member this.GetSlice(i : int option, j : int option) : constArray<'T> = match (i, j) with
+    | (Some i, Some j) -> { data = this.data.[i..j] }
+    | (Some i, None) -> { data = this.data.[i..] }
+    | (None, Some j) -> { data = this.data.[..j] }
+    | (None, None) -> { data = this.data.[*] }
+
+let unfreeze (x:constArray<'T>) = x.data
+
 /// <summary>
 /// Substitutes a varible in some expressions with an integer
 /// Used for loop unrolling
@@ -90,12 +102,13 @@ let parseAST expr =
     !varMax
   let rec gExpr expr = match expr with
     | Let(var, expr1, expr2) -> LET(var.Name, gExpr expr1, gExpr expr2)
-    | Lambdas(vars, lexpr) -> 
-        let vars' = List.map (fun (x : Var list) -> (List.head x).Name) vars
-        List.foldBack (fun v exp -> LAMBDA (v, GVar (inc ()), exp)) vars' (gExpr lexpr)
-    | Applications(f, xs) -> 
-        let exprs = List.map (fun (x : Expr list) -> gExpr <| List.head x) xs
-        List.fold (fun exp param -> APPLY (exp, param)) (gExpr f) exprs
+    | Lambda(var, lexpr) -> 
+        let getTy (ty:Type) =
+          if ty.Name = "constArray`1" 
+          then GConst (GVar (inc ()))
+          else GVar (inc ())
+        LAMBDA (var.Name, getTy var.Type, gExpr lexpr)
+    | Application(f, exp) -> APPLY (gExpr f, gExpr exp)
     | SpecificCall <@@ (<>) @@> (_, _, exprList) -> 
         let lhs = gExpr exprList.Head
         let rhs = gExpr exprList.Tail.Head
@@ -113,7 +126,7 @@ let parseAST expr =
         let thenExpr = gExpr t
         let elseExpr = gExpr e
         IFTHENELSE (condition , thenExpr , elseExpr )
-    | Call(_, methodInfo, exps) -> 
+    | Call(op, methodInfo, exps) -> 
         match methodInfo.Name with
             | "SetArray" -> 
                 let var = gExpr exps.Head
@@ -151,6 +164,17 @@ let parseAST expr =
                 let start =  getVal exps.Tail.Head
                 let finish =  getVal exps.Tail.Tail.Head
                 SLICE(var,start,finish)
+            | "GetSlice" ->       
+                let getVal =
+                    function
+                    | NewUnionCase (_,n) -> evalConstExp n.Head
+                    | x -> failwith <| sprintf "Issue with GetArraySlice: %A" x
+                let var = match op with
+                  | Some v -> gExpr v
+                  | None -> failwith <| sprintf "No root for get slice: %A" expr
+                let start =  getVal exps.Head
+                let finish =  getVal exps.Tail.Head
+                SLICE(var,start,finish)
             | "rot" -> 
                 let dist = evalConstExp exps.Head
                 let exp = gExpr exps.Tail.Head
@@ -168,7 +192,7 @@ let parseAST expr =
             | "not" ->
                 let exp = gExpr exps.Head
                 XOR(BOOL true, exp)
-            | x -> failwith <| sprintf "Unsupported Call to: %A" x
+            | x -> failwith <| sprintf "Unsupported Call to %A in %A" x expr
     | VarSet(var, exp) -> ASSIGN(VAR var.Name, gExpr exp)
     | Var x -> VAR x.Name
     | Int32 x -> ARRAY (List.map (fun b -> BOOL b) (Util.ofInt x 32))
@@ -186,6 +210,12 @@ let parseAST expr =
     | Sequential(first, second) -> SEQUENCE(gExpr first, gExpr second)
     | Sequential(first, unit)   -> gExpr first
     | Value (value, typ) -> failwith <| sprintf "Unsupported value %s : %A" (value.ToString()) typ
+    | PropertyGet (Some x, _, exps) ->
+        let index = evalConstExp exps.Head
+        GET_ARRAY (gExpr x, index)
+    | PropertySet (Some x, _, exps, v) ->
+        let index = evalConstExp exps.Head
+        ASSIGN (GET_ARRAY (gExpr x, index), gExpr v)
     | x -> failwith <| sprintf "Unsupported: %A" x
   let res = gExpr expr
   (inc (), res)

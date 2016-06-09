@@ -5,12 +5,12 @@ open Cmd
 
 let polyEx =
   <@
-  fun (a : bool array) (b : bool array) ->
-    let foo (c : bool array) (d : bool array) =
+  fun (a : bool constArray) (b : bool array) ->
+    let foo (c : bool constArray) (d : bool array) =
       d.[1] <- c.[0] <> d.[0]
     a.[4] <- a.[3] && a.[2]
     b.[8] <- a.[4]
-    foo a b
+    foo a.[0..2] b
     b
   @>
 registerProg "poly-ex" 

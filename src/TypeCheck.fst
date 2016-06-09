@@ -102,10 +102,12 @@ val subtype : t1:GType -> t2:GType -> Tot bool
 val suptype : t1:GType -> t2:GType -> Tot bool
 let rec subtype t1 t2 = if t1 = t2 then true else match (t1, t2) with
   | (GArray i, GArray j) -> j <= i
+  | (GConst t1, GConst t2) -> subtype t1 t2
   | (GFun (t1, t2), GFun (s1, s2)) -> (suptype t1 s1) && (subtype t2 s2)
   | _ -> false
 and suptype t1 t2 = if t1 = t2 then true else match (t1, t2) with
   | (GArray i, GArray j) -> j >= i
+  | (GConst t1, GConst t2) -> suptype t1 t2
   | (GFun (t1, t2), GFun (s1, s2)) -> (subtype t1 s1) && (suptype t2 s2)
   | _ -> false
 
@@ -163,6 +165,7 @@ let rec toTyExp ty = match ty with
   | GBool -> TBool
   | GVar i -> TVar i
   | GArray n -> TArray (ILit n)
+  | GConst ty -> toTyExp ty
   | GFun (ty1, ty2) -> TArrow (toTyExp ty1, toTyExp ty2)
 
 val toGType : TyExp -> GType
@@ -237,7 +240,7 @@ let rec inferTypes top ctx gexp = match gexp with
   | GET_ARRAY (t, i) ->
     let (top', ec1, lc1, ty1) = inferTypes top ctx t in
     let e1 = TCons (ty1, TArray (IVar top')) in
-    let l1 = ICons (ILit i, IVar top') in
+    let l1 = ICons (ILit (i+1), IVar top') in
       (top'+1, e1::ec1, l1::lc1, TBool)
   | APPEND (t1, t2) ->
     let (top', ec1, lc1, ty1) = inferTypes top ctx t1 in
@@ -297,7 +300,7 @@ let rec iSubst i iexp cons = match cons with
 
 let rec tSubst i texp cons = match cons with
   | [] -> []
-  | (TCons c)::xs -> (TCons (substTExp i texp (fst c), substTExp i texp (snd c)))::(tSubst i texp xs)
+  | (TCons (c1, c2))::xs -> (TCons (substTExp i texp c1, substTExp i texp c2))::(tSubst i texp xs)
   | x::xs -> x::(tSubst i texp xs)
 
 let rec mergeLower iexp j bnds = match bnds with

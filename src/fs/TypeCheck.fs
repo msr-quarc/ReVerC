@@ -47,6 +47,7 @@ let rec toTyExp ty = match ty with
   | GBool -> TBool
   | GVar i -> TVar i
   | GArray n -> TArray (ILit n)
+  | GConst ty -> toTyExp ty
   | GFun (ty1, ty2) -> TArrow (toTyExp ty1, toTyExp ty2)
 
 let rec toGType texp = match texp with
