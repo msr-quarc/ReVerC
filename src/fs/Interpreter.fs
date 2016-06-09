@@ -401,7 +401,13 @@ let rec compile (gexp, st) strategy =
       in
         Val ([res], circ)
     | ARRAY lst ->
-      let blst = List.map simploop (lookupLst lst st) in
+      let cmp x y = 
+        let xd = andDepth x in
+        let yd = andDepth y in
+          if xd < yd then 1 else if xd = yd then 0 else -1
+      in
+      let blst' = List.map (fun x -> fromESOP (toESOP x)) (lookupLst lst st) in
+      let blst = List.sortWith cmp blst' in
       let max = listMax (List.map varMax blst) in
       let (ah, outs, anc, circ) = match strategy with
         | Pebbled ->

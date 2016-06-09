@@ -43,6 +43,7 @@ val listMax      : (list int) -> Tot int
 val varCount     : BoolExp -> Tot int
 val varMax       : BoolExp -> Tot int
 val gtVars       : int -> BoolExp -> Tot bool
+val andDepth     : BoolExp -> Tot nat
 
 val substBexp    : BoolExp -> Total.t int BoolExp -> Tot BoolExp
 val substVar     : BoolExp -> Total.t int int -> Tot BoolExp
@@ -127,6 +128,12 @@ let rec gtVars i bexp = match bexp with
   | BVar j -> i > j
   | BNot x -> gtVars i x
   | BXor (x, y) | BAnd (x, y) -> gtVars i x && gtVars i y
+
+let rec andDepth bexp = match bexp with
+  | BNot x   -> andDepth x
+  | BAnd (x, y) -> (andDepth x) + (andDepth y) + 1
+  | BXor (x, y) -> max (andDepth x) (andDepth y)
+  | _ -> 0
 
 (* Substitutions *)
 let rec substBexp bexp sub = match bexp with
@@ -237,7 +244,8 @@ let rec toESOP exp = match exp with
 
 let rec fromESOP es = match es with
   | [] -> BFalse
-  | x::xs -> BXor (fromESOP xs, List.fold_leftT (fun exp v -> BAnd (exp, (BVar v))) (BNot BFalse) x)
+  | []::xs -> BXor (BNot BFalse, fromESOP xs)
+  | (y::ys)::xs -> BXor (List.fold_leftT (fun exp v -> BAnd (exp, (BVar v))) (BVar y) ys, fromESOP xs)
 
 let rec distrib x y = match (x, y) with
   | (BXor (x1, x2), _) -> BXor (distrib x1 y, distrib x2 y)

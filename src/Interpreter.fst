@@ -417,7 +417,12 @@ let rec compile (gexp, st) strategy =
       in
         Val ([res], circ)
     | ARRAY lst ->
-      let blst = lookupLst lst st in
+      let cmp x y = 
+	let xd = andDepth x in
+	let yd = andDepth y in
+	  if xd < yd then 1 else if xd = yd then 0 else -1
+      in
+      let blst = List.sortWithT cmp (lookupLst lst st) in
       let max = listMax (List.mapT varMax blst) in
       let (ah, outs, anc, circ) = match strategy with
         | Pebbled ->

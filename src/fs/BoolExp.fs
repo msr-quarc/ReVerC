@@ -66,6 +66,12 @@ let rec gtVars i bexp = match bexp with
   | BNot x -> gtVars i x
   | BXor (x, y) | BAnd (x, y) -> gtVars i x && gtVars i y
 
+let rec andDepth bexp = match bexp with
+  | BNot x   -> andDepth x
+  | BAnd (x, y) -> (andDepth x) + (andDepth y) + 1
+  | BXor (x, y) -> max (andDepth x) (andDepth y)
+  | _ -> 0
+
 (* Substitutions *)
 let rec substBexp bexp sub = match bexp with
   | BFalse   -> BFalse
@@ -143,19 +149,39 @@ let rec factorAs exp targ = match exp with
         | Some y' -> Some (BXor (x, y'))
     ) else None
 
+(* ESOP forms *)
+type esop = list<list<int> >
+
+let esfalse = []
+let estrue  = [[]]
+let esvar v = [[v]]
+let esnot x = listSymdiff estrue x
+let esxor x y = listSymdiff x y
+let esmul s y = List.map (listUnion s) y
+let esand x y = List.fold_left (fun x s -> listSymdiff x (esmul s y)) [] x
+
+let rec toESOP exp = match exp with
+  | BFalse -> esfalse
+  | BVar v -> esvar v
+  | BNot x -> esnot (toESOP x)
+  | BXor (x, y) -> esxor (toESOP x) (toESOP y)
+  | BAnd (x, y) -> esand (toESOP x) (toESOP y)
+
+let rec fromESOP es = match es with
+  | [] -> BFalse
+  | []::xs -> BXor (BNot BFalse, fromESOP xs)
+  | (y::ys)::xs -> BXor (List.fold_left (fun exp v -> BAnd (exp, (BVar v))) (BVar y) ys, fromESOP xs)
+
+let rec distrib x y = match (x, y) with
+  | (BXor (x1, x2), _) -> BXor (distrib x1 y, distrib x2 y)
+  | (_, BXor (y1, y2)) -> BXor (distrib x y1, distrib x y2)
+  | _                  -> BAnd (x, y)
+
 let rec distributeAnds exp = match exp with
-  | BFalse -> BFalse
-  | BVar v -> BVar v
-  | BNot x -> BNot (distributeAnds x)
-  | BAnd (x, y) ->
-    begin match (distributeAnds x, distributeAnds y) with
-      | (BXor (a, b), BXor (c, d)) ->
-        BXor (BXor (BAnd (a, c), BAnd (b, c)), BXor (BAnd (a, d), BAnd (b, d)))
-      | (x', BXor (c, d)) -> BXor (BAnd (x', c), BAnd (x', d))
-      | (BXor (a, b), y') -> BXor (BAnd (a, y'), BAnd (b, y'))
-      | (x', y') -> BAnd (x', y')
-    end
+  | BNot x      -> BXor (BNot BFalse, distributeAnds x)
+  | BAnd (x, y) -> distrib (distributeAnds x) (distributeAnds y)
   | BXor (x, y) -> BXor (distributeAnds x, distributeAnds y)
+  | _ -> exp
 
 let rec undistributeAnds exp = match exp with
   | BFalse -> BFalse
