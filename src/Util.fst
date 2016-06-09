@@ -41,6 +41,9 @@ val rotate    : l:list 'a -> i:nat{i < List.length l} -> Tot (list 'a) (decrease
 val slice     : l:list 'a -> i:nat -> j:nat{i <= j && j < List.length l} -> Tot (list 'a)
 val ofInt     : i:nat -> j:int -> Tot (list bool) (decreases j)
 
+val listUnion   : #a:Type -> list a -> list a -> Tot (list a)
+val listSymdiff : #a:Type -> list a -> list a -> Tot (list a)
+
 let hdT l = match l with | x::xs -> x
 let tlT l = match l with | x::xs -> xs
 
@@ -87,3 +90,17 @@ let slice l i j = take (remove l i) (j - i + 1)
 let rec ofInt i j =
   if j <= 0 then []
   else (i % 2 = 1)::(ofInt (i / 2) (j - 1))
+
+val unins : #a:Type -> list a -> a -> Tot (list a)
+let rec unins l y = match l with
+  | []    -> [y]
+  | x::xs -> if x = y then x::xs else x::(unins xs y)
+
+let listUnion x y = List.fold_leftT unins [] x
+
+val symins : #a:Type -> list a -> a -> Tot (list a)
+let rec symins l y = match l with
+  | []    -> [y]
+  | x::xs -> if x = y then xs else x::(symins xs y)
+
+let listSymdiff x y = List.fold_leftT symins [] x

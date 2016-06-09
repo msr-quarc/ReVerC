@@ -21,6 +21,15 @@ type BoolExp =
   | BAnd of BoolExp * BoolExp
   | BXor of BoolExp * BoolExp
 
+(* For termination proofs *)
+val expsize : BoolExp -> Tot nat
+let rec expsize bexp = match bexp with
+  | BFalse   -> 0
+  | BVar i   -> 0
+  | BNot x   -> (expsize x) + 1
+  | BAnd (x, y) -> (expsize x) + (expsize y) + 1
+  | BXor (x, y) -> (expsize x) + (expsize y) + 1
+
 type compilerResult = AncHeap * int * (list int) * (Circuit)
 
 val prettyPrintBexp : exp:BoolExp -> Tot string (decreases exp)
@@ -40,10 +49,11 @@ val substVar     : BoolExp -> Total.t int int -> Tot BoolExp
 
 val evalBexp     : BoolExp -> state -> Tot bool
 
-val simplify         : BoolExp -> Tot BoolExp
-val factorAs         : BoolExp -> int -> Tot (option BoolExp)
-val distributeAnds   : BoolExp -> Tot BoolExp
-val undistributeAnds : BoolExp -> Tot BoolExp
+val simplify : BoolExp -> Tot BoolExp
+val factorAs : BoolExp -> int -> Tot (option BoolExp)
+val distrib  : BoolExp -> BoolExp -> Tot BoolExp
+val toXDNF   : BoolExp -> Tot BoolExp
+val untoXDNF : BoolExp -> Tot BoolExp
 
 val compileBexp            : AncHeap -> int -> exp:BoolExp -> Tot compilerResult (decreases %[exp;0])
 val compileBexp_oop        : AncHeap -> exp:BoolExp -> Tot compilerResult (decreases %[exp;1])
@@ -142,30 +152,7 @@ let rec evalBexp bexp st = match bexp with
   | BXor (x, y) -> (evalBexp x st) <> (evalBexp y st)
 
 (* Optimizations *)
-(*
-let rec simplify exp = match exp with
-  | BFalse -> BFalse
-  | BVar x -> exp
-  | BAnd (x, y) ->
-    let x' = simplify x in
-    let y' = simplify y in (
-      match (x', y') with
-        | (BFalse, _) | (_, BFalse) -> BFalse
-        | _ -> BAnd (x', y')
-    )
-  | BXor (x, y) ->
-    let x' = simplify x in
-    let y' = simplify y in (
-      match (x', y') with
-        | (BFalse, z) | (z, BFalse) -> z
-        | _ -> BXor (x', y')
-    )
-  | BNot x ->
-    let x' = simplify x in begin match x' with
-      | BNot y -> y
-      | _ -> BNot x'
-    end
-*)
+ 
 let rec simplify exp = match exp with
   | BFalse -> BFalse
   | BVar x -> exp
@@ -219,27 +206,55 @@ let rec factorAs exp targ = match exp with
         | Some y' -> Some (BXor (x, y'))
     ) else None
 
-let rec distributeAnds exp = match exp with
-  | BFalse -> BFalse
-  | BVar v -> BVar v
-  | BNot x -> BNot (distributeAnds x)
-  | BAnd (x, y) ->
-    begin match (distributeAnds x, distributeAnds y) with
-      | (BXor (a, b), BXor (c, d)) ->
-        BXor (BXor (BAnd (a, c), BAnd (b, c)), BXor (BAnd (a, d), BAnd (b, d)))
-      | (x', BXor (c, d)) -> BXor (BAnd (x', c), BAnd (x', d))
-      | (BXor (a, b), y') -> BXor (BAnd (a, y'), BAnd (b, y'))
-      | (x', y') -> BAnd (x', y')
-    end
-  | BXor (x, y) -> BXor (distributeAnds x, distributeAnds y)
+(* ESOP forms *)
+type esop = list (list int)
 
-let rec undistributeAnds exp = match exp with
-  | BFalse -> BFalse
-  | BVar v -> BVar v
-  | BNot x -> BNot (undistributeAnds x)
-  | BAnd (x, y) -> BAnd (undistributeAnds x, undistributeAnds y)
+val esfalse : esop
+val estrue  : esop
+val esvar   : int -> Tot esop
+val esnot   : esop -> Tot esop
+val esxor   : esop -> esop -> Tot esop
+val esmul   : list int -> esop -> Tot esop
+val esand   : esop -> esop -> Tot esop
+
+val toESOP   : BoolExp -> Tot esop
+val fromESOP : esop -> Tot BoolExp
+
+let esfalse = []
+let estrue  = [[]]
+let esvar v = [[v]]
+let esnot x = listSymdiff estrue x
+let esxor x y = listSymdiff x y
+let esmul s y = List.mapT (listUnion s) y
+let esand x y = List.fold_leftT (fun x s -> listSymdiff x (esmul s y)) [] x
+
+let rec toESOP exp = match exp with
+  | BFalse -> esfalse
+  | BVar v -> esvar v
+  | BNot x -> esnot (toESOP x)
+  | BXor (x, y) -> esxor (toESOP x) (toESOP y)
+  | BAnd (x, y) -> esand (toESOP x) (toESOP y)
+
+let rec fromESOP es = match es with
+  | [] -> BFalse
+  | x::xs -> BXor (fromESOP xs, List.fold_leftT (fun exp v -> BAnd (exp, (BVar v))) (BNot BFalse) x)
+
+let rec distrib x y = match (x, y) with
+  | (BXor (x1, x2), _) -> BXor (distrib x1 y, distrib x2 y)
+  | (_, BXor (y1, y2)) -> BXor (distrib x y1, distrib x y2)
+  | _                  -> BAnd (x, y)
+
+let rec toXDNF exp = match exp with
+  | BNot x      -> BXor (BNot BFalse, toXDNF x)
+  | BAnd (x, y) -> distrib (toXDNF x) (toXDNF y)
+  | BXor (x, y) -> BXor (toXDNF x, toXDNF y)
+  | _ -> exp
+
+let rec untoXDNF exp = match exp with
+  | BNot x -> BNot (untoXDNF x)
+  | BAnd (x, y) -> BAnd (untoXDNF x, untoXDNF y)
   | BXor (x, y) ->
-    begin match (undistributeAnds x, undistributeAnds y) with
+    begin match (untoXDNF x, untoXDNF y) with
       | (BAnd (a, b), BAnd (c, d)) ->
         if a = c then BAnd (a, BXor (b, d))
         else if a = d then BAnd (a, BXor (b, c))
@@ -248,6 +263,7 @@ let rec undistributeAnds exp = match exp with
         else BXor (BAnd (a, b), BAnd (c, d))
       | (x', y') -> BXor (x', y')
     end
+  | _ -> exp
 
 (* Compilation *)
 let rec compileBexp ah targ exp = match exp with
@@ -377,53 +393,52 @@ val commutativityXor : x:BoolExp -> y:BoolExp ->
   Lemma (forall st. evalBexp (BXor (x, y)) st = evalBexp (BXor (y, x)) st)
 val distributivityAndXor : x:BoolExp -> y:BoolExp -> z:BoolExp ->
   Lemma (forall st. evalBexp (BAnd (x, BXor (y, z))) st = evalBexp (BXor (BAnd (x, y), BAnd (x, z))) st)
+val distributivityAndXorLeft : x:BoolExp -> y:BoolExp -> z:BoolExp ->
+  Lemma (forall st. evalBexp (BAnd (BXor (x, y), z)) st = evalBexp (BXor (BAnd (x, z), BAnd (y, z))) st)
 
 let idempotentAnd x = ()
 let commutativityAnd x y = ()
 let commutativityXor x y = ()
 let distributivityAndXor x y z = ()
+let distributivityAndXorLeft x y z = ()
 
-val distribute_preserves_semantics : exp:BoolExp ->
-  Lemma (forall (st:state). (evalBexp exp st) = (evalBexp (distributeAnds exp) st))
-let rec distribute_preserves_semantics exp = match exp with
-  | BFalse -> ()
-  | BVar x -> ()
-  | BNot x -> distribute_preserves_semantics x
-  | BXor (x, y) -> distribute_preserves_semantics x; distribute_preserves_semantics y
+val distrib_preserves_semantics : x:BoolExp -> y:BoolExp ->
+  Lemma (forall (st:state). evalBexp (BAnd (x, y)) st = evalBexp (distrib x y) st)
+let rec distrib_preserves_semantics x y = match (x, y) with
+  | (BXor (x1, x2), _) -> 
+    distrib_preserves_semantics x1 y;
+    distrib_preserves_semantics x2 y;
+    distributivityAndXorLeft x1 x2 y
+  | (_, BXor (y1, y2)) -> 
+    distrib_preserves_semantics x y1;
+    distrib_preserves_semantics x y2;
+    distributivityAndXor x y1 y2
+  | _                  -> ()
+
+val toXDNF_preserves_semantics : exp:BoolExp ->
+  Lemma (forall (st:state). (evalBexp exp st) = (evalBexp (toXDNF exp) st))
+let rec toXDNF_preserves_semantics exp = match exp with
+  | BNot x      -> toXDNF_preserves_semantics x
   | BAnd (x, y) ->
-    distribute_preserves_semantics x;
-    distribute_preserves_semantics y;
-    begin match (distributeAnds x, distributeAnds y) with
-      | (BXor (a, b), BXor (c, d)) ->
-        distributivityAndXor (BXor (a, b)) c d;
-        commutativityAnd (BXor (a, b)) c;
-        commutativityAnd (BXor (a, b)) d;
-        distributivityAndXor c a b;
-        distributivityAndXor d a b;
-        commutativityAnd c a;
-        commutativityAnd c b;
-        commutativityAnd d a;
-        commutativityAnd d b
-      | (x', BXor (c, d)) -> distributivityAndXor x' c d
-      | (BXor (a, b), y') ->
-        commutativityAnd (BXor (a, b)) y';
-        distributivityAndXor y' a b;
-        commutativityAnd y' a;
-        commutativityAnd y' b
-      | (x', y') -> ()
-    end
+    toXDNF_preserves_semantics x;
+    toXDNF_preserves_semantics y;
+    distrib_preserves_semantics (toXDNF x) (toXDNF y)
+  | BXor (x, y) -> 
+    toXDNF_preserves_semantics x; 
+    toXDNF_preserves_semantics y
+  | _           -> ()
 
-val undistribute_preserves_semantics : exp:BoolExp ->
-  Lemma (forall (st:state). (evalBexp exp st) = (evalBexp (undistributeAnds exp) st))
-let rec undistribute_preserves_semantics exp = match exp with
+val untoXDNF_preserves_semantics : exp:BoolExp ->
+  Lemma (forall (st:state). (evalBexp exp st) = (evalBexp (untoXDNF exp) st))
+let rec untoXDNF_preserves_semantics exp = match exp with
   | BFalse -> ()
   | BVar x -> ()
-  | BNot x -> undistribute_preserves_semantics x
-  | BAnd (x, y) -> undistribute_preserves_semantics x; undistribute_preserves_semantics y
+  | BNot x -> untoXDNF_preserves_semantics x
+  | BAnd (x, y) -> untoXDNF_preserves_semantics x; untoXDNF_preserves_semantics y
   | BXor (x, y) ->
-    undistribute_preserves_semantics x;
-    undistribute_preserves_semantics y;
-    begin match (undistributeAnds x, undistributeAnds y) with
+    untoXDNF_preserves_semantics x;
+    untoXDNF_preserves_semantics y;
+    begin match (untoXDNF x, untoXDNF y) with
       | (BAnd (a, b), BAnd (c, d)) ->
         if a = c then distributivityAndXor a b d
         else if a = d then (

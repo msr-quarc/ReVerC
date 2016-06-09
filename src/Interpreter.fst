@@ -351,7 +351,7 @@ type CleanupStrategy =
   | Bennett : CleanupStrategy
 
 val simps : BoolExp -> Tot BoolExp
-let simps bexp = simplify (distributeAnds bexp)
+let simps bexp = simplify (toXDNF bexp)
 
 val allocN : list GExpr * BExpState -> i:int ->
   Tot (list GExpr * BExpState) (decreases i)
@@ -807,8 +807,8 @@ let rec circ_equiv_step gexp st st' init = match gexp with
     circ_equiv_step t1 st st' init;
     circ_equiv_step t2 st st' init
   | ASSIGN (t1, t2) ->
-    circ_equiv_step t1 st st' init
-    circ_equiv_step t2 st st' init
+    circ_equiv_step t1 st st' init;
+    circ_equiv_step t2 st st' init;
     if (isVal t1 && isBexp t2) then
       begin match t1 with
         | LOC l -> circ_equiv_assign st st' init l (get_bexp t2)
