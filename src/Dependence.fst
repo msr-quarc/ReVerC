@@ -401,3 +401,42 @@ val compile_graph_correct : ah:AncHeap -> dg:depGraph -> ctx:(Map.t rID int) -> 
 let compile_graph_correct = admit ()
       //compile_bexp_correct ah (Some (Map.sel ctx r)) bexp st
 *)
+
+(* Dependence graph interpretation -- unfinished
+type depGraphState = (int * int) * (depGraph * (Total.t address rID))
+
+val depGraphInterp : interpretation depGraphState
+let depGraphInterp fs ((atop, rtop), (nodes, dep)) = match fs with
+  | Xor a1 a2 ->
+    bind (lookup dep a1) (fun r1 ->
+    bind (lookup dep a2) (fun r2 ->
+      let nodes'  = (Rinit)::nodes in
+      let nodes'' = (Rbexp (BXor (BVar r1) (BVar r2)) rtop)::nodes' in
+        Val (atop, ((atop+1, rtop+2), (nodes'', update dep atop (rtop+1))))))
+  | And a1 a2 ->
+    bind (lookup dep a1) (fun r1 ->
+    bind (lookup dep a2) (fun r2 ->
+      let nodes'  = (Rinit)::nodes in
+      let nodes'' = (Rbexp (BAnd (BVar r1) (BVar r2)) rtop)::nodes' in
+        Val (atop, ((atop+1, rtop+2), (nodes'', update dep atop (rtop+1))))))
+  | Not a ->
+    bind (lookup dep a) (fun r ->
+      let nodes'  = (Rinit)::nodes in
+      let nodes'' = (Rbexp (BNot (BVar r)) rtop)::nodes' in
+        Val (atop, ((atop+1, rtop+2), (nodes'', update dep atop (rtop+1)))))
+  | Bl b ->
+    let nodes' = (Rinit)::nodes in
+    let (rtop', nodes'') = match b with
+      | false -> (rtop, nodes')
+      | true  -> (rtop+1, (Rbexp (BNot (BVar rtop)) rtop)::nodes')
+    in
+      Val (atop, ((atop+1, rtop'+1), (nodes'', update dep atop rtop')))
+  | Asn a1 a2 -> bind (lookup dep a2) (fun r ->
+    Val (atop, ((atop, rtop), (nodes, update dep a1 r))))
+  | Cln a -> bind (lookup dep a) (fun r ->
+    Val (atop, ((atop, rtop+1), ((Rterm r)::nodes, update dep a rtop))))
+
+val computeGraph : GExpr -> result (valconfig depGraphState)
+let computeGraph gexp = eval_rec (gexp, [], ((0, 0), ([], []))) depGraphInterp
+
+*)

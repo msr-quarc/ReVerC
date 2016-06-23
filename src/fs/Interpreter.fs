@@ -21,6 +21,7 @@ type interpretation<'state> =
   { alloc      : 'state -> BoolExp -> (int * 'state);
     assign     : 'state -> int -> BoolExp -> 'state;
     clean      : 'state -> GExpr -> int -> 'state;
+    apply      : 'state -> 'state -> GExpr -> 'state;
     assertion  : 'state -> GExpr -> int -> 'state;
     eval       : 'state -> Total.state -> int -> bool }
 
@@ -187,7 +188,9 @@ let rec eval_rec (tm, st) interp = match tm with
     bind (eval_rec (t1, st) interp)  (fun (v1, st') ->
     bind (eval_rec (t2, st') interp) (fun (v2, st'') ->
     begin match v1 with
-      | LAMBDA (x, ty, t) -> eval_rec (substGExpr t x v2, st'') interp
+      | LAMBDA (x, ty, t) -> 
+          bind (eval_rec (substGExpr t x v2, st'') interp) (fun (v, st''') ->
+            Val (v, interp.apply st'' st''' (APPLY (v1, v2))))
       | _ -> Err ("LHS is not a lambda: " ^ (show tm))
     end))
   | SEQUENCE (t1, t2) ->
@@ -299,6 +302,7 @@ let boolEval (top, st) ivals i = lookup st i
 let boolInterp = {
   alloc = boolAlloc;
   assign = boolAssign;
+  apply = fun st st' t -> st'
   clean = fun st t l -> st;
   assertion = fun st t l -> st;
   eval = boolEval
@@ -332,6 +336,7 @@ let bexpEval (top, st) ivals i = evalBexp (lookup st i) ivals
 let bexpInterp = {
   alloc = bexpAlloc;
   assign = bexpAssign;
+  apply = fun st st' t -> st'
   clean = fun st t l -> st;
   assertion = fun st t l -> st;
   eval = bexpEval
@@ -466,6 +471,7 @@ let circEval (top, ah, circ, st, cl) ivals i = lookup (evalCirc circ ivals) (loo
 let circInterp = {
   alloc = circAlloc;
   assign = circAssign;
+  apply = fun st st' t -> st'
   clean = circClean;
   assertion = fun st t l -> st;
   eval = circEval
@@ -531,7 +537,7 @@ type circGCState =
 //  -if the qubit is an ancilla, push it back onto the heap, and
 //  -update the current value of all other bits by substituting q.id with ival + cval
 let garbageCollect cs q =
-  if q.modi = true then cs else
+  //if q.modi = true then cs else
   let (ah', res, ancs, circ) = compileBexp cs.ah q.id q.cval in
   let ah'' = if q.ival = BFalse then insert ah' q.id else ah' in
   let f q' = 
@@ -571,6 +577,7 @@ let circGCAssign cs l bexp =
         { id = b.id; 
           ival = b.ival; 
           cval = b.cval; //simplify (substBexp b.cval subq); 
+          //cval = simplify (substBexp b.cval subq); 
           modi = b.modi || occursInBexp q.id b.cval }
       in
       let symtab' = Partial.update (Partial.mapVals f cs.symtab) l q' in
@@ -582,7 +589,8 @@ let circGCAssign cs l bexp =
         let subq = fun v -> if v = q.id then BXor (BVar q.id, bexp'') else BVar v in
         { id = b.id; 
           ival = b.ival; 
-          cval = b.cval; //simplify (substBexp b.cval subq); 
+          cval = b.cval; 
+          //cval = simplify (substBexp b.cval subq); 
           modi = b.modi || occursInBexp q.id b.cval }
       in
       let symtab' = Partial.update (Partial.mapVals f cs.symtab) l q' in
@@ -598,9 +606,19 @@ let circGCClean cs _ l =
     { top = cs.top; ah = insert cs.ah bit.id; gates = cs.gates; symtab = Partial.update cs.symtab l q' }
 let circGCEval cs st i = false
 
+(* For uncoupling dependencies with constant assertions *)
+let circGCApply st st' t = match t with
+  | APPLY (LAMBDA (x, ty, t), v) ->
+      let modSet = getMods (substGExpr t x v, st) in
+      let rem
+        begin match ty with
+          | GConst 
+  | _ -> st'
+
 let circGCInterp = {
   alloc = circGCAlloc;
   assign = circGCAssign;
+  apply = fun st st' t -> st'
   clean = circGCClean;
   assertion = fun st t l -> st;
   eval = circGCEval
