@@ -60,10 +60,10 @@ let rec unins l y = match l with
   | []    -> [y]
   | x::xs -> if x = y then x::xs else x::(unins xs y)
 
-let listUnion x y = List.fold_left unins y x
+let listUnion x y = FStar.List.fold_left unins y x
 
 let rec symins l y = match l with
   | []    -> [y]
   | x::xs -> if x = y then xs else x::(symins xs y)
 
-let listSymdiff x y = List.fold_left symins y x
+let listSymdiff x y = FStar.List.fold_left symins y x

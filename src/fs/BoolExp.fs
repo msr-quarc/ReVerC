@@ -158,7 +158,7 @@ let esvar v = [[v]]
 let esnot x = listSymdiff estrue x
 let esxor x y = listSymdiff x y
 let esmul s y = List.map (listUnion s) y
-let esand x y = List.fold_left (fun x s -> listSymdiff x (esmul s y)) [] x
+let esand x y = FStar.List.fold_left (fun x s -> listSymdiff x (esmul s y)) [] x
 
 let rec toESOP exp = match exp with
   | BFalse -> esfalse
@@ -170,7 +170,7 @@ let rec toESOP exp = match exp with
 let rec fromESOP es = match es with
   | [] -> BFalse
   | []::xs -> BXor (BNot BFalse, fromESOP xs)
-  | (y::ys)::xs -> BXor (List.fold_left (fun exp v -> BAnd (exp, (BVar v))) (BVar y) ys, fromESOP xs)
+  | (y::ys)::xs -> BXor (FStar.List.fold_left (fun exp v -> BAnd (exp, (BVar v))) (BVar y) ys, fromESOP xs)
 
 let rec distrib x y = match (x, y) with
   | (BXor (x1, x2), _) -> BXor (distrib x1 y, distrib x2 y)
