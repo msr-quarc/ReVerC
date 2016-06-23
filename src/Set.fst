@@ -12,6 +12,7 @@ val full         : #a:Type -> Tot (set a)
 val singleton    : #a:Type -> a -> Tot (set a)
 val union        : #a:Type -> set a -> set a -> Tot (set a)
 val intersection : #a:Type -> set a -> set a -> Tot (set a)
+val diff         : #a:Type -> set a -> set a -> Tot (set a)
 val symdiff      : #a:Type -> set a -> set a -> Tot (set a)
 val complement   : #a:Type -> set a -> Tot (set a)
 val ins          : #a:Type -> a -> set a -> Tot (set a)
@@ -22,6 +23,7 @@ let full             = fun _ -> true
 let singleton a      = fun b -> b = a
 let union a b        = fun c -> a c || b c
 let intersection a b = fun c -> a c && b c
+let diff a b         = fun c -> a c && not (b c)
 let symdiff a b      = fun c -> (a c && not (b c)) || (not (a c) && b c)
 let complement s     = fun x -> not (s x)
 let ins a b          = union (singleton a) b

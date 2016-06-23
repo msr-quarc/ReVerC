@@ -44,6 +44,9 @@ val height_lst   : tlst:(list GExpr) -> Tot int (decreases %[tlst;0])
 val freeIn       : x:string -> tm:GExpr -> Tot bool (decreases %[tm;0])
 val freeIn_lst   : x:string -> lst:list GExpr -> Tot bool (decreases %[lst;1])
 val freeVars     : tm:GExpr -> Tot (set string) (decreases %[tm;0])
+val locsAcc      : set int -> tm:GExpr -> Tot (set int) (decreases %[tm;0])
+val locsAcc_lst  : set int -> lst:list GExpr -> Tot (set int) (decreases %[lst;1])
+val locs         : tm:GExpr -> Tot (set int) (decreases %[tm;0])
 val varMaxTy     : ty:GType -> Tot int (decreases ty)
 val varMaxTm     : tm:GExpr -> Tot int (decreases %[tm;0])
 val varMaxTm_lst : lst:list GExpr -> Tot int (decreases %[lst;1])
@@ -119,6 +122,29 @@ and freeIn_lst x lst = match lst with
   | t::xs -> freeIn x t || freeIn_lst x xs
 
 let freeVars tm = fun x -> freeIn x tm
+
+let rec locsAcc lset tm = match tm with
+  | LET (s, t1, t2) -> locsAcc (locsAcc lset t1) t2
+  | LAMBDA (s, ty, t) -> locsAcc lset t
+  | APPLY (t1, t2) -> locsAcc (locsAcc lset t1) t2
+  | IFTHENELSE (t1, t2, t3) -> locsAcc (locsAcc lset t1) t2
+  | SEQUENCE (t1, t2) -> locsAcc (locsAcc lset t1) t2
+  | ASSIGN (t1, t2) -> locsAcc (locsAcc lset t1) t2
+  | XOR (t1, t2) -> locsAcc (locsAcc lset t1) t2
+  | AND (t1, t2) -> locsAcc (locsAcc lset t1) t2
+  | ARRAY tlst -> locsAcc_lst lset tlst
+  | GET_ARRAY (t, i) -> locsAcc lset t
+  | APPEND (t1, t2) -> locsAcc (locsAcc lset t1) t2
+  | ROT (i, t) -> locsAcc lset t
+  | SLICE (t, i, j) -> locsAcc lset t
+  | ASSERT t -> locsAcc lset t
+  | LOC i -> Set.ins i lset
+  | _ -> lset
+and locsAcc_lst lset lst = match lst with
+  | [] -> lset
+  | t::xs -> locsAcc_lst (locsAcc lset t) xs
+
+let locs tm = locsAcc Set.empty tm
 
 let rec varMaxTy ty = match ty with
   | GUnit | GBool | GArray _ -> 0

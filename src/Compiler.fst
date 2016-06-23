@@ -1,6 +1,15 @@
 (** Main compiler transformation *)
 module Compiler
 
+open Util
+open Set
+open Total
+open AncillaHeap
+open BoolExp
+open Circuit
+open ExprTypes
+open Interpreter
+
 (* Reversible circuit interpretation -- compiles a Revs program
    to a reversible circuit in a "natural" way. Specifically, 
    the circuit reflects the structure of the program *)

@@ -46,7 +46,9 @@ val gtVars       : int -> BoolExp -> Tot bool
 val andDepth     : BoolExp -> Tot nat
 
 val substBexp    : BoolExp -> Total.t int BoolExp -> Tot BoolExp
+val substBexpf   : BoolExp -> (int -> Tot BoolExp) -> Tot BoolExp
 val substVar     : BoolExp -> Total.t int int -> Tot BoolExp
+val substVarf    : BoolExp -> (int -> Tot int) -> Tot BoolExp
 
 val evalBexp     : BoolExp -> state -> Tot bool
 
@@ -143,12 +145,26 @@ let rec substBexp bexp sub = match bexp with
   | BAnd (x, y) -> BAnd ((substBexp x sub), (substBexp y sub))
   | BXor (x, y) -> BXor ((substBexp x sub), (substBexp y sub))
 
+let rec substBexpf bexp sub = match bexp with
+  | BFalse   -> BFalse
+  | BVar i   -> sub i
+  | BNot x   -> BNot (substBexpf x sub)
+  | BAnd (x, y) -> BAnd ((substBexpf x sub), (substBexpf y sub))
+  | BXor (x, y) -> BXor ((substBexpf x sub), (substBexpf y sub))
+
 let rec substVar bexp sub = match bexp with
   | BFalse   -> BFalse
   | BVar i   -> BVar (lookup sub i)
   | BNot x   -> BNot (substVar x sub)
   | BAnd (x, y) -> BAnd ((substVar x sub), (substVar y sub))
   | BXor (x, y) -> BXor ((substVar x sub), (substVar y sub))
+
+let rec substVarf bexp sub = match bexp with
+  | BFalse   -> BFalse
+  | BVar i   -> BVar (sub i)
+  | BNot x   -> BNot (substVarf x sub)
+  | BAnd (x, y) -> BAnd ((substVarf x sub), (substVarf y sub))
+  | BXor (x, y) -> BXor ((substVarf x sub), (substVarf y sub))
 
 (* Evaluation *)
 let rec evalBexp bexp st = match bexp with
