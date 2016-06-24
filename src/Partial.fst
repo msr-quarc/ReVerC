@@ -13,7 +13,7 @@ val update   : #key:Type -> #value:Type -> t key value -> key -> value -> Tot (t
 val remove   : #key:Type -> #value:Type -> t key value -> key -> Tot (t key value)
 val totalize : #key:Type -> #value:Type -> t key value -> value -> Tot (Total.t key value)
 val mapVals  : #key:Type -> #value:Type -> #value':Type -> 
-	       (value -> Tot value) -> t key value -> Tot (t key value')
+	       (value -> Tot value') -> t key value -> Tot (t key value')
 
 let rec keys m = match m with
   | []    -> fun _ -> false

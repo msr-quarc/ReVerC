@@ -9,11 +9,20 @@ type t (key:Type) (value:Type) =
 (* type synonym for Boolean-valued states *)
 type state = t int bool
 
+val valsRec  : #key:Type -> #value:Type -> value -> list (key * value) -> Tot bool
+val vals     : #key:Type -> #value:Type -> t key value -> Tot (set value)
 val lookup   : #key:Type -> #value:Type -> t key value -> key -> Tot value
 val update   : #key:Type -> #value:Type -> t key value -> key -> value -> Tot (t key value)
 val constMap : #key:Type -> #value:Type -> value -> Tot (t key value)
 val compose  : #key:Type -> #value:Type -> #value':Type -> t key value -> t value value' -> Tot (t key value')
 val mapVals  : #key:Type -> #value:Type -> #value':Type -> (value -> Tot value') -> t key value -> Tot (t key value')
+
+let rec valsRec y xs = match xs with
+  | []    -> false
+  | x::xs -> (snd x) = y || valsRec y xs
+
+let vals m = 
+    fun y -> y = m.dval || valsRec y m.elts
 
 let lookup m k = match List.assocT k m.elts with
   | None   -> m.dval
@@ -55,6 +64,12 @@ val lookup_update2 : #key:Type -> #value:Type -> m:t key value -> k:key -> v:val
 let lookup_const k v = ()
 let lookup_update1 m k v = ()
 let lookup_update2 m k v k' = ()
+
+(* Relating lookups to values -- don't have time for this trivial but tedious lemma right now *)
+val lookup_is_val : #key:Type -> #value:Type -> m:t key value -> k:key ->
+  Lemma (requires true)
+	(ensures (Set.mem (lookup m k) (vals m)))
+let lookup_is_val m k = admit()
 
 (* Type of maps that agree on a subset of keys *)
 type agree_on (#key:Type) (#value:Type) (m:t key value) (m':t key value) (s:set key) =

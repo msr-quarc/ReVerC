@@ -22,7 +22,7 @@ DLLS = $(FSTAR_HOME)/lib/fs/fstarlib.dll $(FSTAR_HOME)/bin/FSharp.PowerPack.dll 
 FSOPS = $(addprefix -r , $(DLLS))
 
 verify: $(FSTSRC)
-	$(FSTAR) --z3timeout 160 $^ --verify_module Set
+	$(FSTAR) --z3timeout 160 $^ --verify_module GC
 
 fs: $(FSTSRC)
 	$(FSTAR) --admit_smt_queries true --codegen FSharp $(EXCL) $^
