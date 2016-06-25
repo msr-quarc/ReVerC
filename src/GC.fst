@@ -77,7 +77,7 @@ let circGCAlloc cs =
     { top = cs.top + 1;
       ah = ah';
       gates = cs.gates;
-      smtab = update cs.symtab cs.top q }
+      symtab = update cs.symtab cs.top q }
   in
     (cs.top, cs')
 
@@ -223,134 +223,14 @@ let rec subst_subset_active cs bexp = match bexp with
     subst_subset_active cs x;
     subst_subset_active cs y
 
-(* These proofs are too big, takes forever to develop *)
-val valid_alloc1 : cs:circGCState -> init:state -> bexp:BoolExp -> cs':circGCState ->
-  Lemma (requires (validGCState cs init /\ cs' = snd (circGCAlloc cs bexp)))
-	(ensures  (zeroHeap (evalCirc cs'.gates init) cs'.ah))
-let valid_alloc1 cs init bexp cs' =
-  let bexp' = substVar bexp (getSubs cs.symtab) in
-  let (ah, bit) = popMin cs.ah in
-  let (ah', _, _, gates) = compileBexp ah bit bexp' in
-  let q = { id = bit; 
-            ival = BFalse; 
-            cval = bexp' } 
-  in
-  let init' = evalCirc cs'.gates init in
-    pop_proper_subset cs.ah;
-    zeroHeap_subset (evalCirc cs.gates init) cs.ah ah;
-    compile_decreases_heap ah bit bexp';
-    zeroHeap_subset (evalCirc cs.gates init) ah cs'.ah;
-    //------------
-    subst_subset_active cs bexp;
-    disjoint_subset (elts ah) (elts cs.ah) (ids cs.symtab);
-    disjoint_subset (vars bexp') (ids cs.symtab) (elts ah);
-    compile_partition ah bit bexp';
-    zeroHeap_st_impl (evalCirc cs.gates init) cs'.ah gates
-
-val valid_alloc2 : cs:circGCState -> init:state -> bexp:BoolExp -> cs':circGCState ->
-  Lemma (requires (validGCState cs init /\ cs' = snd (circGCAlloc cs bexp)))
-	(ensures  (disjoint (ids cs'.symtab) (elts cs'.ah)))
-let valid_alloc2 cs init bexp cs' =
-  let bexp' = substVar bexp (getSubs cs.symtab) in
-  let (ah, bit) = popMin cs.ah in
-  let (ah', _, _, gates) = compileBexp ah bit bexp' in
-  let q = { id = bit; 
-            ival = BFalse; 
-            cval = bexp' } 
-  in
-  let init' = evalCirc cs'.gates init in
-    pop_proper_subset cs.ah;
-    compile_decreases_heap ah bit bexp'
-
-val valid_alloc4 : cs:circGCState -> init:state -> bexp:BoolExp -> cs':circGCState -> bit:int ->
-  Lemma (requires (validGCState cs init /\ cs' = snd (circGCAlloc cs bexp)))
-        (ensures  (evalBexp BFalse init = evalBexp (BXor (BVar (get_min cs.ah), 
-	                                                  (substVar bexp (getSubs cs.symtab))))
-	                                           (evalCirc cs'.gates init)))
-let valid_alloc4 cs init bexp cs' bit =
-  let bexp' = substVar bexp (getSubs cs.symtab) in
-  let (ah, bit) = popMin cs.ah in
-  let (ah', _, _, gates) = compileBexp ah bit bexp' in
-  let q = { id = bit; 
-            ival = BFalse; 
-            cval = bexp' } 
-  in
-  let init' = evalCirc cs'.gates init in
-    pop_proper_subset cs.ah;
-    zeroHeap_subset (evalCirc cs.gates init) cs.ah ah;
-    //------------
-    subst_subset_active cs bexp;
-    disjoint_subset (elts ah) (elts cs.ah) (ids cs.symtab);
-    disjoint_subset (vars bexp') (ids cs.symtab) (elts ah);
-    //------------
-    compile_bexp_correct ah bit bexp' (evalCirc cs.gates init);
-    eval_mod (evalCirc cs.gates init) gates;
-    eval_state_swap (BXor (BVar q.id, q.cval)) (evalCirc cs.gates init) init'
-
-val valid_alloc3 : cs:circGCState -> init:state -> bexp:BoolExp -> cs':circGCState ->
-  Lemma (requires (validGCState cs init /\ cs' = snd (circGCAlloc cs bexp)))
-	(ensures  (forall q. Set.mem q (vals cs.symtab) ==> 
-                     evalBexp q.ival init = evalBexp (BXor (BVar q.id, q.cval)) (evalCirc cs'.gates init)))
-let valid_alloc3 cs init bexp cs' =
-  let bexp' = substVar bexp (getSubs cs.symtab) in
-  let (ah, bit) = popMin cs.ah in
-  let (ah', _, _, gates) = compileBexp ah bit bexp' in
-  let q = { id = bit; 
-            ival = BFalse; 
-            cval = bexp' } 
-  in
-  let init' = evalCirc cs'.gates init in
-    compile_mods ah bit bexp'
-
-val valid_alloc : cs:circGCState -> init:state -> bexp:BoolExp ->
+val valid_alloc : cs:circGCState -> init:state ->
   Lemma (requires (validGCState cs init))
-	(ensures  (validGCState (snd (circGCAlloc cs bexp)) init))
-let valid_alloc cs init bexp =
-  let bexp' = substVar bexp (getSubs cs.symtab) in
-  let (ah, bit) = popMin cs.ah in
-  let (ah', _, _, gates) = compileBexp ah bit bexp' in
-  let q = { id = bit; 
-            ival = BFalse; 
-            cval = bexp' } 
-  in
-  let cs' = snd (circGCAlloc cs bexp) in
-  let init' = evalCirc cs'.gates init in
-  let zeroHeap_pres = admitP(zeroHeap init' ah')(*
-    //------------ 
+	(ensures  (validGCState (snd (circGCAlloc cs)) init))
+let valid_alloc cs init =
+  let (ah', bit) = popMin cs.ah in
+  let cs' = snd (circGCAlloc cs) in
     pop_proper_subset cs.ah;
-    zeroHeap_subset (evalCirc cs.gates init) cs.ah ah;
-    compile_decreases_heap ah bit bexp';
-    zeroHeap_subset (evalCirc cs.gates init) ah cs'.ah;
-    //------------
-    subst_subset_active cs bexp;
-    disjoint_subset (elts ah) (elts cs.ah) (ids cs.symtab);
-    disjoint_subset (vars bexp') (ids cs.symtab) (elts ah);
-    compile_partition ah bit bexp';
-    zeroHeap_st_impl (evalCirc cs.gates init) cs'.ah gates*)
-  in
-  let disjoint_pres = //admitP(disjoint (ids cs'.symtab) (elts cs'.ah))
-    pop_proper_subset cs.ah;
-    compile_decreases_heap ah bit bexp'
-  in
-  let cleanup_pres =
-    //admitP(forall q. Set.mem q (vals cs.symtab) ==> 
-    //                      evalBexp q.ival init = evalBexp (BXor (BVar q.id, q.cval)) init')
-    compile_mods ah bit bexp'
-  in
-  let alloc_correct : u:unit{evalBexp q.ival init = evalBexp (BXor (BVar q.id, q.cval)) init'} =(*
-    pop_proper_subset cs.ah;
-    zeroHeap_subset (evalCirc cs.gates init) cs.ah ah;
-    //------------
-    subst_subset_active cs bexp;
-    disjoint_subset (elts ah) (elts cs.ah) (ids cs.symtab);
-    disjoint_subset (vars bexp') (ids cs.symtab) (elts ah);
-    //------------
-    compile_bexp_correct ah bit bexp' (evalCirc cs.gates init);
-    eval_mod (evalCirc cs.gates init) gates;
-    eval_state_swap (BXor (BVar q.id, q.cval)) (evalCirc cs.gates init) init';*)
-    admitP(b2t(evalBexp q.ival init = evalBexp (BXor (BVar q.id, q.cval)) init'))
-  in
-    ()
+    zeroHeap_subset (evalCirc cs.gates init) cs.ah cs'.ah
 
 type circ_equiv (st:boolState) (cs:circGCState) (init:state) =
   validGCState cs init /\ fst st = cs.top /\ (forall i. boolEval st init i = circGCEval cs init i)
