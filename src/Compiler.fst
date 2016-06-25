@@ -20,17 +20,20 @@ type circState =
     subs : Total.t int int }
 
 val circInit   : circState
-val circAlloc  : circState -> BoolExp -> Tot (int * circState)
+val circAlloc  : circState -> Tot (int * circState)
 val circAssign : circState -> int -> BoolExp -> Tot circState
 val circEval   : circState -> state -> int -> Tot bool
 
 let circInit = {top = 0; ah = emptyHeap; gates = []; subs = constMap 0}
-let circAlloc cs bexp =
-  let (ah', res, ancs, circ') = compileBexp_oop cs.ah (substVar bexp cs.subs) in
-  let top' = cs.top + 1 in
-  let gates' = cs.gates @ circ' in
-  let subs' = update cs.subs cs.top res in
-  (cs.top, {top = top'; ah = ah'; gates = gates'; subs = subs'})
+let circAlloc cs =
+  let (ah', bit) = popMin cs.ah in
+  let cs' = 
+    { top = cs.top + 1; 
+      ah = ah'; 
+      gates = cs.gates; 
+      subs = update cs.subs cs.top bit }
+  in
+    (cs.top, cs')
 let circAssign cs l bexp =
   let l' = lookup cs.subs l in
   let bexp' = substVar bexp cs.subs in
@@ -104,7 +107,7 @@ let rec compileCirc (gexp, cs) =
 type circ_equiv (st:boolState) (cs:circState) (init:state) =
   fst st = cs.top /\
   zeroHeap (evalCirc cs.gates init) cs.ah /\
-  (forall i. not (mem (lookup cs.subs i) cs.ah)) /\
+  disjoint (vals cs.subs) (elts cs.ah) /\
   (forall i. boolEval st init i = circEval cs init i)
 
 (* Needed for disjointness after applying substitution *)
@@ -163,35 +166,15 @@ let eval_commutes_subst_circ_oop st cs bexp bexp' init =
     compile_bexp_correct_oop cs.ah bexp' init';
     eval_bexp_swap2 st cs bexp bexp' init
 
-val circ_equiv_alloc : st:boolState -> cs:circState -> init:state -> bexp:BoolExp ->
+val circ_equiv_alloc : st:boolState -> cs:circState -> init:state ->
   Lemma (requires (circ_equiv st cs init))
-        (ensures  (circ_equiv (snd (boolAlloc st bexp)) (snd (circAlloc cs bexp)) init))
-let circ_equiv_alloc st cs init bexp =
-  let bexp' = substVar bexp cs.subs in
-  let init' = evalCirc cs.gates init in
-  let (ah', res, ancs, circ') = compileBexp_oop cs.ah bexp' in
-  let st' = snd (boolAlloc st bexp) in
-  let cs' = snd (circAlloc cs bexp) in
-  let zeroHeap_lem : u:unit{zeroHeap (evalCirc cs'.gates init) cs'.ah} =
-    substVar_disjoint bexp cs.subs (elts cs.ah);
-    compile_decreases_heap_oop cs.ah bexp';
-    compile_partition_oop cs.ah bexp';
-    zeroHeap_subset init' cs.ah cs'.ah;
-    zeroHeap_st_impl init' cs'.ah circ'
-  in
-  let disjointHeap_lem : u:unit{forall i. not (mem (lookup cs'.subs i) cs'.ah)} =
-    ()
-  in
-  let preservation : u:unit{forall i. not (i = cs.top) ==> boolEval st' init i = circEval cs' init i} =
-    (* This lemma passes when given enough time. Optimize! *)
-    compile_mods_oop cs.ah bexp';
-    eval_mod init' circ';
-    admit()
-  in
-  let correctness : u:unit{boolEval st' init cs.top = circEval cs' init cs.top} =
-    eval_commutes_subst_circ_oop st cs bexp bexp' init
-  in
-    ()
+        (ensures  (circ_equiv (snd (boolAlloc st)) (snd (circAlloc cs)) init))
+let circ_equiv_alloc st cs init =
+  let (ah', bit) = popMin cs.ah in
+  let cs' = snd (circAlloc cs) in
+  let st' = snd (boolAlloc st) in
+    pop_proper_subset cs.ah;
+    zeroHeap_subset (evalCirc cs.gates init) cs.ah cs'.ah
 
 val circ_equiv_assign : st:boolState -> cs:circState -> init:state -> l:int -> bexp:BoolExp ->
   Lemma (requires (circ_equiv st cs init))

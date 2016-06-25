@@ -19,7 +19,7 @@ open Total
 
 (* A representation of program heap (which is Bool-typed) *)
 type interpretation (state:Type) =
-  { alloc  : state -> BoolExp -> Tot (int * state);
+  { alloc  : state -> Tot (int * state);
     assign : state -> int -> BoolExp -> Tot state;
     eval   : state -> Total.state -> int -> Tot bool }
 
@@ -166,7 +166,9 @@ let rec step (tm, st) interp = match tm with
         | _ -> Err (String.strcat "Cannot reduce assertion: " (show tm))
       end
   | BEXP bexp ->
-    let (l, st') = interp.alloc st bexp in Val (LOC l, st')
+    let (l, st') = interp.alloc st in 
+    let st''     = interp.assign st l (BXor (BVar l, bexp)) in
+      Val (LOC l, st')
   | _ -> Err (String.strcat "No rule applies: " (show tm))
 and step_lst (lst, st) interp = match lst with
   | [] -> Val ([], st)
@@ -258,7 +260,8 @@ let rec eval_rec (tm, st) interp = match tm with
       | _ -> Err (String.strcat "Assert of non-boolean argument: " (show tm))
     end)
   | BEXP bexp ->
-    let (l, st') = interp.alloc st bexp in
+    let (l, st') = interp.alloc st in 
+    let st''     = interp.assign st l (BXor (BVar l, bexp)) in
       Val (LOC l, st')
   | _ -> Err (String.strcat "Unimplemented case: " (show tm))
 and eval_to_bexp (tm, st) interp = match tm with
@@ -288,15 +291,13 @@ and eval_to_bexp (tm, st) interp = match tm with
 type boolState = int * (Total.t int bool)
 
 val boolInit   : boolState
-val boolAlloc  : boolState -> BoolExp -> Tot (int * boolState)
+val boolAlloc  : boolState -> Tot (int * boolState)
 val boolAssign : boolState -> int -> BoolExp -> Tot boolState
 val boolEval   : boolState -> state -> int -> Tot bool
 
 let boolInit = (0, constMap false)
-let boolAlloc (top, st) bexp =
-  (top, (top + 1, update st top (evalBexp bexp st)))
-let boolAssign (top, st) l bexp =
-  (top, update st l (evalBexp bexp st))
+let boolAlloc (top, st) = (top, (top + 1, update st top false))
+let boolAssign (top, st) l bexp = (top, update st l (evalBexp bexp st))
 let boolEval (top, st) ivals i = lookup st i
 
 let boolInterp = {
@@ -331,7 +332,7 @@ type alloc_preservation
   (i1:interpretation s1) 
   (i2:interpretation s2) 
   (p:s1 -> s2 -> Total.t int bool -> Type) =
-    forall st1 st2 bexp init. p st1 st2 init ==> p (snd (i1.alloc st1 bexp)) (snd (i2.alloc st2 bexp)) init
+    forall st1 st2 init. p st1 st2 init ==> p (snd (i1.alloc st1)) (snd (i2.alloc st2)) init
 
 type assign_preservation 
   (#s1:Type) 

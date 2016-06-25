@@ -12,15 +12,13 @@ open Interpreter
 type BExpState = int * (Total.t int BoolExp)
 
 val bexpInit   : BExpState
-val bexpAlloc  : BExpState -> BoolExp -> Tot (int * BExpState)
+val bexpAlloc  : BExpState -> Tot (int * BExpState)
 val bexpAssign : BExpState -> int -> BoolExp -> Tot BExpState
 val bexpEval   : BExpState -> state -> int -> Tot bool
 
 let bexpInit = (0, constMap BFalse)
-let bexpAlloc (top, st) bexp =
-  (top, (top + 1, update st top (substBexp bexp st)))
-let bexpAssign (top, st) l bexp =
-  (top, update st l (substBexp bexp st))
+let bexpAlloc (top, st) = (top, (top + 1, st))
+let bexpAssign (top, st) l bexp = (top, update st l (substBexp bexp st))
 let bexpEval (top, st) ivals i = evalBexp (lookup st i) ivals
 
 let bexpInterp = {
@@ -155,10 +153,10 @@ let rec eval_bexp_swap st st' bexp init = match bexp with
     eval_bexp_swap st st' x init;
     eval_bexp_swap st st' y init
 
-val state_equiv_alloc : st:boolState -> st':BExpState -> init:state -> bexp:BoolExp ->
+val state_equiv_alloc : st:boolState -> st':BExpState -> init:state ->
   Lemma (requires (state_equiv st st' init))
-        (ensures  (state_equiv (snd (boolAlloc st bexp)) (snd (bexpAlloc st' bexp)) init))
-let state_equiv_alloc st st' init bexp = eval_bexp_swap st st' bexp init
+        (ensures  (state_equiv (snd (boolAlloc st)) (snd (bexpAlloc st')) init))
+let state_equiv_alloc st st' init = ()
 
 val state_equiv_assign : st:boolState -> st':BExpState -> init:state -> l:int -> bexp:BoolExp ->
   Lemma (requires (state_equiv st st' init))
@@ -224,7 +222,11 @@ let rec state_equiv_step gexp st st' init = match gexp with
     state_equiv_step t st st' init
   | ASSERT t ->
     state_equiv_step t st st' init
-  | BEXP bexp -> state_equiv_alloc st st' init bexp
+  | BEXP bexp ->
+    let (l, st0) = boolAlloc st in
+    let (l', st'0) = bexpAlloc st' in
+    state_equiv_alloc st st' init;
+    state_equiv_assign st0 st'0 init l bexp
   | _ -> ()
 and state_equiv_step_lst lst st st' init = match lst with
   | [] -> ()

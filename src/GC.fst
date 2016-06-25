@@ -37,7 +37,7 @@ type circGCState =
 
 val circGC       : circGCState -> int -> Tot circGCState
 val circGCInit   : circGCState
-val circGCAlloc  : circGCState -> BoolExp -> Tot (int * circGCState)
+val circGCAlloc  : circGCState -> Tot (int * circGCState)
 val circGCAssign : circGCState -> int -> BoolExp -> Tot circGCState
 val circGCEval   : circGCState -> state -> int -> Tot bool
 
@@ -67,18 +67,19 @@ let circGCInit =
     gates  = []; 
     symtab = constMap nullq }
 
-let circGCAlloc cs bexp = 
-  let bexp' = substVar bexp (getSubs cs.symtab) in
+let circGCAlloc cs = 
   let (ah', bit) = popMin cs.ah in
-  let (ah'', res, ancs, circ') = compileBexp ah' bit bexp' in
   let q = { id = bit; 
 	    ival = BFalse; 
-	    cval = bexp' } 
+	    cval = BFalse } 
   in
-  let top' = cs.top + 1 in
-  let gates' = cs.gates @ circ' in
-  let symtab' = update cs.symtab cs.top q in
-    (cs.top, {top = top'; ah = ah''; gates = gates'; symtab = symtab'})
+  let cs' =
+    { top = cs.top + 1;
+      ah = ah';
+      gates = cs.gates;
+      smtab = update cs.symtab cs.top q }
+  in
+    (cs.top, cs')
 
 let circGCAssign cs l bexp =
   let q = lookup cs.symtab l in
