@@ -16,6 +16,7 @@ val diff         : #a:Type -> set a -> set a -> Tot (set a)
 val symdiff      : #a:Type -> set a -> set a -> Tot (set a)
 val complement   : #a:Type -> set a -> Tot (set a)
 val ins          : #a:Type -> a -> set a -> Tot (set a)
+val rem          : #a:Type -> a -> set a -> Tot (set a)
 
 let mem i s          = s i
 let empty            = fun _ -> false
@@ -27,6 +28,7 @@ let diff a b         = fun c -> a c && not (b c)
 let symdiff a b      = fun c -> (a c && not (b c)) || (not (a c) && b c)
 let complement s     = fun x -> not (s x)
 let ins a b          = union (singleton a) b
+let rem a b          = diff b (singleton a)
 
 (** Verification utilities *)
 

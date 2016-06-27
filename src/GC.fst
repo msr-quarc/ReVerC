@@ -16,24 +16,30 @@ type qubit =
     ival : BoolExp;
     cval : BoolExp }
 
-val null_q  : qubit
-val getSubs : Total.t int qubit -> Tot (Total.t int int)
-val ids     : Total.t int qubit -> Tot (set int)
-val data_q  : int -> Tot qubit
-val anc_q   : int -> Tot qubit
+val null_q    : qubit
+val getSubs   : Total.t int qubit -> Tot (Total.t int int)
+val ids       : Total.t int qubit -> Tot (set int)
+val data_q    : int -> Tot qubit
+val anc_q     : int -> Tot qubit
+//val applyCval : qubit -> Tot qubit
 
-let nullq    = { id = 0; ival = BFalse; cval = BFalse }
-let getSubs  = mapVals (fun q -> q.id)
-let ids m    = vals (getSubs m)
-let data_q i = { id = i; ival = BVar i; cval = BFalse }
-let anc_q i  = { id = i; ival = BFalse; cval = BFalse }
-
+let nullq       = { id = 0; ival = BFalse; cval = BFalse }
+let getSubs     = mapVals (fun q -> q.id)
+let ids m       = vals (getSubs m)
+let data_q i    = { id = i; ival = BVar i; cval = BFalse }
+let anc_q i     = { id = i; ival = BFalse; cval = BFalse }
+//let applyCval q = { id = q.id; ival = q.ival;
 
 type circGCState =
   { top    : int;
     ah     : AncHeap;
     gates  : list Gate;
     symtab : Total.t int qubit }
+
+val applyCvals : (BoolExp -> Tot BoolExp) -> Total.t int qubit -> Tot (Total.t int qubit)
+let applyCvals f symtab = 
+  let g q = { id = q.id; ival = q.ival; cval = f q.cval } in
+    mapVals g symtab
 
 val circGC       : circGCState -> int -> Tot circGCState
 val circGCInit   : circGCState
@@ -49,13 +55,8 @@ val garbageCollect : circGCState -> qubit -> Tot circGCState
 let garbageCollect cs q = 
   let (ah', res, ancs, circ) = compileBexp cs.ah q.id q.cval in
   let ah'' = if q.ival = BFalse then insert ah' q.id else ah' in
-  let f q' = 
-    let subq = fun v -> if v = q.id then BXor (q.ival, q.cval) else BVar v in
-      { id   = q'.id; 
-        ival = q'.ival; 
-	cval = substBexpf q'.cval subq }
-  in
-  let symtab' = mapVals f cs.symtab in
+  let f bexp = substOneVar bexp q.id (BXor (q.ival, q.cval)) in
+  let symtab' = applyCvals f cs.symtab in
     { top    = cs.top; 
       ah     = ah''; 
       gates  = cs.gates @ circ; 
@@ -87,16 +88,11 @@ let circGCAssign cs l bexp =
   let bexpfac = factorAs bexp' q.id in
   match (q.cval, bexpfac) with
     | (BFalse, _)      -> // substitute q.id with BFalse, compile in place
-      let bexp'' = substBexpf bexp' (fun v -> if v = q.id then BFalse else BVar v) in
+      let bexp'' = substOneVar bexp' q.id BFalse in
       let (ah', res, ancs, circ) = compileBexp cs.ah q.id bexp'' in
       let q' = { id = q.id; ival = q.ival; cval = bexp'' } in
-      let f b =
-	let subq = fun v -> if v = q.id then bexp'' else BVar v in
-	  { id = b.id; 
-	    ival = b.ival; 
-	    cval = substBexpf b.cval subq }
-      in
-      let symtab' = update (mapVals f cs.symtab) l q' in
+      let f bexp = substOneVar bexp q.id bexp'' in
+      let symtab' = update (applyCvals f cs.symtab) l q' in
         { top = cs.top; 
 	  ah = ah'; 
 	  gates = cs.gates @ circ; 
@@ -104,13 +100,8 @@ let circGCAssign cs l bexp =
     | (_, Some bexp'') -> // compile in place, substitute q.id with q.id \oplus bexp''
       let (ah', res, ancs, circ') = compileBexp cs.ah q.id bexp'' in
       let q' = { id = q.id; ival = q.ival; cval = BXor (q.cval, bexp'') } in
-      let f b = 
-        let subq = fun v -> if v = q.id then BXor (BVar q.id, bexp'') else BVar v in
-	  { id = b.id; 
-	    ival = b.ival; 
-	    cval = substBexpf b.cval subq }
-      in
-      let symtab' = update (mapVals f cs.symtab) l q' in
+      let f bexp = substOneVar bexp q.id (BXor (BVar q.id, bexp'')) in
+      let symtab' = update (applyCvals f cs.symtab) l q' in
         { top = cs.top; 
 	  ah = ah'; 
 	  gates = cs.gates @ circ'; 
@@ -231,6 +222,66 @@ let valid_alloc cs init =
   let cs' = snd (circGCAlloc cs) in
     pop_proper_subset cs.ah;
     zeroHeap_subset (evalCirc cs.gates init) cs.ah cs'.ah
+
+(* Random lemma about symbol table lookups *)
+val id_is_mem : symtab:t int qubit -> l:int -> 
+  Lemma (Set.mem (lookup symtab l).id (ids symtab))
+  (decreases symtab.elts)
+let rec id_is_mem symtab l = match symtab.elts with
+  | [] -> ()
+  | x::xs -> 
+    let symtab' = { elts = xs; dval = symtab.dval } in
+      id_is_mem symtab' l
+
+val apply_ids_same : f:(BoolExp -> Tot BoolExp) -> symtab:Total.t int qubit  ->
+  Lemma (ids symtab = ids (applyCvals f symtab))
+  (decreases symtab.elts)
+let rec apply_ids_same f symtab = match symtab.elts with
+  | [] -> ()
+  | x::xs -> 
+    let symtab' = { elts = xs; dval = symtab.dval } in
+      apply_ids_same f symtab';
+      admit()
+
+val valid_assign : cs:circGCState -> l:int -> bexp:BoolExp -> init:state ->
+  Lemma (requires (validGCState cs init))
+	(ensures  (validGCState (circGCAssign cs l bexp) init))
+let valid_assign cs l bexp init =
+  let q = lookup cs.symtab l in
+  let bexp' = substVar bexp (getSubs cs.symtab) in
+  let bexpfac = factorAs bexp' q.id in
+  let cs' = circGCAssign cs l bexp in
+  match (q.cval, bexpfac) with
+    | (BFalse, _)      -> 
+      let bexp'' = substOneVar bexp' q.id BFalse in
+      let (ah', res, ancs, circ) = compileBexp cs.ah q.id bexp'' in
+      let q' = { id = q.id; ival = q.ival; cval = bexp'' } in
+      let f bexp = substOneVar bexp q.id bexp'' in
+	substVar_elems bexp (getSubs cs.symtab); // subset (vars bexp') (ids cs.symtab)
+	substOneVar_elems bexp' q.id BFalse;     // subset (vars bexp'') (vars bexp' \ q.id)
+	id_is_mem cs.symtab l;                   // q.id in ids (symtab)
+	compile_bexp_zero cs.ah q.id bexp'' (evalCirc cs.gates init);
+	//admitP(zeroHeap (evalCirc cs'.gates init) cs'.ah);
+	compile_decreases_heap cs.ah q.id bexp''; // subset cs.ah' cs.ah
+	disjoint_subset (elts ah') (elts cs.ah) (ids cs.symtab); // disjoint cs.ah' (ids cs.symtab)
+	apply_ids_same f cs.symtab;
+	//assert(ids cs'.symtab = ins q.id (ids (applyCvals f cs.symtab)));
+	admit();
+	//admitP(disjoint (ids cs'.symtab) (elts cs'.ah));
+	admitP(forall q. Set.mem q (vals cs'.symtab) ==> 
+	  evalBexp q.ival init = evalBexp (BXor (BVar q.id, q.cval)) (evalCirc cs'.gates init))
+    | (_, Some bexp'') ->
+	admitP(validGCState cs' init) (*
+	admitP(zeroHeap (evalCirc cs'.gates init) cs'.ah);
+	admitP(disjoint (ids cs'.symtab) (elts cs'.ah));
+	admitP(forall q. Set.mem q (vals cs'.symtab) ==> 
+	  evalBexp q.ival init = evalBexp (BXor (BVar q.id, q.cval)) (evalCirc cs'.gates init))*)
+    | _                -> 
+	admitP(validGCState cs' init)(*
+	admitP(zeroHeap (evalCirc cs'.gates init) cs'.ah);
+	admitP(disjoint (ids cs'.symtab) (elts cs'.ah));
+	admitP(forall q. Set.mem q (vals cs'.symtab) ==> 
+	  evalBexp q.ival init = evalBexp (BXor (BVar q.id, q.cval)) (evalCirc cs'.gates init))*)
 
 type circ_equiv (st:boolState) (cs:circGCState) (init:state) =
   validGCState cs init /\ fst st = cs.top /\ (forall i. boolEval st init i = circGCEval cs init i)

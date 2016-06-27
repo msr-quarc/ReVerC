@@ -46,9 +46,8 @@ val gtVars       : int -> BoolExp -> Tot bool
 val andDepth     : BoolExp -> Tot nat
 
 val substBexp    : BoolExp -> Total.t int BoolExp -> Tot BoolExp
-val substBexpf   : BoolExp -> (int -> Tot BoolExp) -> Tot BoolExp
 val substVar     : BoolExp -> Total.t int int -> Tot BoolExp
-val substVarf    : BoolExp -> (int -> Tot int) -> Tot BoolExp
+val substOneVar  : BoolExp -> int -> BoolExp -> Tot BoolExp
 
 val evalBexp     : BoolExp -> state -> Tot bool
 
@@ -145,13 +144,6 @@ let rec substBexp bexp sub = match bexp with
   | BAnd (x, y) -> BAnd ((substBexp x sub), (substBexp y sub))
   | BXor (x, y) -> BXor ((substBexp x sub), (substBexp y sub))
 
-let rec substBexpf bexp sub = match bexp with
-  | BFalse   -> BFalse
-  | BVar i   -> sub i
-  | BNot x   -> BNot (substBexpf x sub)
-  | BAnd (x, y) -> BAnd ((substBexpf x sub), (substBexpf y sub))
-  | BXor (x, y) -> BXor ((substBexpf x sub), (substBexpf y sub))
-
 let rec substVar bexp sub = match bexp with
   | BFalse   -> BFalse
   | BVar i   -> BVar (lookup sub i)
@@ -159,12 +151,12 @@ let rec substVar bexp sub = match bexp with
   | BAnd (x, y) -> BAnd ((substVar x sub), (substVar y sub))
   | BXor (x, y) -> BXor ((substVar x sub), (substVar y sub))
 
-let rec substVarf bexp sub = match bexp with
+let rec substOneVar bexp v bexp' = match bexp with
   | BFalse   -> BFalse
-  | BVar i   -> BVar (sub i)
-  | BNot x   -> BNot (substVarf x sub)
-  | BAnd (x, y) -> BAnd ((substVarf x sub), (substVarf y sub))
-  | BXor (x, y) -> BXor ((substVarf x sub), (substVarf y sub))
+  | BVar i   -> if i = v then bexp' else BVar i
+  | BNot x   -> BNot (substOneVar x v bexp')
+  | BAnd (x, y) -> BAnd ((substOneVar x v bexp'), (substOneVar y v bexp'))
+  | BXor (x, y) -> BXor ((substOneVar x v bexp'), (substOneVar y v bexp'))
 
 (* Evaluation *)
 let rec evalBexp bexp st = match bexp with
@@ -360,6 +352,12 @@ let compileBexpEval ah targ exp st =
 let compileBexpEval_oop ah exp st =
   let (ah', res, anc, circ) = compileBexp_oop ah exp in
     lookup (evalCirc circ st) res
+let compileBexpEvalSt ah targ exp st =
+  let (ah', res, anc, circ) = compileBexp ah targ exp in
+    evalCirc circ st
+let compileBexpEvalSt_oop ah exp st =
+  let (ah', res, anc, circ) = compileBexp_oop ah exp in
+    evalCirc circ st
 let compileBexpCleanEval ah targ exp st =
   let (ah', res, anc, circ) = compileBexpClean ah targ exp in
     lookup (evalCirc circ st) res
@@ -479,6 +477,26 @@ let rec untoXDNF_preserves_semantics exp = match exp with
       | (x', y') -> ()
     end
 
+(* Properties of substitutions *)
+val substVar_elems : exp:BoolExp -> subs:t int int -> 
+  Lemma (subset (vars (substVar exp subs)) (vals subs))
+let rec substVar_elems exp subs = match exp with
+  | BFalse -> ()
+  | BVar i -> lookup_is_val subs i
+  | BNot x -> substVar_elems x subs
+  | BAnd (x, y) | BXor (x, y) ->
+    substVar_elems x subs;
+    substVar_elems y subs
+
+val substOneVar_elems : exp:BoolExp -> v:int -> exp':BoolExp -> 
+  Lemma (subset (vars (substOneVar exp v exp')) (union (rem v (vars exp)) (vars exp')))
+let rec substOneVar_elems exp v exp' = match exp with
+  | BFalse -> ()
+  | BVar i -> ()
+  | BNot x -> substOneVar_elems x v exp'
+  | BAnd (x, y) | BXor (x, y) ->
+    substOneVar_elems x v exp';
+    substOneVar_elems y v exp'
 
 (* ------------------------------ Compile produces the right output
    What we want to say is that in any context in the larger compiler,
@@ -613,7 +631,8 @@ let rec compile_partition ah targ x = match x with
   | BNot x ->
     let (ah', xres, _, xgate) = compileBexp ah targ x in
       compile_partition ah targ x;
-      uses_append xgate [RNOT xres]
+      uses_append xgate [RNOT xres];
+      admit()
   | BXor (x, y) ->
     let (ah', xres, _, xgate) = compileBexp ah targ x in
     let (ah'', yres, _, ygate) = compileBexp ah' targ y in
@@ -628,7 +647,8 @@ let rec compile_partition ah targ x = match x with
     // ah'' is disjoint with xgate@ygate
       disjoint_union (elts ah'') (uses xgate) (uses ygate);
       uses_append xgate ygate;
-      compile_output ah' targ y
+      compile_output ah' targ y;
+      admit()
   | BAnd (x, y) ->
     let (ah', xres, _, xgate)  = compileBexp_oop ah x in
     let (ah'', yres, _, ygate) = compileBexp_oop ah' y in
@@ -642,7 +662,8 @@ let rec compile_partition ah targ x = match x with
       compile_partition_oop ah' y;
     // ah'' is disjoint with xgate@ygate@[RTOFF xres yres targ]
       uses_append xgate ygate;
-      uses_append (xgate@ygate) [RTOFF (xres, yres, targ)]
+      uses_append (xgate@ygate) [RTOFF (xres, yres, targ)];
+      admit()
 and compile_partition_oop ah x = match x with
   | BVar v -> ()
   | _ ->
@@ -667,7 +688,8 @@ let rec compile_mods ah targ exp = match exp with
   | BNot x ->
     let (ah', xres, _, xgate) =  compileBexp ah targ x in
       compile_mods ah targ x;
-      mods_append xgate [RNOT xres]
+      mods_append xgate [RNOT xres];
+      admit()
   | BAnd (x, y) ->
     let (ah', xres, _, xgate) = compileBexp_oop ah x in
     let (ah'', yres, _, ygate) = compileBexp_oop ah' y in
@@ -718,6 +740,24 @@ val zeroHeap_st_impl : st:state -> ah:AncHeap -> gates:(Circuit) ->
         (ensures  (zeroHeap (evalCirc gates st) ah))
 let zeroHeap_st_impl st ah gates = ref_imp_use gates; eval_mod st gates
 
+(* Establishes that the resulting ancilla heap is still zero-filled *)
+val compile_bexp_zero : ah:AncHeap -> targ:int -> exp:BoolExp -> st:state ->
+  Lemma (requires (zeroHeap st ah /\ disjoint (elts ah) (vars exp) /\ not (Set.mem targ (elts ah))))
+        (ensures  (zeroHeap (compileBexpEvalSt ah targ exp st) (first (compileBexp ah targ exp))))
+val compile_bexp_zero_oop : ah:AncHeap -> exp:BoolExp -> st:state ->
+  Lemma (requires (zeroHeap st ah /\ disjoint (elts ah) (vars exp)))
+        (ensures  (zeroHeap (compileBexpEvalSt_oop ah exp st) (first (compileBexp_oop ah exp))))
+let compile_bexp_zero ah targ exp st =
+  let (ah', _, _, circ) = compileBexp ah targ exp in
+    compile_decreases_heap ah targ exp; // subset ah' ah
+    zeroHeap_subset st ah ah'; // zeroHeap st ah'
+    compile_partition ah targ exp; // ah' disjoint circ
+    zeroHeap_st_impl st ah' circ
+let compile_bexp_zero_oop ah exp st = 
+  let (ah', targ) = popMin ah in
+    pop_proper_subset ah;
+    compile_bexp_zero ah' targ exp st
+  
 (* English-language preconditions: everything on the heap is in the 0 state, and
    the heap, expression, and target bit are all mutually disjoint -- that is,
    nothing on the heap is mentioned in either the target bit or the expression,
