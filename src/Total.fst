@@ -80,6 +80,10 @@ val agree_on_trans : #key:Type -> #value:Type -> m:t key value -> m':t key value
         (ensures  (agree_on m m'' s))
 let agree_on_trans m m' m'' s = ()
 
+val agree_on_subset : #key:Type -> #value:Type -> m:t key value -> m':t key value -> s:set key -> s':set key ->
+  Lemma (requires (agree_on m m' s /\ subset s' s))
+        (ensures  (agree_on m m' s'))
+let agree_on_subset m m' s s' = ()
 
 (* Functional extensionality for lookups. We're rolling our own since we're
 going to be bad and assume maps which are extensionally equal are actually equal *)

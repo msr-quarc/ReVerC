@@ -80,3 +80,11 @@ val disjoint_union : #a:Type -> s:set a -> s':set a -> s'':set a ->
   Lemma (requires (disjoint s s' /\ disjoint s s''))
         (ensures  (disjoint s (union s' s'')))
 let disjoint_union s s' s'' = ()
+
+val disjoint_is_subset_compl : #a:Type -> s:set a -> s':set a ->
+  Lemma (disjoint s s' <==> subset s (complement s'))
+let disjoint_is_subset_compl s s' = ()
+
+val subset_compl_reverse : #a:Type -> s:set a -> s':set a ->
+  Lemma (subset s s' <==> subset (complement s') (complement s))
+let subset_compl_reverse s s' = ()

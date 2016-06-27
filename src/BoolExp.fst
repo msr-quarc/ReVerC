@@ -498,6 +498,17 @@ let rec substOneVar_elems exp v exp' = match exp with
     substOneVar_elems x v exp';
     substOneVar_elems y v exp'
 
+val subst_value_pres : exp:BoolExp -> v:int -> exp':BoolExp -> st:state -> st':state ->
+  Lemma (requires (agree_on st st' (rem v (vars exp)) /\ evalBexp (BVar v) st = evalBexp exp' st'))
+	(ensures  (evalBexp exp st = evalBexp (substOneVar exp v exp') st'))
+let rec subst_value_pres exp v exp' st st' = match exp with
+  | BFalse -> ()
+  | BVar i -> ()
+  | BNot x -> subst_value_pres x v exp' st st'
+  | BAnd (x, y) | BXor (x, y) ->
+    subst_value_pres x v exp' st st';
+    subst_value_pres y v exp' st st'
+
 (* ------------------------------ Compile produces the right output
    What we want to say is that in any context in the larger compiler,
    the output of the subcircuit compiled for the boolean expression is
