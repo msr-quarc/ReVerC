@@ -17,7 +17,7 @@ type circGCState =
     ah     : AncHeap;
     gates  : list Gate;
     symtab : Total.t int int;
-    ivals  : Total.t int BoolExp;
+    isanc  : Total.t int bool;
     cvals  : Total.t int BoolExp }
 
 val circGC       : circGCState -> int -> Tot circGCState
@@ -32,25 +32,34 @@ val circGCEval   : circGCState -> state -> int -> Tot bool
      -update the current value of all other bits by substituting q.id with ival + cval *)
 val garbageCollect : circGCState -> int -> Tot circGCState
 let garbageCollect cs bit = 
-  let ival = lookup cs.ivals bit in
   let cval = lookup cs.cvals bit in
   let (ah', res, ancs, circ) = compileBexp cs.ah bit cval in
-  let ah'' = if ival = BFalse then insert ah' bit else ah' in
-  let f bexp = substOneVar bexp bit (BXor (ival, cval)) in
-  let cvals' = mapVals f cs.cvals in
-    { top    = cs.top; 
-      ah     = ah''; 
-      gates  = cs.gates @ circ; 
-      symtab = cs.symtab;
-      ivals  = cs.ivals;
-      cvals  = cvals' }
+    match lookup cs.isanc bit with
+      | true ->
+	let f bexp = substOneVar bexp bit cval in
+	let cvals' = mapVals f cs.cvals in
+	  { top    = cs.top; 
+	    ah     = insert ah' bit; 
+	    gates  = cs.gates @ circ; 
+	    symtab = cs.symtab;
+	    isanc  = cs.isanc;
+	    cvals  = cvals' }
+      | false ->
+        let f bexp = substOneVar bexp bit (BXor (BVar bit, cval)) in
+        let cvals' = mapVals f cs.cvals in
+          { top    = cs.top; 
+            ah     = ah'; 
+            gates  = cs.gates @ circ; 
+            symtab = cs.symtab;
+            isanc  = cs.isanc;
+            cvals  = cvals' }
 
 let circGCInit = 
   { top    = 0; 
     ah     = emptyHeap; 
     gates  = []; 
     symtab = constMap 0;
-    ivals  = constMap BFalse;
+    isanc  = constMap true;
     cvals  = constMap BFalse }
 
 let circGCAlloc cs = 
@@ -60,7 +69,7 @@ let circGCAlloc cs =
       ah     = ah';
       gates  = cs.gates;
       symtab = update cs.symtab cs.top bit;
-      ivals  = update cs.ivals bit BFalse;
+      isanc  = update cs.isanc bit true;
       cvals  = update cs.cvals bit BFalse }
   in
     (cs.top, cs')
@@ -79,7 +88,7 @@ let circGCAssign cs l bexp =
 	  ah     = ah'; 
 	  gates  = cs.gates @ circ; 
 	  symtab = cs.symtab;
-	  ivals  = cs.ivals;
+	  isanc  = cs.isanc;
 	  cvals  = cvals'}
     | (cval, Some bexp'') -> // compile in place, substitute q.id with q.id \oplus bexp''
       let (ah', _, _, circ') = compileBexp cs.ah bit bexp'' in
@@ -89,19 +98,19 @@ let circGCAssign cs l bexp =
 	  ah     = ah'; 
 	  gates  = cs.gates @ circ'; 
 	  symtab = cs.symtab;
-	  ivals  = cs.ivals;
+	  isanc  = cs.isanc;
 	  cvals  = cvals' }
     | _                -> // Compile out of place, clean q.id
       let (ah', bit', _, circ') = compileBexp_oop cs.ah bexp' in
       let symtab' = update cs.symtab l bit' in
-      let ivals' = update cs.ivals bit' BFalse in
+      let isanc' = update cs.isanc bit' true in
       let cvals' = update cs.cvals bit' bexp' in
       let cs' = 
 	{ top    = cs.top; 
 	  ah     = ah'; 
 	  gates  = cs.gates @ circ'; 
 	  symtab = symtab';
-	  ivals  = ivals';
+	  isanc  = isanc';
 	  cvals  = cvals' } 
       in
         garbageCollect cs' bit
@@ -124,7 +133,7 @@ let rec allocNcircGC (locs, cs) i =
                 ah = ah';
                 gates = cs.gates;
                 symtab = update cs.symtab cs.top bit;
-		ivals = update cs.ivals bit (BVar bit);
+		isanc = update cs.isanc bit false;
 		cvals = update cs.cvals bit BFalse }
     in
       allocNcircGC (((LOC cs.top)::locs), cs') (i-1)
@@ -137,7 +146,7 @@ let allocTycircGC ty cs = match ty with
                 ah = ah';
                 gates = cs.gates;
                 symtab = update cs.symtab cs.top bit;
-		ivals = update cs.ivals bit (BVar bit);
+		isanc = update cs.isanc bit false;
 		cvals = update cs.cvals bit BFalse }
     in
       Val (LOC cs.top, cs')
@@ -185,27 +194,6 @@ let rec compileGCCirc (gexp, cs) =
 
 (** Verification utilities *)
 
-(* A GCstate is valid w.r.t a set of initial values if
-     - the heap starts above 0
-     - everything on the heap is 0-valued after executing the circuit
-     - no active qubit is in the heap
-     - for every active qubit, q.ival = q' <> q.cval' *)
-type validGCState (cs:circGCState) (init:state) =
-  zeroHeap (evalCirc cs.gates init) cs.ah /\ 
-  disjoint (vals cs.symtab) (elts cs.ah) /\
-  (forall bit. Set.mem bit (vals cs.symtab) ==> 
-    evalBexp (lookup cs.ivals bit) init = 
-    evalBexp (BXor (BVar bit, (lookup cs.cvals bit))) (evalCirc cs.gates init))
-
-val valid_alloc : cs:circGCState -> init:state ->
-  Lemma (requires (validGCState cs init))
-	(ensures  (validGCState (snd (circGCAlloc cs)) init))
-let valid_alloc cs init =
-  let (ah', bit) = popMin cs.ah in
-  let cs' = snd (circGCAlloc cs) in
-    pop_proper_subset cs.ah;
-    zeroHeap_subset (evalCirc cs.gates init) cs.ah cs'.ah
-
 val cvals_vars_lem : cvals:Total.t int BoolExp -> bit:int -> exp:BoolExp ->
   Lemma (forall exp'. Set.mem exp' (vals cvals) ==> 
 	   subset (vars (substOneVar exp' bit exp)) (union (rem bit (vars exp')) (vars exp)))
@@ -245,6 +233,20 @@ let rec cvals_vars_lem2 symtab cvals bit exp s = match symtab.elts with
       substOneVar_elems (lookup cvals (snd x)) bit exp; 
       cvals_vars_lem2 symtab' cvals bit exp s
 
+val cvals_vars_lemma : symtab:Total.t int int -> cvals:Total.t int BoolExp ->
+		       bit:int -> exp:BoolExp -> s:set int ->
+  Lemma (requires (disjoint (vars exp) s /\
+		  (forall bit'. Set.mem bit' (vals symtab) ==> 
+		    disjoint (vars (lookup cvals bit')) (ins bit' s))))
+	(ensures  (forall bit'. Set.mem bit' (vals symtab) ==> 
+		    disjoint (vars (substOneVar (lookup cvals bit') bit exp)) (ins bit' s)))
+let rec cvals_vars_lemma symtab cvals bit exp s = match symtab.elts with
+  | [] -> substOneVar_elems (lookup cvals symtab.dval) bit exp
+  | x::xs -> admit();
+    let symtab' = { elts = xs; dval = symtab.dval } in
+      substOneVar_elems (lookup cvals (snd x)) bit exp; 
+      cvals_vars_lemma symtab' cvals bit exp s
+
 (* These lemmas relate to the partitioning of the ancilla heap wrt the allocated values.
    Note that the statement actually doesn't require that all bits used in the circuit
    are not in the ancilla heap, only that all active bits are not in the heap. This will
@@ -252,23 +254,36 @@ let rec cvals_vars_lem2 symtab cvals bit exp s = match symtab.elts with
 
 val garbage_partition_lemma : cs:circGCState -> bit:int -> cs':circGCState ->
   Lemma (requires (cs' = garbageCollect cs bit /\ 
+		   not (Set.mem bit (vals cs.symtab)) /\
 		   disjoint (vals cs.symtab) (elts cs.ah) /\
-		   (forall bit. Set.mem bit (vals cs.symtab) ==> 
-		     subset (vars (lookup cs.cvals bit)) (vals cs.symtab))))
+		   (forall bit'. Set.mem bit' (vals cs.symtab) ==> 
+		     disjoint (vars (lookup cs.cvals bit')) (ins bit' (elts cs.ah)))))
 	(ensures  (disjoint (vals cs'.symtab) (elts cs'.ah) /\
-		   (forall bit. Set.mem bit (vals cs'.symtab) ==> 
-		     subset (vars (lookup cs'.cvals bit)) (vals cs'.symtab))))
+		   (forall bit'. Set.mem bit' (vals cs'.symtab) ==> 
+		     disjoint (vars (lookup cs'.cvals bit')) (ins bit' (elts cs'.ah)))))
 let garbage_partition_lemma cs bit cs' =
-  let ival = lookup cs.ivals bit in
   let cval = lookup cs.cvals bit in
-  let (ah', res, ancs, circ) = compileBexp cs.ah bit cval in
-  let ah'' = if ival = BFalse then insert ah' bit else ah' in
-  let f bexp = substOneVar bexp bit (BXor (ival, cval)) in
-  let cvals' = mapVals f cs.cvals in
-    assert(elts cs'.ah = ins bit (elts cs.ah));
-    admitP(disjoint (vals cs'.symtab) (elts cs'.ah));
-    admitP(forall bit. Set.mem bit (vals cs'.symtab) ==> 
-             subset (vars (lookup cs'.cvals bit)) (vals cs'.symtab))
+  let (ah', _, _, circ) = compileBexp cs.ah bit cval in
+    match lookup cs.isanc bit with
+      | true ->
+	let f bexp = substOneVar bexp bit cval in
+	let cvals' = mapVals f cs.cvals in
+	let ah''   = insert ah' bit in
+          compile_decreases_heap cs.ah bit cval;                    // subset ah' cs.ah
+          disjoint_subset (elts ah') (elts cs.ah) (vals cs.symtab); // disjoint ah' (vals cs.symtab)
+          elts_insert ah' bit;                                      // subset ah'' (ins bit ah')
+          //admitP(disjoint (vals cs'.symtab) (elts cs'.ah));
+	  cvals_vars_lemma cs.symtab cs.cvals cval (elts cs'.ah);
+          admitP(forall bit. Set.mem bit (vals cs'.symtab) ==> 
+		    disjoint (vars (lookup cs'.cvals bit)) (ins bit (elts cs'.ah)))
+      | false -> admit() (*
+        let f bexp = substOneVar bexp bit (BXor (BVar bit, cval)) in
+        let cvals' = mapVals f cs.cvals in
+          compile_decreases_heap cs.ah bit cval;                    // subset ah' cs.ah
+          disjoint_subset (elts ah') (elts cs.ah) (vals cs.symtab); // disjoint ah' (vals cs.symtab)
+          //admitP(disjoint (vals cs'.symtab) (elts cs'.ah));
+          admitP(forall bit. Set.mem bit (vals cs'.symtab) ==> 
+		    disjoint (vars (lookup cs'.cvals bit)) (elts cs'.ah))*)
 
 val assign_partition_lemma : cs:circGCState -> l:int -> bexp:BoolExp -> cs':circGCState ->
   Lemma (requires (cs' = circGCAssign cs l bexp /\ 
@@ -326,6 +341,27 @@ let assign_partition_lemma cs l bexp cs' =
 	//admitP(forall bit. Set.mem bit (vals cs''.symtab) ==> 
 	//	 subset (vars (lookup cs''.cvals bit)) (vals cs''.symtab));
 	garbage_partition_lemma cs'' bit cs'
+
+(* A GCstate is valid w.r.t a set of initial values if
+     - the heap starts above 0
+     - everything on the heap is 0-valued after executing the circuit
+     - no active qubit is in the heap
+     - for every active qubit, q.ival = q' <> q.cval' *)
+type validGCState (cs:circGCState) (init:state) =
+  zeroHeap (evalCirc cs.gates init) cs.ah /\ 
+  disjoint (vals cs.symtab) (elts cs.ah) /\
+  (forall bit. Set.mem bit (vals cs.symtab) ==> 
+    evalBexp (lookup cs.ivals bit) init = 
+    evalBexp (BXor (BVar bit, (lookup cs.cvals bit))) (evalCirc cs.gates init))
+
+val valid_alloc : cs:circGCState -> init:state ->
+  Lemma (requires (validGCState cs init))
+	(ensures  (validGCState (snd (circGCAlloc cs)) init))
+let valid_alloc cs init =
+  let (ah', bit) = popMin cs.ah in
+  let cs' = snd (circGCAlloc cs) in
+    pop_proper_subset cs.ah;
+    zeroHeap_subset (evalCirc cs.gates init) cs.ah cs'.ah
 
 val valid_assign : cs:circGCState -> l:int -> bexp:BoolExp -> init:state ->
   Lemma (requires (validGCState cs init))
