@@ -120,3 +120,8 @@ type PairHeap_mem (i:int) (ah:AncHeap) =
   | Ge_max : i':int -> ah':AncHeap -> b:(i' >= ah'.max) -> PairHeap_mem i' ah'
   | Mem_heap : i':int -> ah':AncHeap -> b:b2t (Heap.mem i ah.hp) -> PairHeap_mem i' ah'
 *)
+
+val elts_insert : ah:AncHeap -> i:int ->
+  Lemma (requires true)
+	(ensures  (elts (insert ah i) = ins i (elts ah)))
+let elts_insert ah i =

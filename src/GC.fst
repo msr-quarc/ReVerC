@@ -230,6 +230,7 @@ let rec cvals_update_lem cvals bit exp st st' = match cvals.elts with
       subst_value_pres (snd x) bit exp st st'; 
       cvals_update_lem cvals' bit exp st st'
 
+(* More precisely tuned version *)
 val cvals_vars_lem2 : symtab:Total.t int int -> cvals:Total.t int BoolExp -> 
 		      bit:int -> exp:BoolExp -> s:set int ->
   Lemma (requires (subset (vars exp) s /\ 
@@ -243,6 +244,11 @@ let rec cvals_vars_lem2 symtab cvals bit exp s = match symtab.elts with
     let symtab' = { elts = xs; dval = symtab.dval } in
       substOneVar_elems (lookup cvals (snd x)) bit exp; 
       cvals_vars_lem2 symtab' cvals bit exp s
+
+(* These lemmas relate to the partitioning of the ancilla heap wrt the allocated values.
+   Note that the statement actually doesn't require that all bits used in the circuit
+   are not in the ancilla heap, only that all active bits are not in the heap. This will
+   be important if we want to use a pebble strategy *)
 
 val garbage_partition_lemma : cs:circGCState -> bit:int -> cs':circGCState ->
   Lemma (requires (cs' = garbageCollect cs bit /\ 
@@ -259,7 +265,10 @@ let garbage_partition_lemma cs bit cs' =
   let ah'' = if ival = BFalse then insert ah' bit else ah' in
   let f bexp = substOneVar bexp bit (BXor (ival, cval)) in
   let cvals' = mapVals f cs.cvals in
-    admit()
+    assert(elts cs'.ah = ins bit (elts cs.ah));
+    admitP(disjoint (vals cs'.symtab) (elts cs'.ah));
+    admitP(forall bit. Set.mem bit (vals cs'.symtab) ==> 
+             subset (vars (lookup cs'.cvals bit)) (vals cs'.symtab))
 
 val assign_partition_lemma : cs:circGCState -> l:int -> bexp:BoolExp -> cs':circGCState ->
   Lemma (requires (cs' = circGCAssign cs l bexp /\ 
