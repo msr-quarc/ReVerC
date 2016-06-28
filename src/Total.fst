@@ -60,10 +60,20 @@ val lookup_update2 : #key:Type -> #value:Type -> m:t key value -> k:key -> v:val
   Lemma (requires (not (k = k')))
         (ensures (lookup (update m k v) k' = lookup m k'))
   [SMTPat (lookup (update m k v) k')]
+val lookup_map : #key:Type -> #value:Type -> #value':Type -> f:(value -> Tot value') -> m:t key value -> k:key ->
+  Lemma (requires true)
+        (ensures (lookup (mapVals f m) k = f (lookup m k)))
+  (decreases m.elts)
+  [SMTPat (lookup (mapVals f m) k)]
 
 let lookup_const k v = ()
 let lookup_update1 m k v = ()
 let lookup_update2 m k v k' = ()
+let rec lookup_map f m k = match m.elts with
+  | [] -> ()
+  | x::xs -> 
+    let m' = { elts = xs; dval = m.dval } in
+      lookup_map f m' k
 
 (* Relating lookups to values -- don't have time for this trivial but tedious lemma right now *)
 val lookup_is_val : #key:Type -> #value:Type -> m:t key value -> k:key ->

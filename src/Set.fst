@@ -66,6 +66,12 @@ val subset_ins : #a:Type -> i:a -> s:set a ->
   Lemma (subset s (ins i s))
 let subset_ins i s = ()
 
+val ins_rem_equal : #a:Type -> i:a -> s:set a ->
+  Lemma (requires true)
+	(ensures  (ins i (rem i s) = s))
+  [SMTPat (ins i (rem i s))]
+let ins_rem_equal i s = admit()
+
 val ins_subset_pres : #a:Type -> i:a -> s:set a -> s':set a ->
   Lemma (requires (subset s s'))
         (ensures  (subset (ins i s) (ins i s')))

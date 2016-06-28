@@ -90,7 +90,7 @@ let circGCAssign cs l bexp =
 	  gates  = cs.gates @ circ'; 
 	  symtab = cs.symtab;
 	  ivals  = cs.ivals;
-	  cvals  = cvals'}
+	  cvals  = cvals' }
     | _                -> // Compile out of place, clean q.id
       let (ah', bit', _, circ') = compileBexp_oop cs.ah bexp' in
       let symtab' = update cs.symtab l bit' in
@@ -205,6 +205,118 @@ let valid_alloc cs init =
   let cs' = snd (circGCAlloc cs) in
     pop_proper_subset cs.ah;
     zeroHeap_subset (evalCirc cs.gates init) cs.ah cs'.ah
+
+val cvals_vars_lem : cvals:Total.t int BoolExp -> bit:int -> exp:BoolExp ->
+  Lemma (forall exp'. Set.mem exp' (vals cvals) ==> 
+	   subset (vars (substOneVar exp' bit exp)) (union (rem bit (vars exp')) (vars exp)))
+  (decreases (cvals.elts))
+let rec cvals_vars_lem cvals bit exp = match cvals.elts with
+  | [] -> substOneVar_elems cvals.dval bit exp
+  | x::xs -> 
+    let cvals' = { elts = xs; dval = cvals.dval } in
+      substOneVar_elems (snd x) bit exp; 
+      cvals_vars_lem cvals' bit exp
+
+val cvals_update_lem : cvals:Total.t int BoolExp -> bit:int -> exp:BoolExp -> st:state -> st':state ->
+  Lemma (requires (evalBexp (BVar bit) st = evalBexp exp st' /\ 
+                   (forall exp'. Set.mem exp' (vals cvals) ==> agree_on st st' (rem bit (vars exp')))))
+	(ensures  (forall exp'. Set.mem exp' (vals cvals) ==> 
+		     evalBexp exp' st = evalBexp (substOneVar exp' bit exp) st'))
+  (decreases (cvals.elts))
+let rec cvals_update_lem cvals bit exp st st' = match cvals.elts with
+  | [] -> subst_value_pres cvals.dval bit exp st st'
+  | x::xs -> 
+    let cvals' = { elts = xs; dval = cvals.dval } in
+      subst_value_pres (snd x) bit exp st st'; 
+      cvals_update_lem cvals' bit exp st st'
+
+val cvals_vars_lem2 : symtab:Total.t int int -> cvals:Total.t int BoolExp -> 
+		      bit:int -> exp:BoolExp -> s:set int ->
+  Lemma (requires (subset (vars exp) s /\ 
+		  (forall bit'. Set.mem bit' (vals symtab) ==> subset (vars (lookup cvals bit')) s)))
+	(ensures  (forall bit'. Set.mem bit' (vals symtab) ==> 
+		     subset (vars (substOneVar (lookup cvals bit') bit exp)) s))
+  (decreases (symtab.elts))
+let rec cvals_vars_lem2 symtab cvals bit exp s = match symtab.elts with
+  | [] -> substOneVar_elems (lookup cvals symtab.dval) bit exp
+  | x::xs -> 
+    let symtab' = { elts = xs; dval = symtab.dval } in
+      substOneVar_elems (lookup cvals (snd x)) bit exp; 
+      cvals_vars_lem2 symtab' cvals bit exp s
+
+val garbage_partition_lemma : cs:circGCState -> bit:int -> cs':circGCState ->
+  Lemma (requires (cs' = garbageCollect cs bit /\ 
+		   disjoint (vals cs.symtab) (elts cs.ah) /\
+		   (forall bit. Set.mem bit (vals cs.symtab) ==> 
+		     subset (vars (lookup cs.cvals bit)) (vals cs.symtab))))
+	(ensures  (disjoint (vals cs'.symtab) (elts cs'.ah) /\
+		   (forall bit. Set.mem bit (vals cs'.symtab) ==> 
+		     subset (vars (lookup cs'.cvals bit)) (vals cs'.symtab))))
+let garbage_partition_lemma cs bit cs' =
+  let ival = lookup cs.ivals bit in
+  let cval = lookup cs.cvals bit in
+  let (ah', res, ancs, circ) = compileBexp cs.ah bit cval in
+  let ah'' = if ival = BFalse then insert ah' bit else ah' in
+  let f bexp = substOneVar bexp bit (BXor (ival, cval)) in
+  let cvals' = mapVals f cs.cvals in
+    admit()
+
+val assign_partition_lemma : cs:circGCState -> l:int -> bexp:BoolExp -> cs':circGCState ->
+  Lemma (requires (cs' = circGCAssign cs l bexp /\ 
+		   disjoint (vals cs.symtab) (elts cs.ah) /\
+		   (forall bit. Set.mem bit (vals cs.symtab) ==> 
+		     subset (vars (lookup cs.cvals bit)) (vals cs.symtab))))
+	(ensures  (disjoint (vals cs'.symtab) (elts cs'.ah) /\
+		   (forall bit. Set.mem bit (vals cs'.symtab) ==> 
+		     subset (vars (lookup cs'.cvals bit)) (vals cs'.symtab))))
+let assign_partition_lemma cs l bexp cs' =
+  let bit = lookup cs.symtab l in
+  let bexp' = substVar bexp cs.symtab in
+  let bexpfac = factorAs bexp' bit in
+  substVar_elems bexp cs.symtab;      // subset (vars bexp') (vals cs.symtab)
+  match (lookup cs.cvals bit, bexpfac) with
+    | (BFalse, _)      ->
+      let bexp'' = substOneVar bexp' bit BFalse in
+      let (ah', _, _, circ) = compileBexp cs.ah bit bexp'' in
+      let f bexp = substOneVar bexp bit bexp'' in
+	compile_decreases_heap cs.ah bit bexp'';                  // subset cs.ah' cs.ah
+	disjoint_subset (elts ah') (elts cs.ah) (vals cs.symtab); // disjoint cs.ah' (ids cs.symtab)
+	//admitP(disjoint (vals cs'.symtab) (elts cs'.ah));
+	substOneVar_elems bexp' bit BFalse; // subset (vars bexp'') (vars bexp' \ bit)
+	cvals_vars_lem2 cs.symtab cs.cvals bit bexp'' (vals cs'.symtab)
+	//admitP(forall bit. Set.mem bit (vals cs'.symtab) ==> 
+	//	 subset (vars (lookup cs'.cvals bit)) (vals cs'.symtab))
+    | (_, Some bexp'') ->
+      let (ah', _, _, circ') = compileBexp cs.ah bit bexp'' in
+      let f bexp = substOneVar bexp bit (BXor (BVar bit, bexp'')) in
+	compile_decreases_heap cs.ah bit bexp'';                  // subset cs.ah' cs.ah
+	disjoint_subset (elts ah') (elts cs.ah) (vals cs.symtab); // disjoint cs.ah' (ids cs.symtab)
+	//admitP(disjoint (vals cs'.symtab) (elts cs'.ah));
+	factorAs_vars bexp' bit; // subset (vars bexp'') (vars bexp' \ bit)
+	ins_subset_pres bit (vars bexp'') (rem bit (vars bexp'));
+	cvals_vars_lem2 cs.symtab cs.cvals bit (BXor (BVar bit, bexp'')) (vals cs'.symtab)
+	//admitP(forall bit. Set.mem bit (vals cs'.symtab) ==> 
+	//	 subset (vars (lookup cs'.cvals bit)) (vals cs'.symtab))
+    | _                ->
+      let (ah', bit', _, circ') = compileBexp_oop cs.ah bexp' in
+      let symtab' = update cs.symtab l bit' in
+      let ivals' = update cs.ivals bit' BFalse in
+      let cvals' = update cs.cvals bit' bexp' in
+      let cs'' = 
+	{ top    = cs.top; 
+	  ah     = ah'; 
+	  gates  = cs.gates @ circ'; 
+	  symtab = symtab';
+	  ivals  = ivals';
+	  cvals  = cvals' } 
+      in
+	compile_decreases_heap_oop cs.ah bexp';
+	disjoint_subset (elts ah') (elts cs.ah) (vals cs.symtab); // disjoint cs.ah' (vals cs.symtab)
+	compile_partition_oop cs.ah bexp';
+	//admitP(disjoint (vals cs''.symtab) (elts cs''.ah));
+	//admitP(forall bit. Set.mem bit (vals cs''.symtab) ==> 
+	//	 subset (vars (lookup cs''.cvals bit)) (vals cs''.symtab));
+	garbage_partition_lemma cs'' bit cs'
 
 val valid_assign : cs:circGCState -> l:int -> bexp:BoolExp -> init:state ->
   Lemma (requires (validGCState cs init))

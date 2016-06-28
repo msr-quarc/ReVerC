@@ -86,7 +86,12 @@ let rec occursInBexp i exp = match exp with
   | BXor (x, y) -> occursInBexp i x || occursInBexp i y
   | BNot x      -> occursInBexp i x
 
-let vars exp = fun i -> occursInBexp i exp
+let rec vars exp = match exp with (* Old version, may need for compatibility fun i -> occursInBexp i exp *)
+  | BFalse      -> Set.empty
+  | BVar n      -> Set.singleton n
+  | BAnd (x, y) -> Set.union (vars x) (vars y)
+  | BXor (x, y) -> Set.union (vars x) (vars y)
+  | BNot x      -> vars x
 
 (* Use getVars for computational stuff *)
 let rec getVars_acc acc exp = match exp with
@@ -394,9 +399,8 @@ let rec factorAs_correct exp targ st = match exp with
     factorAs_correct x targ st;
     factorAs_correct y targ st
 
-(* Stronger version that used to go through: ins targ (vars exp') = (vars exp) *)
 val factorAs_vars : exp:BoolExp -> targ:int ->
-  Lemma (forall exp'. factorAs exp targ = Some exp' ==> subset (vars exp') (vars exp))
+  Lemma (forall exp'. factorAs exp targ = Some exp' ==> subset (vars exp') (rem targ (vars exp)))
 let rec factorAs_vars exp targ = match exp with
   | BFalse -> ()
   | BVar x -> ()
