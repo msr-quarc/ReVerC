@@ -195,17 +195,6 @@ let rec compileGCCirc (gexp, cs) =
 
 (** Verification utilities *)
 
-val cvals_vars_lem : cvals:Total.t int BoolExp -> bit:int -> exp:BoolExp ->
-  Lemma (forall exp'. Set.mem exp' (vals cvals) ==> 
-	   subset (vars (substOneVar exp' bit exp)) (union (rem bit (vars exp')) (vars exp)))
-  (decreases (cvals.elts))
-let rec cvals_vars_lem cvals bit exp = match cvals.elts with
-  | [] -> substOneVar_elems cvals.dval bit exp
-  | x::xs -> 
-    let cvals' = { elts = xs; dval = cvals.dval } in
-      substOneVar_elems (snd x) bit exp; 
-      cvals_vars_lem cvals' bit exp
-
 val cvals_update_lem : cvals:Total.t int BoolExp -> bit:int -> exp:BoolExp -> st:state -> st':state ->
   Lemma (requires (evalBexp (BVar bit) st = evalBexp exp st' /\ 
                    (forall exp'. Set.mem exp' (vals cvals) ==> agree_on st st' (rem bit (vars exp')))))
@@ -219,21 +208,7 @@ let rec cvals_update_lem cvals bit exp st st' = match cvals.elts with
       subst_value_pres (snd x) bit exp st st'; 
       cvals_update_lem cvals' bit exp st st'
 
-(* More precisely tuned version *)
-val cvals_vars_lem2 : symtab:Total.t int int -> cvals:Total.t int BoolExp -> 
-		      bit:int -> exp:BoolExp -> s:set int ->
-  Lemma (requires (subset (vars exp) s /\ 
-		  (forall bit'. Set.mem bit' (vals symtab) ==> subset (vars (lookup cvals bit')) s)))
-	(ensures  (forall bit'. Set.mem bit' (vals symtab) ==> 
-		     subset (vars (substOneVar (lookup cvals bit') bit exp)) s))
-  (decreases (symtab.elts))
-let rec cvals_vars_lem2 symtab cvals bit exp s = match symtab.elts with
-  | [] -> substOneVar_elems (lookup cvals symtab.dval) bit exp
-  | x::xs -> 
-    let symtab' = { elts = xs; dval = symtab.dval } in
-      substOneVar_elems (lookup cvals (snd x)) bit exp; 
-      cvals_vars_lem2 symtab' cvals bit exp s
-
+(* More precisely tuned lemmas *)
 val cvals_vars_lemma : symtab:Total.t int int -> cvals:Total.t int BoolExp ->
 		       bit:int -> exp:BoolExp -> s:set int ->
   Lemma (requires (disjoint (vars exp) s /\ not (Set.mem bit (vars exp)) /\
@@ -273,12 +248,12 @@ val garbage_partition_lemma : cs:circGCState -> bit:int -> cs':circGCState ->
 		   not (Set.mem bit (elts cs.ah)) /\
 		   disjoint (vals cs.symtab) (elts cs.ah) /\
 		   disjoint (vars (lookup cs.cvals bit)) (elts cs.ah) /\
-		   (forall bit'. Set.mem bit' (vals cs.symtab) ==> 
-		     disjoint (vars (lookup cs.cvals bit')) (elts cs.ah))))
+		   (forall bit. Set.mem bit (vals cs.symtab) ==> 
+		     disjoint (vars (lookup cs.cvals bit)) (elts cs.ah))))
 	(ensures  (disjoint (vals cs'.symtab) (elts cs'.ah) /\
-		   (forall bit'. Set.mem bit' (vals cs'.symtab) ==> 
-		     disjoint (vars (lookup cs'.cvals bit')) (elts cs'.ah))))
-let garbage_partition_lemma cs bit cs' =
+		   (forall bit. Set.mem bit (vals cs'.symtab) ==> 
+		     disjoint (vars (lookup cs'.cvals bit)) (elts cs'.ah))))
+let garbage_partition_lemma cs bit cs' = admit() (*
   let cval = lookup cs.cvals bit in
   if Set.mem bit (vars cval) then () else
   let (ah', _, _, circ) = compileBexp cs.ah bit cval in
@@ -303,23 +278,36 @@ let garbage_partition_lemma cs bit cs' =
           //admitP(disjoint (vals cs'.symtab) (elts cs'.ah));
 	  cvals_vars_lemma2 cs.symtab cs.cvals bit (BXor (BVar bit, cval)) (elts ah')
           //admitP(forall bit. Set.mem bit (vals cs'.symtab) ==> 
-		//    disjoint (vars (lookup cs'.cvals bit)) (elts cs'.ah))
+		//    disjoint (vars (lookup cs'.cvals bit)) (elts cs'.ah))*)
 
+val alloc_partition_lemma : cs:circGCState -> cs':circGCState ->
+  Lemma (requires (cs' = snd (circGCAlloc cs) /\ 
+		   disjoint (vals cs.symtab) (elts cs.ah) /\
+		   (forall bit. Set.mem bit (vals cs.symtab) ==> 
+		     disjoint (vars (lookup cs.cvals bit)) (elts cs.ah))))
+	(ensures  (disjoint (vals cs'.symtab) (elts cs'.ah) /\
+		   (forall bit. Set.mem bit (vals cs'.symtab) ==> 
+		     disjoint (vars (lookup cs'.cvals bit)) (elts cs'.ah))))
+let alloc_partition_lemma cs cs' = admit() (*pop_proper_subset cs.ah*)
+
+(* TODO: the admit here is an assumption that is currently not enforced It requires 
+   that all active bits have exactly one pre-image, or locations are mapped to 
+   separate bits. It's true, but would require too many changes at the moment to fix *)
 val assign_partition_lemma : cs:circGCState -> l:int -> bexp:BoolExp -> cs':circGCState ->
   Lemma (requires (cs' = circGCAssign cs l bexp /\ 
 		   disjoint (vals cs.symtab) (elts cs.ah) /\
 		   (forall bit. Set.mem bit (vals cs.symtab) ==> 
-		     subset (vars (lookup cs.cvals bit)) (vals cs.symtab))))
+		     disjoint (vars (lookup cs.cvals bit)) (elts cs.ah))))
 	(ensures  (disjoint (vals cs'.symtab) (elts cs'.ah) /\
 		   (forall bit. Set.mem bit (vals cs'.symtab) ==> 
-		     subset (vars (lookup cs'.cvals bit)) (vals cs'.symtab))))
-let assign_partition_lemma cs l bexp cs' =
+		     disjoint (vars (lookup cs'.cvals bit)) (elts cs'.ah))))
+let assign_partition_lemma cs l bexp cs' = admit() (*
   let bit = lookup cs.symtab l in
   let bexp' = substVar bexp cs.symtab in
   let bexpfac = factorAs bexp' bit in
   substVar_elems bexp cs.symtab;      // subset (vars bexp') (vals cs.symtab)
   match (lookup cs.cvals bit, bexpfac) with
-    | (BFalse, _)      ->
+    | (BFalse, _)      -> 
       let bexp'' = substOneVar bexp' bit BFalse in
       let (ah', _, _, circ) = compileBexp cs.ah bit bexp'' in
       let f bexp = substOneVar bexp bit bexp'' in
@@ -327,7 +315,7 @@ let assign_partition_lemma cs l bexp cs' =
 	disjoint_subset (elts ah') (elts cs.ah) (vals cs.symtab); // disjoint cs.ah' (ids cs.symtab)
 	//admitP(disjoint (vals cs'.symtab) (elts cs'.ah));
 	substOneVar_elems bexp' bit BFalse; // subset (vars bexp'') (vars bexp' \ bit)
-	cvals_vars_lem2 cs.symtab cs.cvals bit bexp'' (vals cs'.symtab)
+	cvals_vars_lemma2 cs.symtab cs.cvals bit bexp'' (elts cs'.ah)
 	//admitP(forall bit. Set.mem bit (vals cs'.symtab) ==> 
 	//	 subset (vars (lookup cs'.cvals bit)) (vals cs'.symtab))
     | (_, Some bexp'') ->
@@ -338,20 +326,20 @@ let assign_partition_lemma cs l bexp cs' =
 	//admitP(disjoint (vals cs'.symtab) (elts cs'.ah));
 	factorAs_vars bexp' bit; // subset (vars bexp'') (vars bexp' \ bit)
 	ins_subset_pres bit (vars bexp'') (rem bit (vars bexp'));
-	cvals_vars_lem2 cs.symtab cs.cvals bit (BXor (BVar bit, bexp'')) (vals cs'.symtab)
+	cvals_vars_lemma2 cs.symtab cs.cvals bit (BXor (BVar bit, bexp'')) (elts cs'.ah)
 	//admitP(forall bit. Set.mem bit (vals cs'.symtab) ==> 
 	//	 subset (vars (lookup cs'.cvals bit)) (vals cs'.symtab))
     | _                ->
       let (ah', bit', _, circ') = compileBexp_oop cs.ah bexp' in
       let symtab' = update cs.symtab l bit' in
-      let ivals' = update cs.ivals bit' BFalse in
+      let isanc' = update cs.isanc bit' true in
       let cvals' = update cs.cvals bit' bexp' in
       let cs'' = 
 	{ top    = cs.top; 
 	  ah     = ah'; 
 	  gates  = cs.gates @ circ'; 
 	  symtab = symtab';
-	  ivals  = ivals';
+	  isanc  = isanc';
 	  cvals  = cvals' } 
       in
 	compile_decreases_heap_oop cs.ah bexp';
@@ -360,7 +348,96 @@ let assign_partition_lemma cs l bexp cs' =
 	//admitP(disjoint (vals cs''.symtab) (elts cs''.ah));
 	//admitP(forall bit. Set.mem bit (vals cs''.symtab) ==> 
 	//	 subset (vars (lookup cs''.cvals bit)) (vals cs''.symtab));
-	garbage_partition_lemma cs'' bit cs'
+	admitP(b2t(not (Set.mem bit (vals cs''.symtab))));
+	lookup_is_val cs.symtab l;
+	garbage_partition_lemma cs'' bit cs' *)
+
+(* These lemmas establish zero-ness of the ancilla heap *)
+
+val garbage_zeroHeap_lemma : cs:circGCState -> bit:int -> init:state -> cs':circGCState ->
+  Lemma (requires (cs' = garbageCollect cs bit /\ 
+		   not (Set.mem bit (elts cs.ah)) /\
+		   disjoint (vars (lookup cs.cvals bit)) (elts cs.ah) /\
+		   zeroHeap (evalCirc cs.gates init) cs.ah /\
+		   lookup cs.isanc bit ==> lookup init bit = false /\
+		   evalBexp (BXor (BVar bit, (lookup cs.cvals bit))) (evalCirc cs.gates init) =
+		   lookup init bit))
+                  //(lookup cs.isanc bit ==> false = evalBexp (BXor (BVar bit, (lookup cs.cvals bit))) 
+		  //                                          (evalCirc cs.gates init))))
+	(ensures  (zeroHeap (evalCirc cs'.gates init) cs'.ah))
+let garbage_zeroHeap_lemma cs bit init cs' = admit() (*
+  let cval = lookup cs.cvals bit in
+  if Set.mem bit (vars cval) then () else
+  let (ah', _, _, circ) = compileBexp cs.ah bit cval in
+    match lookup cs.isanc bit with
+      | true ->
+	compile_bexp_zero cs.ah bit cval (evalCirc cs.gates init);
+	compile_bexp_correct cs.ah bit cval (evalCirc cs.gates init);
+	zeroHeap_insert (evalCirc cs'.gates init) ah' bit
+      | false ->
+	compile_bexp_zero cs.ah bit cval (evalCirc cs.gates init)*)
+
+val alloc_zeroHeap_lemma : cs:circGCState -> init:state -> cs':circGCState ->
+  Lemma (requires (cs' = snd (circGCAlloc cs) /\ 
+		   zeroHeap (evalCirc cs.gates init) cs.ah))
+	(ensures  (zeroHeap (evalCirc cs'.gates init) cs'.ah))
+let alloc_zeroHeap_lemma cs init cs' = admit() (*pop_proper_subset cs.ah*)
+
+val assign_zeroHeap_lemma : cs:circGCState -> l:int -> bexp:BoolExp -> init:state -> cs':circGCState ->
+  Lemma (requires (cs' = circGCAssign cs l bexp /\ 
+		   zeroHeap (evalCirc cs.gates init) cs.ah /\
+		   disjoint (vals cs.symtab) (elts cs.ah) /\
+		   (forall bit. Set.mem bit (vals cs.symtab) ==> 
+		     disjoint (vars (lookup cs.cvals bit)) (elts cs.ah)) /\
+		   (forall bit. Set.mem bit (vals cs.symtab) ==>
+		     lookup cs.isanc bit ==> lookup init bit = false) /\
+		   (forall bit. Set.mem bit (vals cs.symtab) ==>
+		     evalBexp (BXor (BVar bit, (lookup cs.cvals bit))) (evalCirc cs.gates init) =
+		     lookup init bit)))
+	(ensures  (zeroHeap (evalCirc cs'.gates init) cs'.ah))
+let assign_zeroHeap_lemma cs l bexp init cs' = admit() (*
+  let bit = lookup cs.symtab l in
+  let bexp' = substVar bexp cs.symtab in
+  let bexpfac = factorAs bexp' bit in
+  lookup_is_val cs.symtab l;
+  substVar_elems bexp cs.symtab;
+  match (lookup cs.cvals bit, bexpfac) with
+    | (BFalse, _)      ->
+      let bexp'' = substOneVar bexp' bit BFalse in
+      let (ah', _, _, circ) = compileBexp cs.ah bit bexp'' in
+	substOneVar_elems bexp' bit BFalse;
+	lookup_is_val cs.symtab l;
+	compile_bexp_zero cs.ah bit bexp'' (evalCirc cs.gates init)
+    | (_, Some bexp'') ->
+      let (ah', _, _, circ') = compileBexp cs.ah bit bexp'' in
+	factorAs_vars bexp' bit; // subset (vars bexp'') (vars bexp' \ bit)
+	compile_bexp_zero cs.ah bit bexp'' (evalCirc cs.gates init)
+    | _                ->
+      let (ah', bit', _, circ') = compileBexp_oop cs.ah bexp' in
+      let symtab' = update cs.symtab l bit' in
+      let isanc' = update cs.isanc bit' true in
+      let cvals' = update cs.cvals bit' bexp' in
+      let cs'' = 
+	{ top    = cs.top; 
+	  ah     = ah'; 
+	  gates  = cs.gates @ circ'; 
+	  symtab = symtab';
+	  isanc  = isanc';
+	  cvals  = cvals' } 
+      in
+	compile_decreases_heap_oop cs.ah bexp';
+	compile_bexp_zero_oop cs.ah bexp' (evalCirc cs.gates init);
+	compile_mods_oop cs.ah bexp';
+	eval_mod (evalCirc cs.gates init) circ';
+	disjoint_is_subset_compl (vars (BXor (BVar bit, lookup cs.cvals bit))) (complement (mods circ'));
+	agree_on_subset (evalCirc cs.gates init)
+			(evalCirc cs''.gates init)
+			(complement (mods circ'))
+			(vars (BXor (BVar bit, lookup cs.cvals bit)));
+	eval_state_swap (BXor (BVar bit, lookup cs.cvals bit)) 
+			(evalCirc cs.gates init) 
+			(evalCirc cs''.gates init);
+	garbage_zeroHeap_lemma cs'' bit init cs' *)
 
 (* A GCstate is valid w.r.t a set of initial values if
      - the heap starts above 0
