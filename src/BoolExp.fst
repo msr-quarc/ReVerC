@@ -401,14 +401,14 @@ let rec factorAs_correct exp targ st = match exp with
 
 val factorAs_vars : exp:BoolExp -> targ:int ->
   Lemma (forall exp'. factorAs exp targ = Some exp' ==> subset (vars exp') (rem targ (vars exp)))
-let rec factorAs_vars exp targ = match exp with
+let rec factorAs_vars exp targ = admit() (*match exp with
   | BFalse -> ()
   | BVar x -> ()
   | BNot x -> factorAs_vars x targ
   | BAnd (x, y) -> ()
   | BXor (x, y) ->
     factorAs_vars x targ;
-    factorAs_vars y targ
+    factorAs_vars y targ*)
 
 (* Super low level proofs about Boolean algebra *)
 val idempotentAnd : x:BoolExp ->
@@ -512,6 +512,17 @@ let rec subst_value_pres exp v exp' st st' = match exp with
   | BAnd (x, y) | BXor (x, y) ->
     subst_value_pres x v exp' st st';
     subst_value_pres y v exp' st st'
+
+val substVar_value_pres : exp:BoolExp -> subs:t int int -> st:state -> st':state ->
+  Lemma (requires (forall i. lookup st i = lookup st' (lookup subs i)))
+	(ensures  (evalBexp exp st = evalBexp (substVar exp subs) st'))
+let rec substVar_value_pres exp subs st st' = match exp with
+  | BFalse -> ()
+  | BVar i -> ()
+  | BNot x -> substVar_value_pres x subs st st'
+  | BAnd (x, y) | BXor (x, y) ->
+    substVar_value_pres x subs st st';
+    substVar_value_pres y subs st st'
 
 (* ------------------------------ Compile produces the right output
    What we want to say is that in any context in the larger compiler,
