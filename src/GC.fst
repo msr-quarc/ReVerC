@@ -543,6 +543,38 @@ val assign_value_lemma : cs:circGCState -> l:int -> bexp:BoolExp -> init:state -
 		       lookup init bit))))
 let assign_value_lemma cs l bexp init cs' = admit()
 
+(* Fixpoint of the above preconditions w.r.t. garbagecollection, alloc and assign *)
+type valid_GC_state (cs:circGCState) (init:state) =
+  (forall l l'. not (l = l') ==> not (lookup cs.symtab l = lookup cs.symtab l')) /\
+  (disjoint (vals cs.symtab) (elts cs.ah)) /\
+  (zeroHeap init cs.ah) /\
+  (zeroHeap (evalCirc cs.gates init) cs.ah) /\
+  (forall bit. Set.mem bit (vals cs.symtab) ==>
+    ((disjoint (vars (lookup cs.cvals bit)) (elts cs.ah)) /\
+     (lookup cs.isanc bit ==> lookup init bit = false) /\
+     (evalBexp (BXor (BVar bit, (lookup cs.cvals bit))) (evalCirc cs.gates init) = lookup init bit)))
+
+val garbageCollect_pres_valid : cs:circGCState -> bit:int -> init:state ->
+  Lemma (requires ((valid_GC_state cs init) /\
+                   (not (Set.mem bit (vals cs.symtab))) /\
+                   (not (Set.mem bit (elts cs.ah))) /\
+                   (disjoint (vars (lookup cs.cvals bit)) (elts cs.ah)) /\
+                   (lookup cs.isanc bit ==> lookup init bit = false) /\
+                   (evalBexp (BXor (BVar bit, (lookup cs.cvals bit))) (evalCirc cs.gates init) = 
+		     lookup init bit)))
+	(ensures  (valid_GC_state (garbageCollect cs bit) init))
+let garbageCollect_pres_valid cs bit init = admit()
+
+val alloc_pres_valid : cs:circGCState -> init:state ->
+  Lemma (requires (valid_GC_state cs init))
+	(ensures  (valid_GC_state (snd (circGCAlloc cs)) init))
+let alloc_pres_valid cs init = admit()
+
+val assign_pres_valid : cs:circGCState -> l:int -> bexp:BoolExp -> init:state ->
+  Lemma (requires (valid_GC_state cs init))
+	(ensures  (valid_GC_state (circGCAssign cs l bexp) init))
+let assign_pres_valid cs l bexp init = admit()
+
 (* (external) Correctness properties *)
 type equiv_state (cs:circGCState) (bs:boolState) (init:state) =
   cs.top = fst bs /\ (forall i. circGCEval cs init i = boolEval bs init i)
@@ -579,16 +611,20 @@ let assign_pres_equiv cs bs l bexp init =
   assign_value_lemma cs l bexp init cs';
   lookup_is_valF cs.symtab;
   substVar_value_pres bexp cs.symtab (snd bs) (evalCirc cs.gates init);
-  let (ah', bit', _, circ') = compileBexp_oop cs.ah bexp' in
-  let cs'' = 
-	{ top    = cs.top; 
-	  ah     = ah'; 
-	  gates  = cs.gates @ circ'; 
-	  symtab = update cs.symtab l bit';
-	  isanc  = update cs.isanc bit' true;
+  match (lookup cs.cvals bit, factorAs bexp' bit) with
+    | (BFalse, _)      -> ()
+    | (_, Some bexp'') -> ()
+    | _ ->
+      let (ah', bit', _, circ') = compileBexp_oop cs.ah bexp' in
+      let cs'' = 
+        { top    = cs.top; 
+          ah     = ah'; 
+          gates  = cs.gates @ circ'; 
+	  symtab = update cs.symtab l bit'; 
+	  isanc  = update cs.isanc bit' true; 
 	  cvals  = update cs.cvals bit' bexp' } 
-  in
-    garbageCollect_pres_equiv cs'' bs bit init
+      in
+        garbageCollect_pres_equiv cs'' bs bit init
 
 (* A GCstate is valid w.r.t a set of initial values if
      - the heap starts above 0
