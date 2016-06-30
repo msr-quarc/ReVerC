@@ -554,6 +554,11 @@ type valid_GC_state (cs:circGCState) (init:state) =
      (lookup cs.isanc bit ==> lookup init bit = false) /\
      (evalBexp (BXor (BVar bit, (lookup cs.cvals bit))) (evalCirc cs.gates init) = lookup init bit)))
 
+val valid_implies_pre : cs:circGCState -> l:int -> init:state ->
+  Lemma (requires (valid_GC_state cs init))
+	(ensures  (precond1 cs (lookup cs.symtab l) init))
+let valid_implies_pre cs l init = admit()
+
 val garbageCollect_pres_valid : cs:circGCState -> bit:int -> init:state ->
   Lemma (requires ((valid_GC_state cs init) /\
                    (not (Set.mem bit (vals cs.symtab))) /\
@@ -589,26 +594,28 @@ let garbageCollect_pres_equiv cs bs bit init =
   lookup_is_valF cs.symtab
 
 val alloc_pres_equiv : cs:circGCState -> bs:boolState -> init:state ->
-  Lemma (requires (equiv_state cs bs init))
-	(ensures  (equiv_state (snd (circGCAlloc cs)) (snd (boolAlloc bs)) init))
+  Lemma (requires (valid_GC_state cs init /\ equiv_state cs bs init))
+	(ensures  (valid_GC_state (snd (circGCAlloc cs)) init /\
+	           equiv_state (snd (circGCAlloc cs)) (snd (boolAlloc bs)) init))
 let alloc_pres_equiv cs bs init =
   let (l, cs') = circGCAlloc cs in
   let (k, bs') = boolAlloc bs in
-  admitP(precond2 cs init);
+  alloc_pres_valid cs init;
   alloc_value_lemma cs init cs';
   lookup_is_valF cs.symtab
 
 val assign_pres_equiv : cs:circGCState -> bs:boolState -> l:int -> bexp:BoolExp -> init:state ->
-  Lemma (requires (equiv_state cs bs init))
-	(ensures  (equiv_state (circGCAssign cs l bexp) (boolAssign bs l bexp) init))
+  Lemma (requires (valid_GC_state cs init /\ equiv_state cs bs init))
+	(ensures  (valid_GC_state (circGCAssign cs l bexp) init /\
+	           equiv_state (circGCAssign cs l bexp) (boolAssign bs l bexp) init))
 let assign_pres_equiv cs bs l bexp init =
   let cs' = circGCAssign cs l bexp in
   let bs' = boolAssign bs l bexp in
   let bit = lookup cs.symtab l in
   let bexp' = substVar bexp cs.symtab in
-  admitP(precond1 cs bit init);
-  admitP(precond3 cs l bexp init);
+  valid_implies_pre cs l init;
   assign_value_lemma cs l bexp init cs';
+  assign_pres_valid cs l bexp init;
   lookup_is_valF cs.symtab;
   substVar_value_pres bexp cs.symtab (snd bs) (evalCirc cs.gates init);
   match (lookup cs.cvals bit, factorAs bexp' bit) with
