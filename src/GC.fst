@@ -268,16 +268,6 @@ let garbage_partition_lemma cs bit cs' = admit() (*
           //admitP(forall bit. Set.mem bit (vals cs'.symtab) ==> 
 		//    disjoint (vars (lookup cs'.cvals bit)) (elts cs'.ah))*)
 
-val alloc_partition_lemma : cs:circGCState -> cs':circGCState ->
-  Lemma (requires (cs' = snd (circGCAlloc cs) /\ 
-		   disjoint (vals cs.symtab) (elts cs.ah) /\
-		   (forall bit. Set.mem bit (vals cs.symtab) ==> 
-		     disjoint (vars (lookup cs.cvals bit)) (elts cs.ah))))
-	(ensures  (disjoint (vals cs'.symtab) (elts cs'.ah) /\
-		   (forall bit. Set.mem bit (vals cs'.symtab) ==> 
-		     disjoint (vars (lookup cs'.cvals bit)) (elts cs'.ah))))
-let alloc_partition_lemma cs cs' = admit() (*pop_proper_subset cs.ah*)
-
 (* TODO: the admit here is an assumption that is currently not enforced It requires 
    that all active bits have exactly one pre-image, or locations are mapped to 
    separate bits. It's true, but would require too many changes at the moment to fix *)
@@ -365,18 +355,6 @@ let garbage_zeroHeap_lemma cs bit init cs' = admit() (*
       | false ->
 	compile_bexp_zero cs.ah bit cval (evalCirc cs.gates init)*)
 
-val alloc_zeroHeap_lemma : cs:circGCState -> init:state -> cs':circGCState ->
-  Lemma (requires (cs' = snd (circGCAlloc cs) /\ 
-		   zeroHeap (evalCirc cs.gates init) cs.ah))
-	(ensures  (zeroHeap (evalCirc cs'.gates init) cs'.ah))
-let alloc_zeroHeap_lemma cs init cs' = admit() (*pop_proper_subset cs.ah*)
-
-val assign_zeroHeap_lemma : cs:circGCState -> l:int -> bexp:BoolExp -> init:state -> cs':circGCState ->
-  Lemma (requires (cs' = circGCAssign cs l bexp /\ 
-		   zeroHeap (evalCirc cs.gates init) cs.ah /\
-		   disjoint (vals cs.symtab) (elts cs.ah) /\
-		   (forall bit. Set.mem bit (vals cs.symtab) ==> 
-		     disjoint (vars (lookup cs.cvals bit)) (elts cs.ah)) /\
 		   (forall bit. Set.mem bit (vals cs.symtab) ==>
 		     lookup cs.isanc bit ==> lookup init bit = false) /\
 		   (forall bit. Set.mem bit (vals cs.symtab) ==>
@@ -509,24 +487,6 @@ let garbage_value_lemma cs bit init cs'= admit() (*
   //admitP(forall bit'. Set.mem bit' (vals cs.symtab) ==> 
   //  evalBexp (lookup cs.cvals bit') st = evalBexp (lookup cs'.cvals bit') st');*)
 
-type precond2 (cs:circGCState) (init:state) =
-  (zeroHeap init cs.ah) /\
-  (zeroHeap (evalCirc cs.gates init) cs.ah) /\
-  (forall bit. Set.mem bit (vals cs.symtab) ==>
-    (lookup cs.isanc bit ==> lookup init bit = false /\
-     evalBexp (BXor (BVar bit, (lookup cs.cvals bit))) (evalCirc cs.gates init) = lookup init bit))
-
-val alloc_value_lemma : cs:circGCState -> init:state -> cs':circGCState ->
-  Lemma (requires (cs' = snd (circGCAlloc cs) /\
-                   precond2 cs init))
-	(ensures  (forall bit. Set.mem bit (vals cs'.symtab) ==>
-		    (lookup cs'.isanc bit ==> lookup init bit = false /\
-		     evalBexp (BXor (BVar bit, lookup cs'.cvals bit)) (evalCirc cs'.gates init) = 
-		       lookup init bit)))
-let alloc_value_lemma cs init cs' = admit() (*
-  pop_is_zero init cs.ah; 
-  pop_is_zero (evalCirc cs.gates init) cs.ah*)
-
 type precond3 (cs:circGCState) (l:int) (bexp:BoolExp) (init:state) =
   forall l'. not (l' = l) ==> not (lookup cs.symtab l = lookup cs.symtab l')
   
@@ -570,10 +530,23 @@ val garbageCollect_pres_valid : cs:circGCState -> bit:int -> init:state ->
 	(ensures  (valid_GC_state (garbageCollect cs bit) init))
 let garbageCollect_pres_valid cs bit init = admit()
 
+(* For whatever reason this lemma needs to be separate *)
+val minor_lemma1 : m1:Total.t int int -> m2:Total.t int int -> loc:int ->
+  Lemma (requires (not (Set.mem (lookup m2 loc) (vals m1)) /\
+                  (forall l l'. not (l = l') ==> not (lookup m1 l = lookup m1 l')) /\
+                  (forall l. not (l = loc) ==> lookup m1 l = lookup m2 l)))
+        (ensures  (forall l l'. not (l = l') ==> not (lookup m2 l = lookup m2 l')))
+let minor_lemma1 m1 m2 loc = lookup_converse m1 (lookup m2 loc)
+
 val alloc_pres_valid : cs:circGCState -> init:state ->
   Lemma (requires (valid_GC_state cs init))
 	(ensures  (valid_GC_state (snd (circGCAlloc cs)) init))
-let alloc_pres_valid cs init = admit()
+let alloc_pres_valid cs init =
+  let (loc, cs') = circGCAlloc cs in
+  pop_proper_subset cs.ah;
+  pop_is_zero init cs.ah;
+  pop_is_zero (evalCirc cs.gates init) cs.ah;
+  minor_lemma1 cs.symtab cs'.symtab loc
 
 val assign_pres_valid : cs:circGCState -> l:int -> bexp:BoolExp -> init:state ->
   Lemma (requires (valid_GC_state cs init))

@@ -86,6 +86,11 @@ val lookup_is_valF : #key:Type -> #value:Type -> m:t key value ->
 	(ensures (forall k. Set.mem (lookup m k) (vals m)))
 let lookup_is_valF m = admit()
 
+val lookup_converse : #key:Type -> #value:Type -> m:t key value -> v:value ->
+  Lemma (requires (not (Set.mem v (vals m))))
+	(ensures  (forall k. not (lookup m k = v)))
+let lookup_converse m v = lookup_is_valF m
+
 (* Type of maps that agree on a subset of keys *)
 type agree_on (#key:Type) (#value:Type) (m:t key value) (m':t key value) (s:set key) =
   forall x. mem x s ==> lookup m x = lookup m' x
