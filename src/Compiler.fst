@@ -249,7 +249,7 @@ val circ_equiv_step_lst : lst:list GExpr -> st:boolState -> st':circState -> ini
           circ_equiv (snd (getVal (step_lst (lst, st) boolInterp)))
                       (snd (getVal (step_lst (lst, st') circInterp)))
                       init)))
-  (decreases %[lst;0])
+  (decreases %[lst;0])(*
 let rec circ_equiv_step gexp st st' init = match gexp with
   | LET (x, t1, t2) ->
     circ_equiv_step t1 st st' init
