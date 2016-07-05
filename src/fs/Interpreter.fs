@@ -299,7 +299,7 @@ and eval_to_bexp (tm, st) interp = match tm with
 type boolState = int * (Total.t<int, bool>)
 
 let boolInit = (0, constMap false)
-let boolAlloc (top, st) bexp = (top, (top + 1, update st top false))
+let boolAlloc (top, st) = (top, (top + 1, update st top false))
 let boolAssign (top, st) l bexp = (top, update st l (evalBexp bexp st))
 let boolEval (top, st) ivals i = lookup st i
 

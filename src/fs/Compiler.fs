@@ -2,7 +2,6 @@
 module Compiler
 
 open Util
-open Set
 open Total
 open AncillaHeap
 open BoolExp
@@ -20,7 +19,7 @@ type circState =
     subs : Total.t<int, int>;
     zero : Total.t<int, bool> }
 
-let circInit = {top = 0; ah = emptyHeap; gates = []; subs = constMap 0}
+let circInit = {top = 0; ah = emptyHeap; gates = []; subs = constMap 0; zero = constMap true }
 let circAlloc cs =
   let (ah', bit) = popMin cs.ah in
   let cs' = 

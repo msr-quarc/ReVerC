@@ -75,17 +75,24 @@ let rec andDepth bexp = match bexp with
 (* Substitutions *)
 let rec substBexp bexp sub = match bexp with
   | BFalse   -> BFalse
-  | BVar i   -> sub i
+  | BVar i   -> lookup sub i
   | BNot x   -> BNot (substBexp x sub)
   | BAnd (x, y) -> BAnd ((substBexp x sub), (substBexp y sub))
   | BXor (x, y) -> BXor ((substBexp x sub), (substBexp y sub))
 
 let rec substVar bexp sub = match bexp with
   | BFalse   -> BFalse
-  | BVar i   -> BVar (sub i)
+  | BVar i   -> BVar (lookup sub i)
   | BNot x   -> BNot (substVar x sub)
   | BAnd (x, y) -> BAnd ((substVar x sub), (substVar y sub))
   | BXor (x, y) -> BXor ((substVar x sub), (substVar y sub))
+
+let rec substOneVar bexp v bexp' = match bexp with
+  | BFalse   -> BFalse
+  | BVar i   -> if i = v then bexp' else BVar i
+  | BNot x   -> BNot (substOneVar x v bexp')
+  | BAnd (x, y) -> BAnd ((substOneVar x v bexp'), (substOneVar y v bexp'))
+  | BXor (x, y) -> BXor ((substOneVar x v bexp'), (substOneVar y v bexp'))
 
 (* Evaluation *)
 let rec evalBexp bexp st = match bexp with
@@ -185,8 +192,6 @@ let rec distributeAnds exp = match exp with
 
 let rec undistributeAnds exp = match exp with
   | BFalse -> BFalse
-  | BVar v -> BVar v
-  | BNot x -> BNot (undistributeAnds x)
   | BAnd (x, y) -> BAnd (undistributeAnds x, undistributeAnds y)
   | BXor (x, y) ->
     begin match (undistributeAnds x, undistributeAnds y) with
@@ -198,6 +203,7 @@ let rec undistributeAnds exp = match exp with
         else BXor (BAnd (a, b), BAnd (c, d))
       | (x', y') -> BXor (x', y')
     end
+  | _ -> exp
 
 (* Compilation *)
 let rec compileBexp ah targ exp = match exp with

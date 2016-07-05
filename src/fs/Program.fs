@@ -78,7 +78,7 @@ let comp (top, gexp) =
     | Some subs -> 
         let gexp' = applySubs subs gexp
         // Compilation
-        let res = compileCirc (gexp', circInit)
+        let res = Compiler.compileCirc (gexp', Compiler.circInit)
         match res with
           | Err s -> printf "%s\n" s
           | Val (_, circ) -> 
@@ -101,7 +101,7 @@ let compStats (top, gexp) =
     | Some subs -> 
         let gexp' = applySubs subs gexp
         // Compilation
-        let res = compileCirc (gexp', circInit)
+        let res = Compiler.compileCirc (gexp', Compiler.circInit)
         match res with
           | Err s -> printf "%s\n" s
           | Val (_, circ) -> 
@@ -124,7 +124,7 @@ let compGC (top, gexp) =
     | Some subs -> 
         let gexp' = applySubs subs gexp
         // Compilation
-        let res = compileGCCirc (gexp', circGCInit)
+        let res = GC.compileGCCirc (gexp', GC.circGCInit)
         match res with
           | Err s -> printf "%s\n" s
           | Val (_, circ) -> 
@@ -147,7 +147,7 @@ let compGCStats (top, gexp) =
     | Some subs -> 
         let gexp' = applySubs subs gexp
         // Compilation
-        let res = compileGCCirc (gexp', circGCInit)
+        let res = GC.compileGCCirc (gexp', GC.circGCInit)
         match res with
           | Err s -> printf "%s\n" s
           | Val (_, circ) -> 
@@ -170,7 +170,7 @@ let crush (top, gexp) =
     | Some subs -> 
         let gexp' = applySubs subs gexp
         // Compilation
-        let res = compile (gexp', bexpInit) Pebbled
+        let res = Crush.compile (gexp', Crush.bexpInit) Crush.Pebbled
         match res with
           | Err s -> printf "%s\n" s
           | Val (_, circ) -> 
@@ -193,7 +193,7 @@ let crushStats (top, gexp) =
     | Some subs -> 
         let gexp' = applySubs subs gexp
         // Compilation
-        let res = compile (gexp', bexpInit) Pebbled
+        let res = Crush.compile (gexp', Crush.bexpInit) Crush.Pebbled
         match res with
           | Err s -> printf "%s\n" s
           | Val (_, circ) -> 
@@ -225,8 +225,8 @@ let run program mode cleanupStrategy =
         if ver then ignore <| compileBDD (gexp', bddInit)
         // Compilation
         let res = match mode with 
-          | Default   -> compileCirc (gexp', circInit)
-          | SpaceSave -> compile     (gexp', bexpInit) cleanupStrategy
+          | Default   -> Compiler.compileCirc (gexp', Compiler.circInit)
+          | SpaceSave -> Crush.compile     (gexp', Crush.bexpInit) cleanupStrategy
         match res with
           | Err s -> printf "%s\n" s
           | Val (_, circ) -> 
@@ -253,14 +253,14 @@ let runHack program mode cleanupStrategy =
         let gexp' = applySubs subs gexp
         // Compilation
         let res = match mode with 
-          | Default   -> compileCirc (gexp', circInit)
-          | SpaceSave -> compile     (gexp', bexpInit) cleanupStrategy
+          | Default   -> Compiler.compileCirc (gexp', Compiler.circInit)
+          | SpaceSave -> Crush.compile     (gexp', Crush.bexpInit) cleanupStrategy
         ()
 
 
 [<EntryPoint>]
 let __main _ = 
-  ignore <| runHack polyEx Default Pebbled
+  ignore <| runHack polyEx Default Crush.Pebbled
   let mutable exit = false
   let mutable line = ""
   while (not exit) do

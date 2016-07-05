@@ -2,7 +2,6 @@
 module GC
 
 open Util
-open Set
 open Total
 open AncillaHeap
 open BoolExp
@@ -15,10 +14,10 @@ open Interpreter
 type circGCState =
   { top    : int;
     ah     : AncHeap;
-    gates  : list Gate;
-    symtab : Total.t int int;
-    isanc  : Total.t int bool;
-    cvals  : Total.t int BoolExp }
+    gates  : list<Gate>;
+    symtab : Total.t<int, int>;
+    isanc  : Total.t<int, bool>;
+    cvals  : Total.t<int, BoolExp> }
 
   (* The garbage collector needs to:
     -compile the current value in place (i.e. ival + cval + cval = ival),

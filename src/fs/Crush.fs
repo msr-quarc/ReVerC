@@ -9,7 +9,7 @@ open Interpreter
 
 (* Boolean expression interpretation -- for generating the fully
    inlined classical circuit of the Revs program *)
-type BExpState = int * (Total.t int BoolExp)
+type BExpState = int * Total.t<int, BoolExp>
 
 let bexpInit : BExpState = (0, constMap BFalse)
 let bexpAlloc (top, st) = (top, (top + 1, st))
@@ -29,11 +29,11 @@ type CleanupStrategy =
   | Boundaries
   | Bennett
 
-  let simps bexp = simplify (toXDNF bexp)
+let simps bexp = simplify (distributeAnds bexp)
 
 let rec allocN (locs, (top, st)) i =
  if i <= 0 
- then (List.rev locs, (top, st))
+ then (FStar.List.rev locs, (top, st))
  else allocN (((LOC top)::locs), (top+1, update st top (BVar top))) (i-1)
 
 let allocTy ty (top, st) = match ty with
@@ -60,7 +60,7 @@ let foldClean (ah, outs, anc, circ) bexp =
 
 let foldBennett (ah, outs, anc, circ, ucirc) bexp =
   let (ah', res, anc', circ') = compileBexp_oop ah (simps bexp) in
-  (ah', res::outs, anc'@anc, circ@circ', (List.rev (uncompute circ' res))@ucirc)
+  (ah', res::outs, anc'@anc, circ@circ', (FStar.List.rev (uncompute circ' res))@ucirc)
 
 (* Compilation wrapper. The main point of interest is its action when the
    program is a function. In that case it allocates some new free variables
@@ -90,24 +90,24 @@ let rec compile (gexp, st) strategy =
         let yd = andDepth y in
         if xd < yd then 1 else if xd = yd then 0 else -1
       in
-      let blst = List.sortWithT cmp (lookupLst lst st) in
-      let max = listMax (List.mapT varMax blst) in
+      let blst = List.sortWith cmp (lookupLst lst st) in
+      let max = listMax (FStar.List.mapT varMax blst) in
       let (ah, outs, anc, circ) = match strategy with
         | Pebbled ->
           let (ah, outs, anc, circ) =
-            List.fold_leftT foldPebble (above (max+1), [], [], []) blst
+            FStar.List.fold_left foldPebble (above (max+1), [], [], []) blst
           in
-          (ah, List.rev outs, List.rev anc, circ)
+          (ah, FStar.List.rev outs, FStar.List.rev anc, circ)
         | Boundaries ->
           let (ah, outs, anc, circ) =
-            List.fold_leftT foldClean (above (max+1), [], [], []) blst
+            FStar.List.fold_left foldClean (above (max+1), [], [], []) blst
           in
-          (ah, List.rev outs, List.rev anc, circ)
+          (ah, FStar.List.rev outs, FStar.List.rev anc, circ)
         | Bennett ->
           let (ah, outs, anc, circ, ucirc) =
-            List.fold_leftT foldBennett (above (max+1), [], [], [], []) blst
+            FStar.List.fold_left foldBennett (above (max+1), [], [], [], []) blst
           in
-          (ah, List.rev outs, List.rev anc, circ@ucirc)
+          (ah, FStar.List.rev outs, FStar.List.rev anc, circ@ucirc)
       in
       Val (outs, circ)
   else match (step (gexp, st) bexpInterp) with

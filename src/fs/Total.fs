@@ -8,12 +8,18 @@ type t<'key,'value> =
 (* type synonym for Boolean-valued states *)
 type state = t<int,bool>
 
+let keys m = List.fold_left (fun s x -> Set.add (fst x) s) Set.empty m.elts
+
 let lookup m k = match (List.tryFind (fun (k', v') -> k = k') m.elts) with
   | None   -> m.dval
   | Some (_, v) -> v
 
 let update m k v =
   { elts = (k, v)::(List.filter (fun (k', _) -> not (k = k')) m.elts);
+    dval = m.dval }
+
+let delete m k =
+  { elts = List.filter (fun (k', _) -> not (k = k')) m.elts;
     dval = m.dval }
 
 let constMap v =

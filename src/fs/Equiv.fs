@@ -51,7 +51,7 @@ let printCELst celst env = List.iter (fun ce -> printf "    "; printCE ce env) c
 type bddState = int * (Total.t<int, bdd.BDD>) * (Total.t<int, string * option<int> >)
 
 let bddInit : bddState              = (0, constMap (bdd.dfalse man), constMap ("", None))
-let bddAlloc (top, st, env) bexp    = (top, (top + 1, update st top (bexpToBDD bexp st), env))
+let bddAlloc (top, st, env)         = (top, (top + 1, st, env))
 let bddAssign (top, st, env) l bexp = (top, update st l (bexpToBDD bexp st), env)
 let bddClean (top, st, env) gexp l  = 
   begin match bdd.allsat (lookup st l) with
