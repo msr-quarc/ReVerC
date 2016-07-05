@@ -167,8 +167,8 @@ let rec step (tm, st) interp = match tm with
       end
   | BEXP bexp ->
     let (l, st') = interp.alloc st in 
-    let st''     = interp.assign st l (BXor (BVar l, bexp)) in
-      Val (LOC l, st')
+    let st''     = interp.assign st' l (BXor (BVar l, bexp)) in
+      Val (LOC l, st'')
   | _ -> Err (String.strcat "No rule applies: " (show tm))
 and step_lst (lst, st) interp = match lst with
   | [] -> Val ([], st)
