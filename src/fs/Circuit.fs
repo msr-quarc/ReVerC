@@ -80,7 +80,14 @@ let rec ctrls gates = match gates with
   | (RNOT a)::xs          -> ctrls xs
 
 (* Uncompute relative a target bit *)
-let rec uncompute circ targ = match circ with
-  | [] -> []
-  | x::xs -> if (used targ [x]) then uncompute xs targ else x::(uncompute xs targ)
+let uncompute circ targ = 
+  let rec uncomputeAcc circ targ acc = match circ with
+    | [] -> List.rev acc
+    | x::xs -> 
+      if (used targ [x]) 
+      then uncomputeAcc xs targ acc 
+      else uncomputeAcc xs targ (x::acc)
+  in
+  uncomputeAcc circ targ []
+
 

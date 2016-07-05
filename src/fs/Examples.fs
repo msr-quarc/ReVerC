@@ -37,10 +37,11 @@ registerProg "ver-ex"
 
 let carryRippleAdder n =
     <@
-    fun (a : bool array) (b : bool array) (result : bool array) ->
+    fun (a : bool array) (b : bool array) ->
       let compute_carry (a : bool) (b : bool) (c : bool) =
         (a && (b <> c)) <> (b && c) // a && b <> a && c <> b && c
 
+      let result = Array.zeroCreate(n)
       let mutable carry = false
       result.[0] <- a.[0] <> b.[0]
       for i in 1 .. n-1 do
@@ -74,12 +75,35 @@ let addMod n =
       c <- c <> a.[0]
       b.[0] <- b.[0] <> c
       clean c
+    @>
+
+let addModO n =
+    <@
+    fun (a:bool array) (b:bool array) ->
+      let mutable c = false
+      b.[0] <- b.[0] <> a.[0]
+      c <- c <> a.[0]
+      a.[0] <- a.[0] <> (c && b.[0])
+      for i in 1 .. n - 2 do
+        b.[i] <- b.[i] <> a.[i]
+        a.[i-1] <- a.[i-1] <> a.[i]
+        a.[i] <- a.[i] <> (a.[i-1] && b.[i])
+      b.[n-1] <- b.[n-1] <> a.[n-1]
+      b.[n-1] <- b.[n-1] <> a.[n-2]
+      for i in 2 .. n - 1 do
+        a.[n-i] <- a.[n-i] <> (a.[n-i-1] && b.[n-i])
+        a.[n-i-1] <- a.[n-i-1] <> a.[n-i]
+        b.[n-i] <- b.[n-i] <> a.[n-i-1]
+      a.[0] <- a.[0] <> (c && b.[0])
+      c <- c <> a.[0]
+      b.[0] <- b.[0] <> c
+      clean c
       b
     @>
 registerProg "addMod" 
              "Adder mod n, in place" 
              true 
-             (fun n -> parseAST (addMod n))
+             (fun n -> parseAST (addModO n))
 
 let cucarro n =
     <@ 

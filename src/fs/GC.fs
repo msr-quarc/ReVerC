@@ -26,11 +26,13 @@ type circGCState =
 let garbageCollect cs bit = 
   let cval = lookup cs.cvals bit in
   if Set.mem bit (vars cval) then cs else
-  let (ah', res, ancs, circ) = compileBexp cs.ah bit cval in
+  let (ah', res, ancs, circ) = compileBexpPebbled cs.ah bit cval in
   match lookup cs.isanc bit with
     | true ->
-      let f bexp = substOneVar bexp bit cval in
-      let cvals' = mapVals f cs.cvals in
+      //let f bexp = substOneVar bexp bit cval in
+      //let cvals' = mapVals f cs.cvals in
+      let f (bit', bexp) = substOneVar bexp bit (BVar bit') in
+      let cvals' = mapKeyVals f cs.cvals in
         { top    = cs.top; 
           ah     = insert ah' bit; 
           gates  = cs.gates @ circ; 
@@ -38,8 +40,10 @@ let garbageCollect cs bit =
           isanc  = cs.isanc;
           cvals  = cvals' }
     | false ->
-      let f bexp = substOneVar bexp bit (BXor (BVar bit, cval)) in
-      let cvals' = mapVals f cs.cvals in
+      //let f bexp = substOneVar bexp bit (BXor (BVar bit, cval)) in
+      //let cvals' = mapVals f cs.cvals in
+      let f (bit', bexp) = substOneVar bexp bit (BVar bit') in
+      let cvals' = mapKeyVals f cs.cvals in
         { top    = cs.top; 
           ah     = ah'; 
           gates  = cs.gates @ circ; 
@@ -73,30 +77,34 @@ let circGCAssign cs l bexp =
   match (lookup cs.cvals bit, factorAs bexp' bit, lookup cs.isanc bit) with
     | (BFalse, _, true) -> // substitute bit with BFalse, compile in place
       let bexp'' = simplify (substOneVar bexp' bit BFalse) in
-      let (ah', _, _, circ) = compileBexp cs.ah bit bexp'' in
-      let f bexp = substOneVar bexp bit BFalse in
-      let cvals' = update (mapVals f cs.cvals) bit bexp'' in
+      let (ah', _, _, circ) = compileBexpPebbled cs.ah bit bexp'' in
+      //let f bexp = substOneVar bexp bit BFalse in
+      //let cvals' = update (mapVals f cs.cvals) bit bexp'' in
+      let f (bit', bexp) = substOneVar bexp bit (BVar bit') in
+      let cvals' = mapKeyVals f cs.cvals in
       { top    = cs.top; 
         ah     = ah'; 
         gates  = cs.gates @ circ; 
         symtab = cs.symtab;
         isanc  = cs.isanc;
-        cvals  = cvals'}
+        cvals  = update cvals' bit bexp'' }
     | (cval, Some bexp0, _) -> // compile in place, substitute q.id with q.id \oplus bexp''
       let bexp'' = simplify bexp0 in
-      let (ah', _, _, circ') = compileBexp cs.ah bit bexp'' in
-      let f bexp = substOneVar bexp bit (BXor (BVar bit, bexp'')) in
-      let cvals' = mapVals f cs.cvals in
+      let (ah', _, _, circ') = compileBexpPebbled cs.ah bit bexp'' in
+      //let f bexp = substOneVar bexp bit (BXor (BVar bit, bexp'')) in
+      //let cvals' = mapVals f cs.cvals in
+      let f (bit', bexp) = substOneVar bexp bit (BVar bit') in
+      let cvals' = mapKeyVals f cs.cvals in
       { top    = cs.top; 
         ah     = ah'; 
         gates  = cs.gates @ circ'; 
         symtab = cs.symtab;
         isanc  = cs.isanc;
-        cvals  = update cvals' bit (BXor (bexp'', lookup cvals' bit)) }
+        cvals  = update cvals' bit (BXor (bexp'', cval)) }
     | _                -> // Compile out of place, clean q.id
       let bexp'' = simplify bexp' in
       let (ah', bit') = popMin cs.ah in
-      let (ah'', _, _, circ') = compileBexp ah' bit' bexp'' in
+      let (ah'', _, _, circ') = compileBexpPebbled ah' bit' bexp'' in
       let cs' = 
         { top    = cs.top; 
           ah     = ah''; 
@@ -174,7 +182,7 @@ let garbageCollector gexp cs =
   Set.fold f cs garbage
 
 let rec compileGCCirc (gexp, cs) =
-  let cs = garbageCollector gexp cs in
+  //let cs = garbageCollector gexp cs in
   if isVal gexp then match gexp with
     | UNIT -> Val ([], [])
     | LAMBDA (x, ty, t) ->

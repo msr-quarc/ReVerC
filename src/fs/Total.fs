@@ -34,3 +34,7 @@ let mapVals f m =
   { elts = List.map (fun (k, v) -> (k, f v)) m.elts;
     dval = f m.dval }
 
+let mapKeyVals f m = 
+  { elts = List.map (fun (k, v) -> (k, f (k, v))) m.elts;
+    dval = m.dval }
+

@@ -192,6 +192,7 @@ let parseAST expr =
             | "not" ->
                 let exp = gExpr exps.Head
                 XOR(BOOL true, exp)
+            | "Ignore" -> gExpr exps.Head
             | x -> failwith <| sprintf "Unsupported Call to %A in %A" x expr
     | VarSet(var, exp) -> ASSIGN(VAR var.Name, gExpr exp)
     | Var x -> VAR x.Name
