@@ -18,6 +18,10 @@ val complement   : #a:Type -> set a -> Tot (set a)
 val ins          : #a:Type -> a -> set a -> Tot (set a)
 val rem          : #a:Type -> a -> set a -> Tot (set a)
 
+(* This is poor design. Computational sets are needed elsewhere... *)
+val fold : #a:Type -> #b:Type -> (b -> a -> b) -> b -> set a -> b
+let fold f b s = admit()
+
 let mem i s          = s i
 let empty            = fun _ -> false
 let full             = fun _ -> true

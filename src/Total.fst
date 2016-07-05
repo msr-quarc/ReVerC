@@ -9,13 +9,17 @@ type t (key:Type) (value:Type) =
 (* type synonym for Boolean-valued states *)
 type state = t int bool
 
+val keys     : #key:Type -> #value:Type -> t key value -> Tot (set key)
 val valsRec  : #key:Type -> #value:Type -> value -> list (key * value) -> Tot bool
 val vals     : #key:Type -> #value:Type -> t key value -> Tot (set value)
 val lookup   : #key:Type -> #value:Type -> t key value -> key -> Tot value
 val update   : #key:Type -> #value:Type -> t key value -> key -> value -> Tot (t key value)
+val delete   : #key:Type -> #value:Type -> t key value -> key -> Tot (t key value)
 val constMap : #key:Type -> #value:Type -> value -> Tot (t key value)
 val compose  : #key:Type -> #value:Type -> #value':Type -> t key value -> t value value' -> Tot (t key value')
 val mapVals  : #key:Type -> #value:Type -> #value':Type -> (value -> Tot value') -> t key value -> Tot (t key value')
+
+let keys m = List.fold_leftT (fun s x -> Set.ins (fst x) s) Set.empty m.elts
 
 let rec valsRec y xs = match xs with
   | []    -> false
@@ -30,6 +34,10 @@ let lookup m k = match List.assocT k m.elts with
 
 let update m k v =
   { elts = (k, v)::m.elts; //(k, v)::(List.filterT (fun (k', _) -> not (k = k')) m.elts);
+    dval = m.dval }
+
+let delete m k =
+  { elts = List.filterT (fun (k', _) -> not (k = k')) m.elts;
     dval = m.dval }
 
 let constMap v =

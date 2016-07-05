@@ -158,17 +158,21 @@ let rec lookup_Lst_gc symtab lst = match lst with
   | [] -> []
   | (LOC l)::xs -> ((lookup symtab l))::(lookup_Lst_gc symtab xs)
 
-(* Scrubs the state with respect to the remainder of the program
+(* Scrubs the state with respect to the remainder of the program *)
 let findGarbage gexp cs = Set.diff (keys cs.symtab) (locs gexp)
 let garbageCollector gexp cs = 
   let garbage = findGarbage gexp cs in
   let f cs l = 
     let q = lookup cs.symtab l in
     let cs' = garbageCollect cs q in
-    { top = cs'.top; ah = cs'.ah; gates = cs'.gates; symtab = remove cs'.symtab l }
+      { top    = cs'.top; 
+        ah     = cs'.ah; 
+	gates  = cs'.gates; 
+	symtab = delete cs'.symtab l;
+	isanc  = cs'.isanc;
+	cvals  = cs'.cvals }
   in
-    cs
-  //Set.fold f cs garbage *)
+    Set.fold f cs garbage
 
 val compileGCCirc : config circGCState -> Dv (result (list int * list Gate))
 let rec compileGCCirc (gexp, cs) =

@@ -104,3 +104,5 @@ let rec symins l y = match l with
   | x::xs -> if x = y then xs else x::(symins xs y)
 
 let listSymdiff x y = List.fold_leftT symins [] x
+
+let listDiff x y = List.filter (fun x -> not (List.mem x y)) x
