@@ -78,6 +78,22 @@ let addMod n =
     @>
 
 let addModO n =
+  if n = 2 then
+    <@
+    fun (a:bool array) (b:bool array) ->
+      let mutable c = false
+      b.[0] <- b.[0] <> a.[0]
+      c <- c <> a.[0]
+      a.[0] <- a.[0] <> (c && b.[0])
+      b.[n-1] <- b.[n-1] <> a.[n-1]
+      b.[n-1] <- b.[n-1] <> a.[n-2]
+      a.[0] <- a.[0] <> (c && b.[0])
+      c <- c <> a.[0]
+      b.[0] <- b.[0] <> c
+      clean c
+      b
+    @>
+  else
     <@
     fun (a:bool array) (b:bool array) ->
       let mutable c = false
@@ -106,6 +122,22 @@ registerProg "addMod"
              (fun n -> parseAST (addModO n))
 
 let cucarro n =
+  if n = 2 then
+    <@ 
+    fun (a:bool array) (b:bool array) ->
+      let mutable c = false
+      b.[0] <- b.[0] <> a.[0]
+      c <- c <> a.[0]
+      a.[0] <- a.[0] <> (c && b.[0])
+      b.[n-1] <- b.[n-1] <> a.[n-1]
+      b.[n-1] <- b.[n-1] <> a.[n-2]
+      a.[0] <- a.[0] <> (c && b.[0])
+      c <- c <> a.[0]
+      b.[0] <- b.[0] <> c
+      clean c
+      b
+    @>
+  else
     <@ 
     fun (a:bool array) (b:bool array) ->
       let mutable c = false
@@ -130,7 +162,28 @@ registerProg "cucarro"
              (fun n -> parseAST (cucarro n))
 
 
-let mult n = 
+let mult n =
+  if n = 2 then
+    <@
+    fun (a:bool array) (b:bool array) ->
+      let ctrlAddModn ctrl (a :bool array) (b :bool array) =
+        let mutable c = false
+        b.[0] <- b.[0] <> (a.[0]&&ctrl)
+        c <- c <> a.[0]
+        a.[0] <- a.[0] <> (c && b.[0])
+        b.[n-1] <- b.[n-1] <> (a.[n-1] && ctrl)
+        b.[n-1] <- b.[n-1] <> (a.[n-2] && ctrl)
+        a.[0] <- a.[0] <> (c && b.[0])
+        c <- c <> a.[0]
+        b.[0] <- b.[0] <> (c&&ctrl)
+        clean c
+
+      let result = Array.zeroCreate (2*n)
+      for i in 0..n-1 do
+        ctrlAddModn a.[i] b result.[i..i+n-1]
+      result 
+    @>
+  else
     <@
     fun (a:bool array) (b:bool array) ->
       let ctrlAddModn ctrl (a :bool array) (b :bool array) =
