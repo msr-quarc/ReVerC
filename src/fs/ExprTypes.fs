@@ -84,7 +84,7 @@ let rec locsAcc lset tm = match tm with
   | CLEAN (t, _) -> locsAcc lset t
   | ASSERT (t, _) -> locsAcc lset t
   | LOC i -> Set.ins i lset
-  | BEXP bexp -> vars bexp
+  | BEXP bexp -> Set.union (vars bexp) lset
   | _ -> lset
 and locsAcc_lst lset lst = match lst with
   | [] -> lset
