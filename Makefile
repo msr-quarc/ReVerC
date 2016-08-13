@@ -29,4 +29,4 @@ fs: $(FSTSRC)
 #	mv *.fs src/fs/
 
 revs: $(FSSRC)
-	$(FSHARP) --mlcompatibility $(FSOPS) -o rever.exe $^
+	$(FSHARP) --mlcompatibility $(FSOPS) -o reverc.exe $^
