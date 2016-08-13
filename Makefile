@@ -1,4 +1,4 @@
-FSTAR_HOME = /home/meamy/Programming/FStar
+FSTAR_HOME = ../../
 
 FSTAR = $(FSTAR_HOME)/bin/fstar.exe
 FSHARP = fsharpc
