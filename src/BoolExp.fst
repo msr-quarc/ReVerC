@@ -401,14 +401,14 @@ let rec factorAs_correct exp targ st = match exp with
 
 val factorAs_vars : exp:BoolExp -> targ:int ->
   Lemma (forall exp'. factorAs exp targ = Some exp' ==> subset (vars exp') (rem targ (vars exp)))
-let rec factorAs_vars exp targ = admit() (*match exp with
+let rec factorAs_vars exp targ = match exp with
   | BFalse -> ()
   | BVar x -> ()
   | BNot x -> factorAs_vars x targ
   | BAnd (x, y) -> ()
   | BXor (x, y) ->
     factorAs_vars x targ;
-    factorAs_vars y targ*)
+    factorAs_vars y targ
 
 (* Super low level proofs about Boolean algebra *)
 val idempotentAnd : x:BoolExp ->
@@ -657,8 +657,7 @@ let rec compile_partition ah targ x = match x with
   | BNot x ->
     let (ah', xres, _, xgate) = compileBexp ah targ x in
       compile_partition ah targ x;
-      uses_append xgate [RNOT xres];
-      admit()
+      uses_append xgate [RNOT xres]
   | BXor (x, y) ->
     let (ah', xres, _, xgate) = compileBexp ah targ x in
     let (ah'', yres, _, ygate) = compileBexp ah' targ y in
@@ -673,8 +672,7 @@ let rec compile_partition ah targ x = match x with
     // ah'' is disjoint with xgate@ygate
       disjoint_union (elts ah'') (uses xgate) (uses ygate);
       uses_append xgate ygate;
-      compile_output ah' targ y;
-      admit()
+      compile_output ah' targ y
   | BAnd (x, y) ->
     let (ah', xres, _, xgate)  = compileBexp_oop ah x in
     let (ah'', yres, _, ygate) = compileBexp_oop ah' y in
@@ -688,8 +686,7 @@ let rec compile_partition ah targ x = match x with
       compile_partition_oop ah' y;
     // ah'' is disjoint with xgate@ygate@[RTOFF xres yres targ]
       uses_append xgate ygate;
-      uses_append (xgate@ygate) [RTOFF (xres, yres, targ)];
-      admit()
+      uses_append (xgate@ygate) [RTOFF (xres, yres, targ)]
 and compile_partition_oop ah x = match x with
   | BVar v -> ()
   | _ ->
@@ -714,8 +711,7 @@ let rec compile_mods ah targ exp = match exp with
   | BNot x ->
     let (ah', xres, _, xgate) =  compileBexp ah targ x in
       compile_mods ah targ x;
-      mods_append xgate [RNOT xres];
-      admit()
+      mods_append xgate [RNOT xres]
   | BAnd (x, y) ->
     let (ah', xres, _, xgate) = compileBexp_oop ah x in
     let (ah'', yres, _, ygate) = compileBexp_oop ah' y in
