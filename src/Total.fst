@@ -121,26 +121,26 @@ let agree_on_subset m m' s s' = ()
 (* Functional extensionality for lookups. We're rolling our own since we're
 going to be bad and assume maps which are extensionally equal are actually equal *)
 
-type Equal (#key:Type) (#value:Type) (m1:t key value) (m2:t key value) = 
+type equal (#key:Type) (#value:Type) (m1:t key value) (m2:t key value) = 
   (forall x.{:pattern (lookup m1 x) \/ (lookup m2 x)} lookup m1 x = lookup m2 x)
 
 (* What did they say about assumption being the mother of all fuckups? *)
 assume TotalExtensionality : 
   forall (key:Type) (value:Type) (m1:t key value) (m2:t key value).
-    {:pattern Equal m1 m2} Equal m1 m2 <==> m1 = m2
+    {:pattern equal m1 m2} equal m1 m2 <==> m1 = m2
 
 val lemma_map_equal_intro: #key:Type -> #value:Type -> m1:t key value -> m2:t key value ->
   Lemma (requires  (forall x. lookup m1 x = lookup m2 x))
-        (ensures   (Equal m1 m2))
-  [SMTPatT (Equal m1 m2)]
+        (ensures   (equal m1 m2))
+  [SMTPatT (equal m1 m2)]
 val lemma_map_equal_elim: #key:Type -> #value:Type -> m1:t key value -> m2:t key value ->
-  Lemma (requires (Equal m1 m2))
+  Lemma (requires (equal m1 m2))
         (ensures  (m1 = m2))
-  [SMTPatT (Equal m1 m2)]
+  [SMTPatT (equal m1 m2)]
 val lemma_map_equal_refl: #key:Type -> #value:Type -> m1:t key value -> m2:t key value ->
   Lemma (requires (m1 = m2))
-        (ensures  (Equal m1 m2))
-  [SMTPatT (Equal m1 m2)]
+        (ensures  (equal m1 m2))
+  [SMTPatT (equal m1 m2)]
 
 let lemma_map_equal_intro m1 m2 = ()
 (* Follows from TotalExtensionality but I can't seem to get it working *)

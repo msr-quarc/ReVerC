@@ -14,15 +14,15 @@ open Util
 open AncillaHeap
 open Circuit
 
-type BoolExp =
+type boolExp =
   | BFalse
   | BVar of int
-  | BNot of BoolExp
-  | BAnd of BoolExp * BoolExp
-  | BXor of BoolExp * BoolExp
+  | BNot of boolExp
+  | BAnd of boolExp * boolExp
+  | BXor of boolExp * boolExp
 
 (* For termination proofs *)
-val expsize : BoolExp -> Tot nat
+val expsize : boolExp -> Tot nat
 let rec expsize bexp = match bexp with
   | BFalse   -> 0
   | BVar i   -> 0
@@ -30,39 +30,39 @@ let rec expsize bexp = match bexp with
   | BAnd (x, y) -> (expsize x) + (expsize y) + 1
   | BXor (x, y) -> (expsize x) + (expsize y) + 1
 
-type compilerResult = AncHeap * int * (list int) * (Circuit)
+type compilerResult = ancHeap * int * (list int) * (circuit)
 
-val prettyPrintBexp : exp:BoolExp -> Tot string (decreases exp)
+val prettyPrintBexp : exp:boolExp -> Tot string (decreases exp)
 
-val occursInBexp : int -> exp:BoolExp -> Tot bool (decreases exp)
-val vars         : BoolExp -> Tot (set int)
-val getVars_acc  : list int -> exp:BoolExp -> Tot (list int) (decreases exp)
-val getVars      : BoolExp -> Tot (list int)
+val occursInBexp : int -> exp:boolExp -> Tot bool (decreases exp)
+val vars         : boolExp -> Tot (set int)
+val getVars_acc  : list int -> exp:boolExp -> Tot (list int) (decreases exp)
+val getVars      : boolExp -> Tot (list int)
 val max          : int -> int -> Tot int
 val listMax      : (list int) -> Tot int
-val varCount     : BoolExp -> Tot int
-val varMax       : BoolExp -> Tot int
-val gtVars       : int -> BoolExp -> Tot bool
-val andDepth     : BoolExp -> Tot nat
+val varCount     : boolExp -> Tot int
+val varMax       : boolExp -> Tot int
+val gtVars       : int -> boolExp -> Tot bool
+val andDepth     : boolExp -> Tot nat
 
-val substBexp    : BoolExp -> Total.t int BoolExp -> Tot BoolExp
-val substVar     : BoolExp -> Total.t int int -> Tot BoolExp
-val substOneVar  : BoolExp -> int -> BoolExp -> Tot BoolExp
+val substBexp    : boolExp -> Total.t int boolExp -> Tot boolExp
+val substVar     : boolExp -> Total.t int int -> Tot boolExp
+val substOneVar  : boolExp -> int -> boolExp -> Tot boolExp
 
-val evalBexp     : BoolExp -> state -> Tot bool
+val evalBexp     : boolExp -> state -> Tot bool
 
-val simplify : BoolExp -> Tot BoolExp
-val factorAs : BoolExp -> int -> Tot (option BoolExp)
-val distrib  : BoolExp -> BoolExp -> Tot BoolExp
-val toXDNF   : BoolExp -> Tot BoolExp
-val untoXDNF : BoolExp -> Tot BoolExp
+val simplify : boolExp -> Tot boolExp
+val factorAs : boolExp -> int -> Tot (option boolExp)
+val distrib  : boolExp -> boolExp -> Tot boolExp
+val toXDNF   : boolExp -> Tot boolExp
+val untoXDNF : boolExp -> Tot boolExp
 
-val compileBexp            : AncHeap -> int -> exp:BoolExp -> Tot compilerResult (decreases %[exp;0])
-val compileBexp_oop        : AncHeap -> exp:BoolExp -> Tot compilerResult (decreases %[exp;1])
-val compileBexpClean       : AncHeap -> int -> BoolExp -> Tot compilerResult
-val compileBexpClean_oop   : AncHeap -> BoolExp -> Tot compilerResult
-val compileBexpPebbled     : AncHeap -> int -> exp:BoolExp -> Tot compilerResult (decreases %[exp;0])
-val compileBexpPebbled_oop : AncHeap -> exp:BoolExp -> Tot compilerResult (decreases %[exp;1])
+val compileBexp            : ancHeap -> int -> exp:boolExp -> Tot compilerResult (decreases %[exp;0])
+val compileBexp_oop        : ancHeap -> exp:boolExp -> Tot compilerResult (decreases %[exp;1])
+val compileBexpClean       : ancHeap -> int -> boolExp -> Tot compilerResult
+val compileBexpClean_oop   : ancHeap -> boolExp -> Tot compilerResult
+val compileBexpPebbled     : ancHeap -> int -> exp:boolExp -> Tot compilerResult (decreases %[exp;0])
+val compileBexpPebbled_oop : ancHeap -> exp:boolExp -> Tot compilerResult (decreases %[exp;1])
 
 (* Printing *)
 let rec prettyPrintBexp bexp = match bexp with
@@ -105,7 +105,7 @@ let getVars exp = getVars_acc [] exp
 
 (* Consistency of getVars -- finish this if needed later *)
 (*
-val getVars_acc_eq_vars : l:list int -> exp:BoolExp ->
+val getVars_acc_eq_vars : l:list int -> exp:boolExp ->
   Lemma (forall i. vars exp i <==> List.mem i (getVars_acc l exp)) (decreases exp)
 let rec getVars_acc_eq_vars l exp = match exp with
   | BVar n   -> ()
@@ -113,12 +113,12 @@ let rec getVars_acc_eq_vars l exp = match exp with
   | BXor (x, y) -> getVars_acc_eq_vars l x; getVars_acc_eq_vars (getVars_acc l x) y
   | BNot x   -> getVars_acc_eq_vars l x
 
-val getVars_eq_vars : exp:BoolExp ->
+val getVars_eq_vars : exp:boolExp ->
   Lemma (forall i. vars exp i <==> List.mem i (getVars exp))
 let rec getVars_eq_vars exp = getVars_acc_eq_vars [] exp
 *)
 
-(* Maximums, counting -- Replace this with a version defined directly on BoolExp *)
+(* Maximums, counting -- Replace this with a version defined directly on boolExp *)
 let max x y = if x > y then x else y
 
 let rec listMax lst = match lst with
@@ -237,8 +237,8 @@ val esxor   : esop -> esop -> Tot esop
 val esmul   : list int -> esop -> Tot esop
 val esand   : esop -> esop -> Tot esop
 
-val toESOP   : BoolExp -> Tot esop
-val fromESOP : esop -> Tot BoolExp
+val toESOP   : boolExp -> Tot esop
+val fromESOP : esop -> Tot boolExp
 
 let esfalse = []
 let estrue  = [[]]
@@ -377,7 +377,7 @@ let compileBexpCleanEvalSt_oop ah exp st =
     evalCirc circ st
 
 (* Correctness of optimizations *)
-val simplify_preserves_semantics : exp:BoolExp ->
+val simplify_preserves_semantics : exp:boolExp ->
   Lemma (forall (st:state). (evalBexp exp st) = (evalBexp (simplify exp) st))
 let rec simplify_preserves_semantics exp = match exp with
   | BFalse -> ()
@@ -387,7 +387,7 @@ let rec simplify_preserves_semantics exp = match exp with
     simplify_preserves_semantics y
   | BNot x -> simplify_preserves_semantics x
 
-val factorAs_correct : exp:BoolExp -> targ:int -> st:state ->
+val factorAs_correct : exp:boolExp -> targ:int -> st:state ->
   Lemma (forall exp'. factorAs exp targ = Some exp' ==>
           not (occursInBexp targ exp') /\ evalBexp exp st = (lookup st targ) <> evalBexp exp' st)
 let rec factorAs_correct exp targ st = match exp with
@@ -410,7 +410,7 @@ let rec occursInBexp_not_var i exp = match exp with
   | BAnd (x, y) -> occursInBexp_not_var i x; occursInBexp_not_var i y
   | BXor (x, y) -> occursInBexp_not_var i x; occursInBexp_not_var i y
 
-val factorAs_vars : exp:BoolExp -> targ:int ->
+val factorAs_vars : exp:boolExp -> targ:int ->
   Lemma (forall exp'. factorAs exp targ = Some exp' ==> subset (vars exp') (rem targ (vars exp)))
 let rec factorAs_vars exp targ = match exp with
   | BFalse -> ()
@@ -432,15 +432,15 @@ let rec factorAs_vars exp targ = match exp with
       ()
 
 (* Super low level proofs about Boolean algebra *)
-val idempotentAnd : x:BoolExp ->
+val idempotentAnd : x:boolExp ->
   Lemma (forall st. evalBexp x st = evalBexp (BAnd (x, x)) st)
-val commutativityAnd : x:BoolExp -> y:BoolExp ->
+val commutativityAnd : x:boolExp -> y:boolExp ->
   Lemma (forall st. evalBexp (BAnd (x, y)) st = evalBexp (BAnd (y, x)) st)
-val commutativityXor : x:BoolExp -> y:BoolExp ->
+val commutativityXor : x:boolExp -> y:boolExp ->
   Lemma (forall st. evalBexp (BXor (x, y)) st = evalBexp (BXor (y, x)) st)
-val distributivityAndXor : x:BoolExp -> y:BoolExp -> z:BoolExp ->
+val distributivityAndXor : x:boolExp -> y:boolExp -> z:boolExp ->
   Lemma (forall st. evalBexp (BAnd (x, BXor (y, z))) st = evalBexp (BXor (BAnd (x, y), BAnd (x, z))) st)
-val distributivityAndXorLeft : x:BoolExp -> y:BoolExp -> z:BoolExp ->
+val distributivityAndXorLeft : x:boolExp -> y:boolExp -> z:boolExp ->
   Lemma (forall st. evalBexp (BAnd (BXor (x, y), z)) st = evalBexp (BXor (BAnd (x, z), BAnd (y, z))) st)
 
 let idempotentAnd x = ()
@@ -449,7 +449,7 @@ let commutativityXor x y = ()
 let distributivityAndXor x y z = ()
 let distributivityAndXorLeft x y z = ()
 
-val distrib_preserves_semantics : x:BoolExp -> y:BoolExp ->
+val distrib_preserves_semantics : x:boolExp -> y:boolExp ->
   Lemma (forall (st:state). evalBexp (BAnd (x, y)) st = evalBexp (distrib x y) st)
 let rec distrib_preserves_semantics x y = match (x, y) with
   | (BXor (x1, x2), _) -> 
@@ -462,7 +462,7 @@ let rec distrib_preserves_semantics x y = match (x, y) with
     distributivityAndXor x y1 y2
   | _                  -> ()
 
-val toXDNF_preserves_semantics : exp:BoolExp ->
+val toXDNF_preserves_semantics : exp:boolExp ->
   Lemma (forall (st:state). (evalBexp exp st) = (evalBexp (toXDNF exp) st))
 let rec toXDNF_preserves_semantics exp = match exp with
   | BNot x      -> toXDNF_preserves_semantics x
@@ -475,7 +475,7 @@ let rec toXDNF_preserves_semantics exp = match exp with
     toXDNF_preserves_semantics y
   | _           -> ()
 
-val untoXDNF_preserves_semantics : exp:BoolExp ->
+val untoXDNF_preserves_semantics : exp:boolExp ->
   Lemma (forall (st:state). (evalBexp exp st) = (evalBexp (untoXDNF exp) st))
 let rec untoXDNF_preserves_semantics exp = match exp with
   | BFalse -> ()
@@ -503,7 +503,7 @@ let rec untoXDNF_preserves_semantics exp = match exp with
     end
 
 (* Properties of substitutions *)
-val substVar_elems : exp:BoolExp -> subs:t int int -> 
+val substVar_elems : exp:boolExp -> subs:t int int -> 
   Lemma (subset (vars (substVar exp subs)) (vals subs))
 let rec substVar_elems exp subs = match exp with
   | BFalse -> ()
@@ -513,7 +513,7 @@ let rec substVar_elems exp subs = match exp with
     substVar_elems x subs;
     substVar_elems y subs
 
-val substOneVar_elems : exp:BoolExp -> v:int -> exp':BoolExp -> 
+val substOneVar_elems : exp:boolExp -> v:int -> exp':boolExp -> 
   Lemma (subset (vars (substOneVar exp v exp')) (union (rem v (vars exp)) (vars exp')))
 let rec substOneVar_elems exp v exp' = match exp with
   | BFalse -> ()
@@ -523,7 +523,7 @@ let rec substOneVar_elems exp v exp' = match exp with
     substOneVar_elems x v exp';
     substOneVar_elems y v exp'
 
-val subst_value_pres : exp:BoolExp -> v:int -> exp':BoolExp -> st:state -> st':state ->
+val subst_value_pres : exp:boolExp -> v:int -> exp':boolExp -> st:state -> st':state ->
   Lemma (requires (agree_on st st' (rem v (vars exp)) /\ evalBexp (BVar v) st = evalBexp exp' st'))
 	(ensures  (evalBexp exp st = evalBexp (substOneVar exp v exp') st'))
 let rec subst_value_pres exp v exp' st st' = match exp with
@@ -534,7 +534,7 @@ let rec subst_value_pres exp v exp' st st' = match exp with
     subst_value_pres x v exp' st st';
     subst_value_pres y v exp' st st'
 
-val substVar_value_pres : exp:BoolExp -> subs:t int int -> st:state -> st':state ->
+val substVar_value_pres : exp:boolExp -> subs:t int int -> st:state -> st':state ->
   Lemma (requires (forall i. lookup st i = lookup st' (lookup subs i)))
 	(ensures  (evalBexp exp st = evalBexp (substVar exp subs) st'))
 let rec substVar_value_pres exp subs st st' = match exp with
@@ -575,9 +575,9 @@ type partition = #a:Type -> s:set a -> s':set a -> s'':set a ->
    the subset relation, but it's enlightening to see how to apply such a basic
    proof method "by hand" in F* *)
 
-val compile_decreases_heap : ah:AncHeap -> targ:int -> exp:BoolExp ->
+val compile_decreases_heap : ah:ancHeap -> targ:int -> exp:boolExp ->
   Lemma (subset (elts (first (compileBexp ah targ exp))) (elts ah)) (decreases %[exp;0])
-val compile_decreases_heap_oop : ah:AncHeap -> exp:BoolExp ->
+val compile_decreases_heap_oop : ah:ancHeap -> exp:boolExp ->
   Lemma (subset (elts (first (compileBexp_oop ah exp))) (elts ah)) (decreases %[exp;1])
 let rec compile_decreases_heap ah targ exp = match exp with
   | BFalse -> ()
@@ -605,9 +605,9 @@ and compile_decreases_heap_oop ah exp = match exp with
       compile_decreases_heap ah' targ exp;
       subset_trans (elts ah'') (elts ah') (elts ah)
 
-val compileClean_decreases_heap : ah:AncHeap -> targ:int -> exp:BoolExp ->
+val compileClean_decreases_heap : ah:ancHeap -> targ:int -> exp:boolExp ->
   Lemma (subset (elts (first (compileBexp ah targ exp))) (elts ah)) (decreases %[exp;0])
-val compileClean_decreases_heap_oop : ah:AncHeap -> exp:BoolExp ->
+val compileClean_decreases_heap_oop : ah:ancHeap -> exp:boolExp ->
   Lemma (subset (elts (first (compileBexp_oop ah exp))) (elts ah)) (decreases %[exp;1])
 let rec compileClean_decreases_heap ah targ exp = match exp with
   | BFalse -> ()
@@ -636,11 +636,11 @@ and compileClean_decreases_heap_oop ah exp = match exp with
       subset_trans (elts ah'') (elts ah') (elts ah)
 
 (* Lemma(s) about the output bit *)
-val compile_output : ah:AncHeap -> targ:int -> x:BoolExp ->
+val compile_output : ah:ancHeap -> targ:int -> x:boolExp ->
   Lemma (second (compileBexp ah targ x) = targ)
 let compile_output ah targ x = ()
 
-val compile_output_oop : ah:AncHeap -> x:BoolExp ->
+val compile_output_oop : ah:ancHeap -> x:boolExp ->
   Lemma (requires (disjoint (elts ah) (vars x)))
         (ensures  (not (mem (second (compileBexp_oop ah x))
                             (first  (compileBexp_oop ah x)))))
@@ -666,10 +666,10 @@ type postCond (c:compilerResult) =
   not (mem (second c) (first c))
 
 (* These proofs are getting big enough that they need comments *)
-val compile_partition : ah:AncHeap -> targ:int -> x:BoolExp ->
+val compile_partition : ah:ancHeap -> targ:int -> x:boolExp ->
   Lemma (requires (disjoint (elts ah) (vars x) /\ not (mem targ ah)))
         (ensures  (postCond (compileBexp ah targ x))) (decreases %[x;0])
-val compile_partition_oop : ah:AncHeap -> x:BoolExp ->
+val compile_partition_oop : ah:ancHeap -> x:boolExp ->
   Lemma (requires (disjoint (elts ah) (vars x)))
         (ensures  (postCond (compileBexp_oop ah x))) (decreases %[x;1])
 let rec compile_partition ah targ x = match x with
@@ -720,10 +720,10 @@ and compile_partition_oop ah x = match x with
 (* Details which bits the compiled circuit may modify. In particular, it is
    gauranteed that the resulting circuit does not modify any bit outside of the
    target bit and the ancilla heap. *)
-val compile_mods : ah:AncHeap -> targ:int -> x:BoolExp ->
+val compile_mods : ah:ancHeap -> targ:int -> x:boolExp ->
   Lemma (subset (mods (last (compileBexp ah targ x))) (ins targ (elts ah)))
   (decreases %[x;0])
-val compile_mods_oop : ah:AncHeap -> x:BoolExp ->
+val compile_mods_oop : ah:ancHeap -> x:boolExp ->
   Lemma (subset (mods (last (compileBexp_oop ah x))) (elts ah))
   (decreases %[x;1])
 let rec compile_mods ah targ exp = match exp with
@@ -768,7 +768,7 @@ and compile_mods_oop ah x = match x with
       subset_trans (mods circ) (ins targ (elts ah')) (elts ah)
 
 (* Compiler correctness *)
-val eval_state_swap : x:BoolExp -> st:state -> st':state ->
+val eval_state_swap : x:boolExp -> st:state -> st':state ->
   Lemma (requires (agree_on st st' (vars x)))
         (ensures  (evalBexp x st = evalBexp x st'))
 let rec eval_state_swap x st st' = match x with
@@ -778,16 +778,16 @@ let rec eval_state_swap x st st' = match x with
   | BAnd (x, y) -> eval_state_swap x st st'; eval_state_swap y st st'
   | BXor (x, y) -> eval_state_swap x st st'; eval_state_swap y st st'
 
-val zeroHeap_st_impl : st:state -> ah:AncHeap -> gates:(Circuit) ->
+val zeroHeap_st_impl : st:state -> ah:ancHeap -> gates:(circuit) ->
   Lemma (requires (zeroHeap st ah /\ disjoint (elts ah) (uses gates)))
         (ensures  (zeroHeap (evalCirc gates st) ah))
 let zeroHeap_st_impl st ah gates = ref_imp_use gates; eval_mod st gates
 
 (* Establishes that the resulting ancilla heap is still zero-filled *)
-val compile_bexp_zero : ah:AncHeap -> targ:int -> exp:BoolExp -> st:state ->
+val compile_bexp_zero : ah:ancHeap -> targ:int -> exp:boolExp -> st:state ->
   Lemma (requires (zeroHeap st ah /\ disjoint (elts ah) (vars exp) /\ not (Set.mem targ (elts ah))))
         (ensures  (zeroHeap (compileBexpEvalSt ah targ exp st) (first (compileBexp ah targ exp))))
-val compile_bexp_zero_oop : ah:AncHeap -> exp:BoolExp -> st:state ->
+val compile_bexp_zero_oop : ah:ancHeap -> exp:boolExp -> st:state ->
   Lemma (requires (zeroHeap st ah /\ disjoint (elts ah) (vars exp)))
         (ensures  (zeroHeap (compileBexpEvalSt_oop ah exp st) (first (compileBexp_oop ah exp))))
 let compile_bexp_zero ah targ exp st =
@@ -806,13 +806,13 @@ let compile_bexp_zero_oop ah exp st =
    nothing on the heap is mentioned in either the target bit or the expression,
    and the target bit is not in the expression *)
 
-val compile_bexp_correct : ah:AncHeap -> targ:int -> exp:BoolExp -> st:state ->
+val compile_bexp_correct : ah:ancHeap -> targ:int -> exp:boolExp -> st:state ->
   Lemma (requires (zeroHeap st ah /\ disjoint (elts ah) (vars exp) /\
                    not (Set.mem targ (elts ah)) /\
                    not (Set.mem targ (vars exp))))
         (ensures  (compileBexpEval ah targ exp st = (lookup st targ) <> evalBexp exp st))
  (decreases %[exp;0])
-val compile_bexp_correct_oop : ah:AncHeap -> exp:BoolExp -> st:state ->
+val compile_bexp_correct_oop : ah:ancHeap -> exp:boolExp -> st:state ->
   Lemma (requires (zeroHeap st ah /\ disjoint (elts ah) (vars exp)))
         (ensures  (compileBexpEval_oop ah exp st = evalBexp exp st))
  (decreases %[exp;1])
@@ -885,13 +885,13 @@ and compile_bexp_correct_oop ah exp st = match exp with
    and the result qubit is not used as a control anywhere. These should
    possibly be separate lemmas... *)
 
-val compileBexp_wf : ah:AncHeap -> targ:int -> exp:BoolExp ->
+val compileBexp_wf : ah:ancHeap -> targ:int -> exp:boolExp ->
   Lemma (requires (disjoint (elts ah) (vars exp) /\
                    not (Set.mem targ (elts ah)) /\
                    not (Set.mem targ (vars exp))))
         (ensures  (wfCirc (last (compileBexp ah targ exp))))
   (decreases %[exp;0])
-val compileBexp_wf_oop : ah:AncHeap -> exp:BoolExp ->
+val compileBexp_wf_oop : ah:ancHeap -> exp:boolExp ->
   Lemma (requires (disjoint (elts ah) (vars exp)))
         (ensures  (wfCirc (last (compileBexp_oop ah exp))))
   (decreases %[exp;1])
@@ -924,10 +924,10 @@ and compileBexp_wf_oop ah exp = match exp with
       pop_proper_subset ah;
       compileBexp_wf ah' targ exp
 
-val compile_anc : ah:AncHeap -> targ:int -> exp:BoolExp ->
+val compile_anc : ah:ancHeap -> targ:int -> exp:boolExp ->
   Lemma (subset (mems (third (compileBexp ah targ exp))) (elts ah))
   (decreases %[exp;0])
-val compile_anc_oop : ah:AncHeap -> exp:BoolExp ->
+val compile_anc_oop : ah:ancHeap -> exp:boolExp ->
   Lemma (subset (mems (third (compileBexp_oop ah exp))) (elts ah))
   (decreases %[exp;1])
 let rec compile_anc ah targ exp = match exp with
@@ -954,11 +954,11 @@ and compile_anc_oop ah exp = match exp with
     let (ah', targ) = popMin ah in
       pop_elt ah; pop_subset ah; compile_anc ah' targ exp
 
-val compile_ctrls : ah:AncHeap -> targ:int -> x:BoolExp ->
+val compile_ctrls : ah:ancHeap -> targ:int -> x:boolExp ->
   Lemma (subset (ctrls (last (compileBexp ah targ x)))
                 (union (elts ah) (vars x)))
   (decreases %[x;0])
-val compile_ctrls_oop : ah:AncHeap -> x:BoolExp ->
+val compile_ctrls_oop : ah:ancHeap -> x:boolExp ->
   Lemma (subset (ctrls (last (compileBexp_oop ah x)))
                 (union (elts ah) (vars x)))
   (decreases %[x;1])
@@ -988,14 +988,14 @@ and compile_ctrls_oop ah x = match x with
    a zero heap. *)
 
 
-type clean_heap_cond (ah:AncHeap) (targ:int) (exp:BoolExp) (st:state) =
+type clean_heap_cond (ah:ancHeap) (targ:int) (exp:boolExp) (st:state) =
   zeroHeap (compileBexpCleanEvalSt ah targ exp st)
            (first (compileBexpClean ah targ exp))
 
-type clean_corr_cond (ah:AncHeap) (targ:int) (exp:BoolExp) (st:state) =
+type clean_corr_cond (ah:ancHeap) (targ:int) (exp:boolExp) (st:state) =
   compileBexpCleanEval ah targ exp st = compileBexpEval ah targ exp st
 
-val compile_with_cleanup : ah:AncHeap -> targ:int -> exp:BoolExp -> st:state ->
+val compile_with_cleanup : ah:ancHeap -> targ:int -> exp:boolExp -> st:state ->
   Lemma (requires (zeroHeap st ah /\ disjoint (elts ah) (vars exp) /\
                    not (Set.mem targ (elts ah)) /\
                    not (Set.mem targ (vars exp))))
@@ -1030,7 +1030,7 @@ let compile_with_cleanup ah targ exp st =
   in
     ()
 
-val compile_with_cleanup_oop : ah:AncHeap -> exp:BoolExp -> st:state ->
+val compile_with_cleanup_oop : ah:ancHeap -> exp:boolExp -> st:state ->
   Lemma (requires (zeroHeap st ah /\ disjoint (elts ah) (vars exp)))
         (ensures  (zeroHeap (compileBexpCleanEvalSt_oop ah exp st)
                             (first (compileBexpClean_oop ah exp)) /\

@@ -38,19 +38,19 @@ let rem a b          = diff b (singleton a)
 
 (* Extensionality-based equality *)
 open FStar.FunctionalExtensionality
-type Equal (#a:Type) (s1:set a) (s2:set a) = FEq s1 s2
+type equal (#a:Type) (s1:set a) (s2:set a) = FEq s1 s2
 val lemma_equal_intro: #a:Type -> s1:set a -> s2:set a -> Lemma
     (requires  (forall x. mem x s1 = mem x s2))
-    (ensures (Equal s1 s2))
-    [SMTPatT (Equal s1 s2)]
+    (ensures (equal s1 s2))
+    [SMTPatT (equal s1 s2)]
 val lemma_equal_elim: #a:Type -> s1:set a -> s2:set a -> Lemma
-    (requires (Equal s1 s2))
+    (requires (equal s1 s2))
     (ensures  (s1 = s2))
-    [SMTPatT (Equal s1 s2)]
+    [SMTPatT (equal s1 s2)]
 val lemma_equal_refl: #a:Type -> s1:set a -> s2:set a -> Lemma
     (requires (s1 = s2))
-    (ensures  (Equal s1 s2))
-    [SMTPatT (Equal s1 s2)]
+    (ensures  (equal s1 s2))
+    [SMTPatT (equal s1 s2)]
 let lemma_equal_intro s1 s2 = ()
 let lemma_equal_elim s1 s2 = ()
 let lemma_equal_refl s1 s2 = ()
