@@ -1,6 +1,7 @@
 (** Total maps, implemented as assoc lists with default values *)
 module Total
-open Set
+open FStar.Set
+open SetExtra
 
 type t (key:Type) (value:Type) = 
   { elts : list (key * value);
@@ -10,7 +11,6 @@ type t (key:Type) (value:Type) =
 type state = t int bool
 
 val keys     : #key:Type -> #value:Type -> t key value -> Tot (set key)
-val valsRec  : #key:Type -> #value:Type -> value -> list (key * value) -> Tot bool
 val vals     : #key:Type -> #value:Type -> t key value -> Tot (set value)
 val lookup   : #key:Type -> #value:Type -> t key value -> key -> Tot value
 val update   : #key:Type -> #value:Type -> t key value -> key -> value -> Tot (t key value)
@@ -19,37 +19,32 @@ val constMap : #key:Type -> #value:Type -> value -> Tot (t key value)
 val compose  : #key:Type -> #value:Type -> #value':Type -> t key value -> t value value' -> Tot (t key value')
 val mapVals  : #key:Type -> #value:Type -> #value':Type -> (value -> Tot value') -> t key value -> Tot (t key value')
 
-let keys m = List.fold_leftT (fun s x -> Set.ins (fst x) s) Set.empty m.elts
+let keys #k #v m = FStar.List.Tot.fold_left (fun s x -> ins (fst x) s) empty m.elts
 
-let rec valsRec y xs = match xs with
-  | []    -> false
-  | x::xs -> (snd x) = y || valsRec y xs
+let vals #k #v m = ins m.dval (FStar.List.Tot.fold_left (fun s x -> ins (snd x) s) empty m.elts)
 
-let vals m = 
-    fun y -> y = m.dval || valsRec y m.elts
-
-let lookup m k = match List.assocT k m.elts with
+let lookup #k #v m key = match FStar.List.Tot.assoc key m.elts with
   | None   -> m.dval
   | Some v -> v
 
-let update m k v =
-  { elts = (k, v)::m.elts; //(k, v)::(List.filterT (fun (k', _) -> not (k = k')) m.elts);
+let update #k #v m key vl =
+  { elts = (key, vl)::m.elts; //(k, v)::(FStar.List.filterT (fun (k', _) -> not (k = k')) m.elts);
     dval = m.dval }
 
-let delete m k =
-  { elts = List.filterT (fun (k', _) -> not (k = k')) m.elts;
+let delete #k #v m key =
+  { elts = FStar.List.Tot.filter (fun (k', _) -> not (key = k')) m.elts;
     dval = m.dval }
 
-let constMap v =
+let constMap #k #v dv =
   { elts = [];
-    dval = v }
+    dval = dv }
 
-let compose m m' = 
-  { elts = List.mapT (fun (k, v) -> (k, lookup m' v)) m.elts;
+let compose #k #v #u m m' = 
+  { elts = FStar.List.Tot.map (fun (k, v) -> (k, lookup m' v)) m.elts;
     dval = lookup m' m.dval }
 
-let mapVals f m = 
-  { elts = List.mapT (fun (k, v) -> (k, f v)) m.elts;
+let mapVals #k #v #u f m = 
+  { elts = FStar.List.Tot.map (fun (k, v) -> (k, f v)) m.elts;
     dval = f m.dval }
 
 
@@ -74,10 +69,10 @@ val lookup_map : #key:Type -> #value:Type -> #value':Type -> f:(value -> Tot val
   (decreases m.elts)
   [SMTPat (lookup (mapVals f m) k)]
 
-let lookup_const k v = ()
-let lookup_update1 m k v = ()
-let lookup_update2 m k v k' = ()
-let rec lookup_map f m k = match m.elts with
+let lookup_const #k #v k v = ()
+let lookup_update1 #k #v m k v = ()
+let lookup_update2 #k #v m k v k' = ()
+let rec lookup_map #k #v #val' f m k = match m.elts with
   | [] -> ()
   | x::xs -> 
     let m' = { elts = xs; dval = m.dval } in
@@ -87,22 +82,22 @@ let rec lookup_map f m k = match m.elts with
 val lookup_is_val : #key:Type -> #value:Type -> m:t key value -> k:key ->
   Lemma (requires true)
 	(ensures (Set.mem (lookup m k) (vals m)))
-let lookup_is_val m k = admit()
+let lookup_is_val #k #v m k = admit()
   
 val lookup_is_valF : #key:Type -> #value:Type -> m:t key value ->
   Lemma (requires true)
 	(ensures (forall k. Set.mem (lookup m k) (vals m)))
-let lookup_is_valF m = admit()
+let lookup_is_valF #k #v m = admit()
 
 val lookup_converse : #key:Type -> #value:Type -> m:t key value -> v:value ->
   Lemma (requires (not (Set.mem v (vals m))))
 	(ensures  (forall k. not (lookup m k = v)))
-let lookup_converse m v = lookup_is_valF m
+let lookup_converse #k #v m v = lookup_is_valF m
 
 val lookup_converse2 : #key:Type -> #value:Type -> m:t key value -> v:value ->
   Lemma (requires (forall k. not (lookup m k = v)))
 	(ensures  (not (Set.mem v (vals m))))
-let lookup_converse2 m v = admit()
+let lookup_converse2 #k #v m v = admit()
 
 (* Type of maps that agree on a subset of keys *)
 type agree_on (#key:Type) (#value:Type) (m:t key value) (m':t key value) (s:set key) =
@@ -111,12 +106,12 @@ type agree_on (#key:Type) (#value:Type) (m:t key value) (m':t key value) (s:set 
 val agree_on_trans : #key:Type -> #value:Type -> m:t key value -> m':t key value -> m'':t key value -> s:set key ->
   Lemma (requires (agree_on m m' s /\ agree_on m' m'' s))
         (ensures  (agree_on m m'' s))
-let agree_on_trans m m' m'' s = ()
+let agree_on_trans #k #v m m' m'' s = ()
 
 val agree_on_subset : #key:Type -> #value:Type -> m:t key value -> m':t key value -> s:set key -> s':set key ->
   Lemma (requires (agree_on m m' s /\ subset s' s))
         (ensures  (agree_on m m' s'))
-let agree_on_subset m m' s s' = ()
+let agree_on_subset #k #v m m' s s' = ()
 
 (* Functional extensionality for lookups. We're rolling our own since we're
 going to be bad and assume maps which are extensionally equal are actually equal *)
@@ -142,8 +137,8 @@ val lemma_map_equal_refl: #key:Type -> #value:Type -> m1:t key value -> m2:t key
         (ensures  (equal m1 m2))
   [SMTPatT (equal m1 m2)]
 
-let lemma_map_equal_intro m1 m2 = ()
+let lemma_map_equal_intro #k #v m1 m2 = ()
 (* Follows from TotalExtensionality but I can't seem to get it working *)
-let lemma_map_equal_elim m1 m2 = admit()
-let lemma_map_equal_refl m1 m2 = ()
+let lemma_map_equal_elim #k #v m1 m2 = admit()
+let lemma_map_equal_refl #k #v m1 m2 = ()
 

@@ -1,6 +1,11 @@
 (** Type checker *)
 module TypeCheck
 
+open Partial
+open Util
+open BoolExp
+open ExprTypes
+
 (* Type checking is really a misnomer -- we don't type check
    in the sense of preventing run-time errors. Type checking
    in ReVer is really a static analysis to infer array bounds
@@ -9,11 +14,6 @@ module TypeCheck
    way to frame the problem, with the added benefit that the
    framework may be used later to better effect when features
    are added *)
-
-open Partial
-open Util
-open BoolExp
-open ExprTypes
 
 type ctxt = Partial.t string GType
 

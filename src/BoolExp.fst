@@ -1,18 +1,19 @@
 ﻿(** Utilities and compilation for Boolean expressions *)
 module BoolExp
 
+open FStar.Set
+open SetExtra
+open Total
+open Util
+open AncillaHeap
+open Circuit
+
 (* Boolean expressions over false, not, and, xor, and free variables.
    This module also defines compilation to circuits in three ways:
    No cleanup of ancillas, cleanup of ancillas after compilation,
    and intermittent cleanup during compilation. All three are proven
    correct with respect to the output and the cleanliness of ancillas.
    Boolean simplifications are also defined here and proven correct *)
-
-open Set
-open Total
-open Util
-open AncillaHeap
-open Circuit
 
 type boolExp =
   | BFalse

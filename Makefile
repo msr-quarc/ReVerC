@@ -3,7 +3,7 @@ FSTAR_HOME = .fstar
 FSTAR = $(FSTAR_HOME)/bin/fstar.exe
 FSHARP = fsharpc
 
-FILES = Set.fst Total.fst Partial.fst Util.fst PairHeap.fst AncillaHeap.fst \
+FILES = SetExtra.fst Total.fst Partial.fst Util.fst PairHeap.fst AncillaHeap.fst \
 				Circuit.fst BoolExp.fst ExprTypes.fst TypeCheck.fst Interpreter.fst \
 				Crush.fst Compiler.fst GC.fst
 #FILES = Util.fst Maps.fst PairHeap.fst AncillaHeap.fst Circuit.fst BoolExp.fst ExprTypes.fst Interpreter.fst

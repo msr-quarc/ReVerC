@@ -2,7 +2,8 @@
 module Compiler
 
 open Util
-open Set
+open FStar.Set
+open SetExtra
 open Total
 open AncillaHeap
 open BoolExp

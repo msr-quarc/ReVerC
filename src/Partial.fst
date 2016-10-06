@@ -1,6 +1,7 @@
 (** Partial maps, implemented as assoc lists *)
 module Partial
-open Set
+open FStar.Set
+open SetExtra
 
 type t (key:Type) (value:Type) = list (key * value)
 

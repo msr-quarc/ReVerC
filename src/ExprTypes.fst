@@ -1,12 +1,13 @@
 ﻿(** Abstract syntax & general Revs utilities *)
 module ExprTypes
 
-(* Abstract syntax of Revs, along with utilities. Eventually a
-   relational definition of the semantics should go here *)
-
-open Set
+open FStar.Set
+open SetExtra
 open Util
 open BoolExp
+
+(* Abstract syntax of Revs, along with utilities. Eventually a
+   relational definition of the semantics should go here *)
 
 type gType =
   | GUnit

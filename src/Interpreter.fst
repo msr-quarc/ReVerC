@@ -1,6 +1,13 @@
 (** Program interpreters *)
 module Interpreter
 
+open FStar.Set
+open SetExtra
+open Util
+open BoolExp
+open ExprTypes
+open Total
+
 (* The main compiler module. Defines two interpreters based on either big step
    or small step style reductions. The interpreters use an interpretation of
    the heap to handle allocation and assignment of new Boolean values.
@@ -10,12 +17,6 @@ module Interpreter
    Correctness is proven by proving that two states which are equal under the
    given semantics (eval function) remain equal after an allocation or
    assignment. *)
-
-open Set
-open Util
-open BoolExp
-open ExprTypes
-open Total
 
 (* A representation of program heap (which is Bool-typed) *)
 type interpretation (state:Type) =
