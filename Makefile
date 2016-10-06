@@ -1,4 +1,4 @@
-FSTAR_HOME = ../..
+FSTAR_HOME = .fstar
 
 FSTAR = $(FSTAR_HOME)/bin/fstar.exe
 FSHARP = fsharpc
