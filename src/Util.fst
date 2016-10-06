@@ -1,6 +1,7 @@
 (** General utilities *)
 module Util
-open Set
+open FStar.Set
+open SetExtra
 
 type fin (n:nat) = m:nat{m <= n}
 

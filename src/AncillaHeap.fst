@@ -1,14 +1,15 @@
 ﻿(** Ancilla heaps with an infinite supply of unique ancillas *)
 module AncillaHeap
 
+open FStar.Set
+open SetExtra
+open Total
+open PairHeap
+
 (* Heaps of integers along with an allocator. The allocator gives
    a value greater than every previously allocated value if the
    user tries to get the min of an empty heap. Used to implement
    bit allocation & retrieval *)
-
-open Set
-open Total
-open PairHeap
 
 type ancHeapRecord = { hp:intHeap; max:int }
 type cond (ah:ancHeapRecord) = 

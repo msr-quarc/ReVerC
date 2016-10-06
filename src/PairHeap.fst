@@ -1,5 +1,7 @@
 (** Pairing heaps *)
 module PairHeap
+open FStar.Set
+open SetExtra
 
 (* An implementation of pairing heaps (see wikipedia). 
    There are no duplicates allowed, and proven properties include 
@@ -7,8 +9,6 @@ module PairHeap
    Note that the is_heap property isn't this exactly -- is_heap means 
    the root is less than the root of each subheap. It is later proven 
    that this property implies the actual heap property. *)
-
-open Set
 
 type heap 'a =
   | Empty
