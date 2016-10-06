@@ -8,48 +8,48 @@ open Set
 open Util
 open BoolExp
 
-type GType =
+type gType =
   | GUnit
   | GBool
   | GArray of int
-  | GFun of GType * GType
-  | GConst of GType
+  | GFun of gType * gType
+  | GConst of gType
   // Compiler use only
   | GVar of int
 
-type GExpr =
-  | LET        of string * GExpr * GExpr
-  | LAMBDA     of string * GType * GExpr
-  | APPLY      of GExpr * GExpr
-  | IFTHENELSE of GExpr * GExpr * GExpr
-  | SEQUENCE   of GExpr * GExpr
-  | ASSIGN     of GExpr * GExpr
+type gExpr =
+  | LET        of string * gExpr * gExpr
+  | LAMBDA     of string * gType * gExpr
+  | APPLY      of gExpr * gExpr
+  | IFTHENELSE of gExpr * gExpr * gExpr
+  | SEQUENCE   of gExpr * gExpr
+  | ASSIGN     of gExpr * gExpr
   | VAR        of string
   | UNIT
   | BOOL       of bool
-  | XOR        of GExpr * GExpr
-  | AND        of GExpr * GExpr
-  | ARRAY      of list GExpr
-  | GET_ARRAY  of GExpr * int
-  | APPEND     of GExpr * GExpr
-  | ROT        of int * GExpr
-  | SLICE      of GExpr * int * int
-  | ASSERT     of GExpr
+  | XOR        of gExpr * gExpr
+  | AND        of gExpr * gExpr
+  | ARRAY      of list gExpr
+  | GET_ARRAY  of gExpr * int
+  | APPEND     of gExpr * gExpr
+  | ROT        of int * gExpr
+  | SLICE      of gExpr * int * int
+  | ASSERT     of gExpr
   // Compiler use only
   | LOC        of int
-  | BEXP       of BoolExp
+  | BEXP       of boolExp
 
-val height       : tm:GExpr -> Tot int (decreases %[tm;1])
-val height_lst   : tlst:(list GExpr) -> Tot int (decreases %[tlst;0])
-val freeIn       : x:string -> tm:GExpr -> Tot bool (decreases %[tm;0])
-val freeIn_lst   : x:string -> lst:list GExpr -> Tot bool (decreases %[lst;1])
-val freeVars     : tm:GExpr -> Tot (set string) (decreases %[tm;0])
-val locsAcc      : set int -> tm:GExpr -> Tot (set int) (decreases %[tm;0])
-val locsAcc_lst  : set int -> lst:list GExpr -> Tot (set int) (decreases %[lst;1])
-val locs         : tm:GExpr -> Tot (set int) (decreases %[tm;0])
-val varMaxTy     : ty:GType -> Tot int (decreases ty)
-val varMaxTm     : tm:GExpr -> Tot int (decreases %[tm;0])
-val varMaxTm_lst : lst:list GExpr -> Tot int (decreases %[lst;1])
+val height       : tm:gExpr -> Tot int (decreases %[tm;1])
+val height_lst   : tlst:(list gExpr) -> Tot int (decreases %[tlst;0])
+val freeIn       : x:string -> tm:gExpr -> Tot bool (decreases %[tm;0])
+val freeIn_lst   : x:string -> lst:list gExpr -> Tot bool (decreases %[lst;1])
+val freeVars     : tm:gExpr -> Tot (set string) (decreases %[tm;0])
+val locsAcc      : set int -> tm:gExpr -> Tot (set int) (decreases %[tm;0])
+val locsAcc_lst  : set int -> lst:list gExpr -> Tot (set int) (decreases %[lst;1])
+val locs         : tm:gExpr -> Tot (set int) (decreases %[tm;0])
+val varMaxTy     : ty:gType -> Tot int (decreases ty)
+val varMaxTm     : tm:gExpr -> Tot int (decreases %[tm;0])
+val varMaxTm_lst : lst:list gExpr -> Tot int (decreases %[lst;1])
 
 val replicate       : int -> string -> Tot string
 val append'         : list string -> list string -> Tot (list string)
@@ -59,16 +59,16 @@ val indent          : int -> list string -> Tot (list string)
 val brackets        : list string -> Tot (list string)
 val hdT             : l:(list 'a){List.lengthT l >= 1} -> Tot 'a
 val tlT             : l:(list 'a){List.lengthT l >= 1} -> Tot (list 'a)
-val prettyPrintTy   : GType -> Tot string
-val prettyPrint     : GExpr -> Tot (l:(list string){List.lengthT l > 0})
-val prettyPrint_lst : list GExpr -> Tot (list (list string))
-val show            : GExpr -> Tot string
+val prettyPrintTy   : gType -> Tot string
+val prettyPrint     : gExpr -> Tot (l:(list string){List.lengthT l > 0})
+val prettyPrint_lst : list gExpr -> Tot (list (list string))
+val show            : gExpr -> Tot string
 
-val substTy            : ty:GType -> int -> GType -> Tot GType (decreases ty)
-val substGExpr         : tm:GExpr -> string -> GExpr -> Tot GExpr (decreases %[tm;0])
-val substGExpr_lst     : l:list GExpr -> string -> GExpr -> Tot (list GExpr) (decreases %[l;1])
-val substTyInGExpr     : tm:GExpr -> int -> GType -> Tot GExpr (decreases %[tm;0])
-val substTyInGExpr_lst : l:list GExpr -> int -> GType -> Tot (list GExpr) (decreases %[l;1])
+val substTy            : ty:gType -> int -> gType -> Tot gType (decreases ty)
+val substgExpr         : tm:gExpr -> string -> gExpr -> Tot gExpr (decreases %[tm;0])
+val substgExpr_lst     : l:list gExpr -> string -> gExpr -> Tot (list gExpr) (decreases %[l;1])
+val substTyIngExpr     : tm:gExpr -> int -> gType -> Tot gExpr (decreases %[tm;0])
+val substTyIngExpr_lst : l:list gExpr -> int -> gType -> Tot (list gExpr) (decreases %[l;1])
 
 (* Structural properties for helping with proofs *)
 let rec height tm = match tm with
@@ -307,59 +307,59 @@ let rec substTy ty i ty' = match ty with
   | GConst ty -> GConst (substTy ty i ty')
   | GFun (ty1, ty2) -> GFun (substTy ty1 i ty', substTy ty2 i ty')
 
-let rec substGExpr tm s tm' = match tm with
+let rec substgExpr tm s tm' = match tm with
   | LET (x, t1, t2) ->
-    if x = s then LET (x, substGExpr t1 s tm', t2)
-    else LET (x, substGExpr t1 s tm', substGExpr t2 s tm')
+    if x = s then LET (x, substgExpr t1 s tm', t2)
+    else LET (x, substgExpr t1 s tm', substgExpr t2 s tm')
   | LAMBDA (x, ty, t) ->
-    if x = s then tm else LAMBDA (x, ty, substGExpr t s tm')
-  | APPLY (t1, t2) -> APPLY (substGExpr t1 s tm', substGExpr t2 s tm')
+    if x = s then tm else LAMBDA (x, ty, substgExpr t s tm')
+  | APPLY (t1, t2) -> APPLY (substgExpr t1 s tm', substgExpr t2 s tm')
   | IFTHENELSE (t1, t2, t3) ->
-    IFTHENELSE (substGExpr t1 s tm', substGExpr t2 s tm', substGExpr t3 s tm')
-  | SEQUENCE (t1, t2) -> SEQUENCE (substGExpr t1 s tm', substGExpr t2 s tm')
-  | ASSIGN (t1, t2) -> ASSIGN (substGExpr t1 s tm', substGExpr t2 s tm')
+    IFTHENELSE (substgExpr t1 s tm', substgExpr t2 s tm', substgExpr t3 s tm')
+  | SEQUENCE (t1, t2) -> SEQUENCE (substgExpr t1 s tm', substgExpr t2 s tm')
+  | ASSIGN (t1, t2) -> ASSIGN (substgExpr t1 s tm', substgExpr t2 s tm')
   | VAR x -> if x = s then tm' else tm
-  | XOR (t1, t2) -> XOR (substGExpr t1 s tm', substGExpr t2 s tm')
-  | AND (t1, t2) -> AND (substGExpr t1 s tm', substGExpr t2 s tm')
-  | ARRAY tlst -> ARRAY (substGExpr_lst tlst s tm')
-  | GET_ARRAY (t, i) -> GET_ARRAY (substGExpr t s tm', i)
-  | APPEND (t1, t2) -> APPEND (substGExpr t1 s tm', substGExpr t2 s tm')
-  | ROT (i, t) -> ROT (i, substGExpr t s tm')
-  | SLICE (t, i, j) -> SLICE (substGExpr t s tm', i, j)
-  | ASSERT t -> ASSERT (substGExpr t s tm')
+  | XOR (t1, t2) -> XOR (substgExpr t1 s tm', substgExpr t2 s tm')
+  | AND (t1, t2) -> AND (substgExpr t1 s tm', substgExpr t2 s tm')
+  | ARRAY tlst -> ARRAY (substgExpr_lst tlst s tm')
+  | GET_ARRAY (t, i) -> GET_ARRAY (substgExpr t s tm', i)
+  | APPEND (t1, t2) -> APPEND (substgExpr t1 s tm', substgExpr t2 s tm')
+  | ROT (i, t) -> ROT (i, substgExpr t s tm')
+  | SLICE (t, i, j) -> SLICE (substgExpr t s tm', i, j)
+  | ASSERT t -> ASSERT (substgExpr t s tm')
   | _ -> tm
-and substGExpr_lst lst s tm' = match lst with
+and substgExpr_lst lst s tm' = match lst with
   | [] -> []
-  | x::xs -> (substGExpr x s tm')::(substGExpr_lst xs s tm')
+  | x::xs -> (substgExpr x s tm')::(substgExpr_lst xs s tm')
 
-let rec substTyInGExpr tm k ty = match tm with
-  | LET (x, t1, t2) -> LET (x, substTyInGExpr t1 k ty, substTyInGExpr t2 k ty)
-  | LAMBDA (x, ty', t) -> LAMBDA (x, substTy ty' k ty, substTyInGExpr t k ty)
-  | APPLY (t1, t2) -> APPLY (substTyInGExpr t1 k ty, substTyInGExpr t2 k ty)
-  | IFTHENELSE (t1, t2, t3) -> IFTHENELSE (substTyInGExpr t1 k ty, substTyInGExpr t2 k ty, substTyInGExpr t3 k ty)
-  | SEQUENCE (t1, t2) -> SEQUENCE (substTyInGExpr t1 k ty, substTyInGExpr t2 k ty)
-  | ASSIGN (t1, t2) -> ASSIGN (substTyInGExpr t1 k ty, substTyInGExpr t2 k ty)
-  | XOR (t1, t2) -> XOR (substTyInGExpr t1 k ty, substTyInGExpr t2 k ty)
-  | AND (t1, t2) -> AND (substTyInGExpr t1 k ty, substTyInGExpr t2 k ty)
-  | ARRAY tlst -> ARRAY (substTyInGExpr_lst tlst k ty)
-  | GET_ARRAY (t, i) -> GET_ARRAY (substTyInGExpr t k ty, i)
-  | APPEND (t1, t2) -> APPEND (substTyInGExpr t1 k ty, substTyInGExpr t2 k ty)
-  | ROT (i, t) -> ROT (i, substTyInGExpr t k ty)
-  | SLICE (t, i, j) -> SLICE (substTyInGExpr t k ty, i, j)
-  | ASSERT t -> ASSERT (substTyInGExpr t k ty)
+let rec substTyIngExpr tm k ty = match tm with
+  | LET (x, t1, t2) -> LET (x, substTyIngExpr t1 k ty, substTyIngExpr t2 k ty)
+  | LAMBDA (x, ty', t) -> LAMBDA (x, substTy ty' k ty, substTyIngExpr t k ty)
+  | APPLY (t1, t2) -> APPLY (substTyIngExpr t1 k ty, substTyIngExpr t2 k ty)
+  | IFTHENELSE (t1, t2, t3) -> IFTHENELSE (substTyIngExpr t1 k ty, substTyIngExpr t2 k ty, substTyIngExpr t3 k ty)
+  | SEQUENCE (t1, t2) -> SEQUENCE (substTyIngExpr t1 k ty, substTyIngExpr t2 k ty)
+  | ASSIGN (t1, t2) -> ASSIGN (substTyIngExpr t1 k ty, substTyIngExpr t2 k ty)
+  | XOR (t1, t2) -> XOR (substTyIngExpr t1 k ty, substTyIngExpr t2 k ty)
+  | AND (t1, t2) -> AND (substTyIngExpr t1 k ty, substTyIngExpr t2 k ty)
+  | ARRAY tlst -> ARRAY (substTyIngExpr_lst tlst k ty)
+  | GET_ARRAY (t, i) -> GET_ARRAY (substTyIngExpr t k ty, i)
+  | APPEND (t1, t2) -> APPEND (substTyIngExpr t1 k ty, substTyIngExpr t2 k ty)
+  | ROT (i, t) -> ROT (i, substTyIngExpr t k ty)
+  | SLICE (t, i, j) -> SLICE (substTyIngExpr t k ty, i, j)
+  | ASSERT t -> ASSERT (substTyIngExpr t k ty)
   | _ -> tm
-and substTyInGExpr_lst lst k ty = match lst with
+and substTyIngExpr_lst lst k ty = match lst with
   | [] -> []
-  | x::xs -> (substTyInGExpr x k ty)::(substTyInGExpr_lst xs k ty)
+  | x::xs -> (substTyIngExpr x k ty)::(substTyIngExpr_lst xs k ty)
 
 (* (Relational) semantics -- commented as it's no longer correct *)
 (*
-type env  = list (string * GExpr)
+type env  = list (string * gExpr)
 type heap = list bool
 
-type inEnv : env -> string -> GExpr -> Type =
-  | Env_zero : s:string -> tm:GExpr -> xs:env -> inEnv ((s, tm)::xs) s tm
-  | Env_succ : s:string -> tm:GExpr -> x:(string * GExpr){~(fst x = s)} -> xs:env ->
+type inEnv : env -> string -> gExpr -> Type =
+  | Env_zero : s:string -> tm:gExpr -> xs:env -> inEnv ((s, tm)::xs) s tm
+  | Env_succ : s:string -> tm:gExpr -> x:(string * gExpr){~(fst x = s)} -> xs:env ->
                inEnv xs s tm ->
                inEnv (x::xs) s tm
 
@@ -369,8 +369,8 @@ type inHeap : heap -> int -> bool -> Type =
                 inHeap xs i b ->
                 inHeap (b'::xs) (i+1) b
 
-val isVal : gexp:GExpr -> Tot bool (decreases %[gexp;1])
-val isVal_lst : lst:list GExpr -> Tot bool (decreases %[lst;0])
+val isVal : gexp:gExpr -> Tot bool (decreases %[gexp;1])
+val isVal_lst : lst:list gExpr -> Tot bool (decreases %[lst;0])
 let rec isVal tm = match tm with
   | UNIT          -> true
   | LAMBDA (s, ty, t) -> true
@@ -381,7 +381,7 @@ and isVal_lst lst = match lst with
   | [] -> true
   | x::xs -> isVal x && isVal_lst xs
 
-val isVal_lst_append : lst1:list GExpr -> lst2:list GExpr ->
+val isVal_lst_append : lst1:list gExpr -> lst2:list gExpr ->
   Lemma (requires (isVal_lst lst1 /\ isVal_lst lst2))
         (ensures  (isVal_lst (lst1@lst2)))
   [SMTPat (isVal_lst (lst1@lst2))]
@@ -389,32 +389,32 @@ let rec isVal_lst_append lst1 lst2 = match lst1 with
   | [] -> ()
   | x::xs -> isVal_lst_append xs lst2
 
-type config = GExpr * env * heap
-type valconfig = c:(GExpr * heap){isVal (fst c)}
+type config = gExpr * env * heap
+type valconfig = c:(gExpr * heap){isVal (fst c)}
 
 (* (Canonical) relational semantics *)
 type evalR : config -> valconfig -> Type =
   | EvLet :
-      #s:string -> #t1:GExpr -> #t2:GExpr -> #env:env -> #st:heap ->
-      #v1:GExpr -> #st':heap -> #v2:GExpr -> #st'':heap ->
+      #s:string -> #t1:gExpr -> #t2:gExpr -> #env:env -> #st:heap ->
+      #v1:gExpr -> #st':heap -> #v2:gExpr -> #st'':heap ->
       evalR (t1, env, st)           (v1, st') ->
       evalR (t2, (s, v1)::env, st') (v2, st'') ->
       evalR (LET (s, t1, t2), env, st)  (v2, st'')
   | EvApp :
-      #t1:GExpr -> #t2:GExpr -> #s:string -> #env:env -> #st:heap -> #ty:GType ->
-      #t:GExpr -> #st':heap -> #v:GExpr -> #st'':heap -> #v':GExpr -> #st''':heap ->
+      #t1:gExpr -> #t2:gExpr -> #s:string -> #env:env -> #st:heap -> #ty:gType ->
+      #t:gExpr -> #st':heap -> #v:gExpr -> #st'':heap -> #v':gExpr -> #st''':heap ->
       evalR (t1, env, st)          (LAMBDA (s, ty, t), st') ->
       evalR (t2, env, st')         (v, st'') ->
       evalR (t, (s,v)::env, st'')  (v', st''') ->
       evalR (APPLY (t1, t2), env, st) (v', st''')
   | EvSeq :
-      #t1:GExpr -> #t2:GExpr -> #env:env -> #st:heap ->
-      #st':heap -> #v:GExpr -> #st'':heap ->
+      #t1:gExpr -> #t2:gExpr -> #env:env -> #st:heap ->
+      #st':heap -> #v:gExpr -> #st'':heap ->
       evalR (t1, env, st)             (UNIT, st') ->
       evalR (t2, env, st')            (v, st'') ->
       evalR (SEQUENCE (t1, t2), env, st) (v, st'')
   | EvXor :
-      #t1:GExpr -> #t2:GExpr -> #env:env -> #st:heap ->
+      #t1:gExpr -> #t2:gExpr -> #env:env -> #st:heap ->
       #l:int -> #st':heap -> #b:bool -> #l':int -> #st'':heap -> #b':bool ->
       inHeap st' l b ->
       inHeap st'' l' b' ->
@@ -422,7 +422,7 @@ type evalR : config -> valconfig -> Type =
       evalR (t2, env, st')       (LOC l', st'') ->
       evalR (XOR (t1, t2), env, st) (LOC (FStar.List.length st''), (b <> b')::st'')
   | EvAnd :
-      #t1:GExpr -> #t2:GExpr -> #env:env -> #st:heap ->
+      #t1:gExpr -> #t2:gExpr -> #env:env -> #st:heap ->
       #l:int -> #st':heap -> #b:bool -> #l':int -> #st'':heap -> #b':bool ->
       inHeap st' l b ->
       inHeap st'' l' b' ->
@@ -433,26 +433,26 @@ type evalR : config -> valconfig -> Type =
       #b:bool -> #env:env -> #st:heap ->
       evalR (BOOL b, env, st) (LOC (FStar.List.length st), b::st)
   | EvApd :
-      #t1:GExpr -> #t2:GExpr -> #env:env -> #st:heap ->
-      #lst1:list GExpr -> #st':heap -> #lst2:list GExpr -> #st'':heap ->
+      #t1:gExpr -> #t2:gExpr -> #env:env -> #st:heap ->
+      #lst1:list gExpr -> #st':heap -> #lst2:list gExpr -> #st'':heap ->
       evalR (t1, env, st)           (ARRAY lst1, st') ->
       evalR (t2, env, st')          (ARRAY lst2, st'') ->
       evalR (APPEND (t1, t2), env, st) (ARRAY (lst1@lst2), st'')
   | EvRot :
-      #t:GExpr -> #i:int -> #env:env -> #st:heap ->
-      #lst:list GExpr -> #st':heap ->
+      #t:gExpr -> #i:int -> #env:env -> #st:heap ->
+      #lst:list gExpr -> #st':heap ->
       b2t (i < FStar.List.length lst) ->
       evalR (t, env, st)       (ARRAY lst, st') ->
       evalR (ROT (i, t), env, st) (ARRAY (rotate lst i), st')
   | EvSlc :
-      #t:GExpr -> #i:int -> #j:int -> #env:env -> #st:heap ->
-      #lst:list GExpr -> #st':heap ->
+      #t:gExpr -> #i:int -> #j:int -> #env:env -> #st:heap ->
+      #lst:list gExpr -> #st':heap ->
       b2t (j < FStar.List.length lst && j >= i) ->
       evalR (t, env, st)           (ARRAY lst, st') ->
       evalR (SLICE (t, i, j), env, st) (ARRAY (slice lst i j), st')
   | EvArr :
-      #x:GExpr -> #xs:list GExpr -> #env:env -> #st:heap ->
-      #v:GExpr -> #st':heap -> #vs:list GExpr -> #st'':heap ->
+      #x:gExpr -> #xs:list gExpr -> #env:env -> #st:heap ->
+      #v:gExpr -> #st':heap -> #vs:list gExpr -> #st'':heap ->
       evalR (x, env, st)           (v, st') ->
       evalR (ARRAY xs, env, st')   (ARRAY vs, st'') ->
       evalR (ARRAY (x::xs), env, st) (ARRAY (v::vs), st'')
@@ -462,17 +462,17 @@ type evalR : config -> valconfig -> Type =
       evalR (t2, env, st')          (LOC l, st'') ->
       inHeap st'' l b ->
   | EvGta :
-      #t:GExpr -> #i:int -> #env:env -> #st:heap ->
-      #lst:list GExpr -> #st':heap ->
+      #t:gExpr -> #i:int -> #env:env -> #st:heap ->
+      #lst:list gExpr -> #st':heap ->
       evalR (t, env, st)       (ARRAY lst, st') -> i < FStar.List.length lst ->
       evalR (ROT t i, env, st) (ARRAY (rotate lst i), st')
   | EvStv :*)
   | EvGtv :
-      #s:string -> #env:env -> #st:heap -> #v:GExpr ->
+      #s:string -> #env:env -> #st:heap -> #v:gExpr ->
       inEnv env s v ->
       evalR (VAR s, env, st) (v, st)
   | EvAssert :
-      #t:GExpr -> #env:env -> #st:heap -> #l:int -> #st':heap ->
+      #t:gExpr -> #env:env -> #st:heap -> #l:int -> #st':heap ->
       evalR (t, env, st)        (LOC l, st') ->
       evalR (ASSERT t, env, st) (UNIT, st')
 *)

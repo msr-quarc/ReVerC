@@ -9,12 +9,12 @@ open Interpreter
 
 (* Boolean expression interpretation -- for generating the fully
    inlined classical circuit of the Revs program *)
-type BExpState = int * (Total.t int BoolExp)
+type bExpState = int * (Total.t int boolExp)
 
-val bexpInit   : BExpState
-val bexpAlloc  : BExpState -> Tot (int * BExpState)
-val bexpAssign : BExpState -> int -> BoolExp -> Tot BExpState
-val bexpEval   : BExpState -> state -> int -> Tot bool
+val bexpInit   : bExpState
+val bexpAlloc  : bExpState -> Tot (int * bExpState)
+val bexpAssign : bExpState -> int -> boolExp -> Tot bExpState
+val bexpEval   : bExpState -> state -> int -> Tot bool
 
 let bexpInit = (0, constMap BFalse)
 let bexpAlloc (top, st) = (top, (top + 1, st))
@@ -27,21 +27,21 @@ let bexpInterp = {
   eval = bexpEval
 }
 
-type CleanupStrategy =
-  | Pebbled : CleanupStrategy
-  | Boundaries : CleanupStrategy
-  | Bennett : CleanupStrategy
+type cleanupStrat =
+  | Pebbled : cleanupStrat
+  | Boundaries : cleanupStrat
+  | Bennett : cleanupStrat
 
-val simps : BoolExp -> Tot BoolExp
+val simps : boolExp -> Tot boolExp
 let simps bexp = simplify (toXDNF bexp)
 
-val allocN : list GExpr * BExpState -> i:int ->
-  Tot (list GExpr * BExpState) (decreases i)
+val allocN : list gExpr * bExpState -> i:int ->
+  Tot (list gExpr * bExpState) (decreases i)
 let rec allocN (locs, (top, st)) i =
   if i <= 0 then (List.rev locs, (top, st))
   else allocN (((LOC top)::locs), (top+1, update st top (BVar top))) (i-1)
 
-val allocTy : GType -> BExpState -> Tot (result (GExpr * BExpState))
+val allocTy : GType -> bExpState -> Tot (result (gExpr * bExpState))
 let allocTy ty (top, st) = match ty with
   | GBool -> Val (LOC top, (top + 1, update st top (BVar top)))
   | GArray n ->
@@ -49,7 +49,7 @@ let allocTy ty (top, st) = match ty with
       Val (ARRAY locs, st')
   | _ -> Err "Invalid parameter type for circuit generation"
 
-val lookupLst : lst:(list GExpr){isVal_lst lst} -> st:BExpState -> Tot (list BoolExp)
+val lookupLst : lst:(list gExpr){isVal_lst lst} -> st:bExpState -> Tot (list boolExp)
 let rec lookupLst lst st = match lst with
   | [] -> []
   | (LOC l)::xs -> (lookup (snd st) l)::(lookupLst xs st)
@@ -57,20 +57,20 @@ let rec lookupLst lst st = match lst with
 open AncillaHeap
 open Circuit
 
-val foldPebble : (AncHeap * list int * list int * list Gate) ->
-  BoolExp -> Tot (AncHeap * list int * list int * list Gate)
+val foldPebble : (AncHeap * list int * list int * list gate) ->
+  boolExp -> Tot (AncHeap * list int * list int * list gate)
 let foldPebble (ah, outs, anc, circ) bexp =
   let (ah', res, anc', circ') = compileBexpPebbled_oop ah (simps bexp) in
     (ah', res::outs, anc'@anc, circ@circ')
 
-val foldClean : (AncHeap * list int * list int * list Gate) ->
-  BoolExp -> Tot (AncHeap * list int * list int * list Gate)
+val foldClean : (AncHeap * list int * list int * list gate) ->
+  boolExp -> Tot (AncHeap * list int * list int * list gate)
 let foldClean (ah, outs, anc, circ) bexp =
   let (ah', res, anc', circ') = compileBexpClean_oop ah (simps bexp) in
     (ah', res::outs, anc'@anc, circ@circ')
 
-val foldBennett : (AncHeap * list int * list int * list Gate * list Gate) ->
-  BoolExp -> Tot (AncHeap * list int * list int * list Gate * list Gate)
+val foldBennett : (AncHeap * list int * list int * list gate * list gate) ->
+  boolExp -> Tot (AncHeap * list int * list int * list gate * list gate)
 let foldBennett (ah, outs, anc, circ, ucirc) bexp =
   let (ah', res, anc', circ') = compileBexp_oop ah (simps bexp) in
     (ah', res::outs, anc'@anc, circ@circ', (List.rev (uncompute circ' res))@ucirc)
@@ -80,14 +80,14 @@ let foldBennett (ah, outs, anc, circ, ucirc) bexp =
    corresponding to the inputs of the function, then evaluates the function
    body. Note also that this wrapper is not verified currently. Eventually this
    should be done. *)
-val compile : config BExpState -> CleanupStrategy -> Dv (result (list int * list Gate))
+val compile : config bExpState -> cleanupStrat -> Dv (result (list int * list gate))
 let rec compile (gexp, st) strategy =
   if isVal gexp then match gexp with
     | UNIT -> Val ([], [])
     | LAMBDA (x, ty, t) ->
       begin match allocTy ty st with
         | Err s -> Err s
-        | Val (v, st') -> compile (substGExpr t x v, st') strategy
+        | Val (v, st') -> compile (substgExpr t x v, st') strategy
       end
     | LOC l ->
       let bexp = lookup (snd st) l in
@@ -133,15 +133,15 @@ let rec compile (gexp, st) strategy =
    equivalence of states and a proof that the interpreter preserves equivalence
    if alloc and assign do). Eventually this should be refactored that way, but
    this was faster for the time being. *)
-type state_equiv (st:boolState) (st':BExpState) (init:state) =
+type state_equiv (st:boolState) (st':bExpState) (init:state) =
   fst st = fst st' /\ (forall i. boolEval st init i = bexpEval st' init i)
 
-val state_equiv_impl : st:boolState -> st':BExpState -> init:state -> i:int ->
+val state_equiv_impl : st:boolState -> st':bExpState -> init:state -> i:int ->
   Lemma (requires (state_equiv st st' init))
         (ensures  (boolEval st init i = bexpEval st' init i))
 let state_equiv_impl st st' init i = ()
 
-val eval_bexp_swap : st:boolState -> st':BExpState -> bexp:BoolExp -> init:state ->
+val eval_bexp_swap : st:boolState -> st':bExpState -> bexp:boolExp -> init:state ->
   Lemma (requires (state_equiv st st' init))
         (ensures  (evalBexp (substBexp bexp (snd st')) init =
                    evalBexp bexp (snd st)))
@@ -153,17 +153,17 @@ let rec eval_bexp_swap st st' bexp init = match bexp with
     eval_bexp_swap st st' x init;
     eval_bexp_swap st st' y init
 
-val state_equiv_alloc : st:boolState -> st':BExpState -> init:state ->
+val state_equiv_alloc : st:boolState -> st':bExpState -> init:state ->
   Lemma (requires (state_equiv st st' init))
         (ensures  (state_equiv (snd (boolAlloc st)) (snd (bexpAlloc st')) init))
 let state_equiv_alloc st st' init = ()
 
-val state_equiv_assign : st:boolState -> st':BExpState -> init:state -> l:int -> bexp:BoolExp ->
+val state_equiv_assign : st:boolState -> st':bExpState -> init:state -> l:int -> bexp:boolExp ->
   Lemma (requires (state_equiv st st' init))
         (ensures  (state_equiv (boolAssign st l bexp) (bexpAssign st' l bexp) init))
 let state_equiv_assign st st' init l bexp = eval_bexp_swap st st' bexp init
 
-val state_equiv_step : gexp:GExpr -> st:boolState -> st':BExpState -> init:state ->
+val state_equiv_step : gexp:gExpr -> st:boolState -> st':bExpState -> init:state ->
   Lemma (requires (state_equiv st st' init))
         (ensures
           (is_Err (step (gexp, st) boolInterp) /\ is_Err (step (gexp, st') bexpInterp)) \/
@@ -174,7 +174,7 @@ val state_equiv_step : gexp:GExpr -> st:boolState -> st':BExpState -> init:state
                       (snd (getVal (step (gexp, st') bexpInterp)))
                       init)))
   (decreases %[gexp;1])
-val state_equiv_step_lst : lst:list GExpr -> st:boolState -> st':BExpState -> init:state ->
+val state_equiv_step_lst : lst:list gExpr -> st:boolState -> st':bExpState -> init:state ->
   Lemma (requires (state_equiv st st' init))
         (ensures
           (is_Err (step_lst (lst, st) boolInterp) /\ is_Err (step_lst (lst, st') bexpInterp)) \/

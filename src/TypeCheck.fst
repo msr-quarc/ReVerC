@@ -125,20 +125,20 @@ let rec findctx_imp_welltyctx ctx s ty h = match ctx with
     else Ctxt_succ s ty (x,y) xs (findctx_imp_welltyctx xs s ty ())
 
 (* Type inference *)
-type IExp =
+type iExp =
   | ILit   of int
   | IVar   of int
-  | IPlus  of IExp * IExp
-  | IMinus of IExp
+  | IPlus  of iExp * iExp
+  | IMinus of iExp
 
-type TyExp =
+type tExp =
   | TUnit
   | TBool
   | TVar   of int
-  | TArray of IExp
-  | TArrow of TyExp * TyExp
+  | TArray of iExp
+  | TArrow of tExp * tExp
 
-val normalize : IExp -> IExp
+val normalize : iExp -> iExp
 let rec normalize iexp = match iexp with
   | IMinus x ->
     begin match normalize x with
@@ -159,16 +159,16 @@ let rec normalize iexp = match iexp with
     end
   | _ -> iexp
 
-val toTyExp : GType -> Tot TyExp
-let rec toTyExp ty = match ty with
+val totExp : GType -> Tot tExp
+let rec totExp ty = match ty with
   | GUnit -> TUnit
   | GBool -> TBool
   | GVar i -> TVar i
   | GArray n -> TArray (ILit n)
-  | GConst ty -> toTyExp ty
-  | GFun (ty1, ty2) -> TArrow (toTyExp ty1, toTyExp ty2)
+  | GConst ty -> totExp ty
+  | GFun (ty1, ty2) -> TArrow (totExp ty1, totExp ty2)
 
-val toGType : TyExp -> GType
+val toGType : tExp -> GType
 let rec toGType texp = match texp with
   | TUnit -> GUnit
   | TBool -> GBool
@@ -181,22 +181,22 @@ let rec toGType texp = match texp with
   | TArrow (texp1, texp2) -> GFun (toGType texp1, toGType texp2)
 
 (* Constraints (equality or less than) over type expressions *)
-type Cons =
-  | ICons of IExp * IExp
-  | TCons of TyExp * TyExp
+type constraint =
+  | ICons of iExp * iExp
+  | TCons of tExp * tExp
 
-type ctxt' = Partial.t string TyExp
+type ctxt' = Partial.t string tExp
 
-val inferTypes : int -> ctxt' -> tm:GExpr -> Tot (int * list Cons * list Cons * TyExp) (decreases %[tm;0])
-val inferTypes_lst : int -> ctxt' -> l:list GExpr -> Tot (int * list Cons * list Cons) (decreases %[l;1])
+val inferTypes : int -> ctxt' -> tm:GExpr -> Tot (int * list constraint * list constraint * tExp) (decreases %[tm;0])
+val inferTypes_lst : int -> ctxt' -> l:list GExpr -> Tot (int * list constraint * list constraint) (decreases %[l;1])
 let rec inferTypes top ctx gexp = match gexp with
   | LET (x, t1, t2) ->
     let (top', ec1, lc1, ty1) = inferTypes top ctx t1 in
     let (top'', ec2, lc2, ty2) = inferTypes top' ((x, ty1)::ctx) t2 in
         (top'', ec1@ec2, lc1@lc2, ty2)
   | LAMBDA (x, ty, t) ->
-    let (top', ec1, lc1, ty1) = inferTypes top ((x, (toTyExp ty))::ctx) t in
-        (top', ec1, lc1, TArrow (toTyExp ty, ty1))
+    let (top', ec1, lc1, ty1) = inferTypes top ((x, (totExp ty))::ctx) t in
+        (top', ec1, lc1, TArrow (totExp ty, ty1))
   | APPLY (t1, t2) ->
     let (top', ec1, lc1, ty1) = inferTypes top ctx t1 in
     let (top'', ec2, lc2, ty2) = inferTypes top' ctx t2 in
@@ -275,32 +275,32 @@ and inferTypes_lst top ctx lst = match lst with
       (top'', e1::(ec1@ec2), lc1@lc2)
 
 
-let rec substIExp i iexp x = match x with
+let rec substiExp i iexp x = match x with
   | ILit j -> ILit j
   | IVar j -> if i = j then iexp else IVar j
-  | IMinus x -> substIExp i iexp x
-  | IPlus (x, y) -> IPlus (substIExp i iexp x, substIExp i iexp y)
+  | IMinus x -> substiExp i iexp x
+  | IPlus (x, y) -> IPlus (substiExp i iexp x, substiExp i iexp y)
 
-let rec substTExp i texp x = match x with
+let rec substtExp i texp x = match x with
   | TUnit -> TUnit
   | TBool -> TBool
   | TVar j -> if i = j then texp else TVar j
   | TArray iexp -> TArray iexp
-  | TArrow (x, y) -> TArrow (substTExp i texp x, substTExp i texp y)
+  | TArrow (x, y) -> TArrow (substtExp i texp x, substtExp i texp y)
 
-let rec substIExpInTExp i iexp x = match x with
-  | TArray iexp' -> TArray (substIExp i iexp iexp')
-  | TArrow (x, y) -> TArrow (substIExpInTExp i iexp x, substIExpInTExp i iexp y)
+let rec substiExpIntExp i iexp x = match x with
+  | TArray iexp' -> TArray (substiExp i iexp iexp')
+  | TArrow (x, y) -> TArrow (substiExpIntExp i iexp x, substiExpIntExp i iexp y)
   | _ -> x
 
 let rec iSubst i iexp cons = match cons with
   | [] -> []
-  | (ICons (c1, c2))::xs -> (ICons (substIExp i iexp c1, substIExp i iexp c2))::(iSubst i iexp xs)
-  | (TCons (c1, c2))::xs -> (TCons (substIExpInTExp i iexp c1, substIExpInTExp i iexp c2))::(iSubst i iexp xs)
+  | (ICons (c1, c2))::xs -> (ICons (substiExp i iexp c1, substiExp i iexp c2))::(iSubst i iexp xs)
+  | (TCons (c1, c2))::xs -> (TCons (substiExpIntExp i iexp c1, substiExpIntExp i iexp c2))::(iSubst i iexp xs)
 
 let rec tSubst i texp cons = match cons with
   | [] -> []
-  | (TCons (c1, c2))::xs -> (TCons (substTExp i texp c1, substTExp i texp c2))::(tSubst i texp xs)
+  | (TCons (c1, c2))::xs -> (TCons (substtExp i texp c1, substtExp i texp c2))::(tSubst i texp xs)
   | x::xs -> x::(tSubst i texp xs)
 
 let rec mergeLower iexp j bnds = match bnds with
