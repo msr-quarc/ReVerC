@@ -3,21 +3,21 @@ module Total
 open FStar.Set
 open SetExtra
 
-type t (key:Type) (value:Type) = 
+type t (key:eqtype) (value:eqtype) = 
   { elts : list (key * value);
     dval : value }
 
 (* type synonym for Boolean-valued states *)
 type state = t int bool
 
-val keys     : #key:Type -> #value:Type -> t key value -> Tot (set key)
-val vals     : #key:Type -> #value:Type -> t key value -> Tot (set value)
-val lookup   : #key:Type -> #value:Type -> t key value -> key -> Tot value
-val update   : #key:Type -> #value:Type -> t key value -> key -> value -> Tot (t key value)
-val delete   : #key:Type -> #value:Type -> t key value -> key -> Tot (t key value)
-val constMap : #key:Type -> #value:Type -> value -> Tot (t key value)
-val compose  : #key:Type -> #value:Type -> #value':Type -> t key value -> t value value' -> Tot (t key value')
-val mapVals  : #key:Type -> #value:Type -> #value':Type -> (value -> Tot value') -> t key value -> Tot (t key value')
+val keys     : #key:eqtype -> #value:eqtype -> t key value -> Tot (set key)
+val vals     : #key:eqtype -> #value:eqtype -> t key value -> Tot (set value)
+val lookup   : #key:eqtype -> #value:eqtype -> t key value -> key -> Tot value
+val update   : #key:eqtype -> #value:eqtype -> t key value -> key -> value -> Tot (t key value)
+val delete   : #key:eqtype -> #value:eqtype -> t key value -> key -> Tot (t key value)
+val constMap : #key:eqtype -> #value:eqtype -> value -> Tot (t key value)
+val compose  : #key:eqtype -> #value:eqtype -> #value':eqtype -> t key value -> t value value' -> Tot (t key value')
+val mapVals  : #key:eqtype -> #value:eqtype -> #value':eqtype -> (value -> Tot value') -> t key value -> Tot (t key value')
 
 let keys #k #v m = FStar.List.Tot.fold_left (fun s x -> ins (fst x) s) empty m.elts
 
@@ -51,19 +51,19 @@ let mapVals #k #v #u f m =
 (** Verification utilities *)
 
 (* Basic equations *)
-val lookup_const : #key:Type -> #value:Type -> k:key -> v:value -> 
+val lookup_const : #key:eqtype -> #value:eqtype -> k:key -> v:value -> 
   Lemma (requires true) 
         (ensures (lookup (constMap v) k = v))
   [SMTPat (lookup (constMap v) k)]
-val lookup_update1 : #key:Type -> #value:Type -> m:t key value -> k:key -> v:value ->
+val lookup_update1 : #key:eqtype -> #value:eqtype -> m:t key value -> k:key -> v:value ->
   Lemma (requires true)
         (ensures (lookup (update m k v) k = v))
   [SMTPat (lookup (update m k v) k)]
-val lookup_update2 : #key:Type -> #value:Type -> m:t key value -> k:key -> v:value -> k':key ->
+val lookup_update2 : #key:eqtype -> #value:eqtype -> m:t key value -> k:key -> v:value -> k':key ->
   Lemma (requires (not (k = k')))
         (ensures (lookup (update m k v) k' = lookup m k'))
   [SMTPat (lookup (update m k v) k')]
-val lookup_map : #key:Type -> #value:Type -> #value':Type -> f:(value -> Tot value') -> m:t key value -> k:key ->
+val lookup_map : #key:eqtype -> #value:eqtype -> #value':eqtype -> f:(value -> Tot value') -> m:t key value -> k:key ->
   Lemma (requires true)
         (ensures (lookup (mapVals f m) k = f (lookup m k)))
   (decreases m.elts)
@@ -79,36 +79,36 @@ let rec lookup_map #k #v #val' f m k = match m.elts with
       lookup_map f m' k
 
 (* Relating lookups to values -- don't have time for this trivial but tedious lemma right now *)
-val lookup_is_val : #key:Type -> #value:Type -> m:t key value -> k:key ->
+val lookup_is_val : #key:eqtype -> #value:eqtype -> m:t key value -> k:key ->
   Lemma (requires true)
 	(ensures (Set.mem (lookup m k) (vals m)))
 let lookup_is_val #k #v m k = admit()
   
-val lookup_is_valF : #key:Type -> #value:Type -> m:t key value ->
+val lookup_is_valF : #key:eqtype -> #value:eqtype -> m:t key value ->
   Lemma (requires true)
 	(ensures (forall k. Set.mem (lookup m k) (vals m)))
 let lookup_is_valF #k #v m = admit()
 
-val lookup_converse : #key:Type -> #value:Type -> m:t key value -> v:value ->
+val lookup_converse : #key:eqtype -> #value:eqtype -> m:t key value -> v:value ->
   Lemma (requires (not (Set.mem v (vals m))))
 	(ensures  (forall k. not (lookup m k = v)))
 let lookup_converse #k #v m v = lookup_is_valF m
 
-val lookup_converse2 : #key:Type -> #value:Type -> m:t key value -> v:value ->
+val lookup_converse2 : #key:eqtype -> #value:eqtype -> m:t key value -> v:value ->
   Lemma (requires (forall k. not (lookup m k = v)))
 	(ensures  (not (Set.mem v (vals m))))
 let lookup_converse2 #k #v m v = admit()
 
 (* Type of maps that agree on a subset of keys *)
-type agree_on (#key:Type) (#value:Type) (m:t key value) (m':t key value) (s:set key) =
+type agree_on (#key:eqtype) (#value:eqtype) (m:t key value) (m':t key value) (s:set key) =
   forall x. mem x s ==> lookup m x = lookup m' x
 
-val agree_on_trans : #key:Type -> #value:Type -> m:t key value -> m':t key value -> m'':t key value -> s:set key ->
+val agree_on_trans : #key:eqtype -> #value:eqtype -> m:t key value -> m':t key value -> m'':t key value -> s:set key ->
   Lemma (requires (agree_on m m' s /\ agree_on m' m'' s))
         (ensures  (agree_on m m'' s))
 let agree_on_trans #k #v m m' m'' s = ()
 
-val agree_on_subset : #key:Type -> #value:Type -> m:t key value -> m':t key value -> s:set key -> s':set key ->
+val agree_on_subset : #key:eqtype -> #value:eqtype -> m:t key value -> m':t key value -> s:set key -> s':set key ->
   Lemma (requires (agree_on m m' s /\ subset s' s))
         (ensures  (agree_on m m' s'))
 let agree_on_subset #k #v m m' s s' = ()
@@ -116,23 +116,23 @@ let agree_on_subset #k #v m m' s s' = ()
 (* Functional extensionality for lookups. We're rolling our own since we're
 going to be bad and assume maps which are extensionally equal are actually equal *)
 
-type equal (#key:Type) (#value:Type) (m1:t key value) (m2:t key value) = 
+type equal (#key:eqtype) (#value:eqtype) (m1:t key value) (m2:t key value) = 
   (forall x.{:pattern (lookup m1 x) \/ (lookup m2 x)} lookup m1 x = lookup m2 x)
 
 (* What did they say about assumption being the mother of all fuckups? *)
 assume TotalExtensionality : 
-  forall (key:Type) (value:Type) (m1:t key value) (m2:t key value).
+  forall (key:eqtype) (value:eqtype) (m1:t key value) (m2:t key value).
     {:pattern equal m1 m2} equal m1 m2 <==> m1 = m2
 
-val lemma_map_equal_intro: #key:Type -> #value:Type -> m1:t key value -> m2:t key value ->
+val lemma_map_equal_intro: #key:eqtype -> #value:eqtype -> m1:t key value -> m2:t key value ->
   Lemma (requires  (forall x. lookup m1 x = lookup m2 x))
         (ensures   (equal m1 m2))
   [SMTPatT (equal m1 m2)]
-val lemma_map_equal_elim: #key:Type -> #value:Type -> m1:t key value -> m2:t key value ->
+val lemma_map_equal_elim: #key:eqtype -> #value:eqtype -> m1:t key value -> m2:t key value ->
   Lemma (requires (equal m1 m2))
         (ensures  (m1 = m2))
   [SMTPatT (equal m1 m2)]
-val lemma_map_equal_refl: #key:Type -> #value:Type -> m1:t key value -> m2:t key value ->
+val lemma_map_equal_refl: #key:eqtype -> #value:eqtype -> m1:t key value -> m2:t key value ->
   Lemma (requires (m1 = m2))
         (ensures  (equal m1 m2))
   [SMTPatT (equal m1 m2)]
