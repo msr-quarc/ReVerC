@@ -30,15 +30,15 @@ val uncompute          : circuit -> int -> Tot circuit
 
 (* Printing *)
 let prettyPrintGate gate = match gate with
-  | RCNOT (a, b) -> String.strcat "tof "
-                   (String.strcat (Prims.string_of_int a)
-                   (String.strcat " " (Prims.string_of_int b)))
-  | RTOFF (a, b, c) -> String.strcat "tof "
-                      (String.strcat (Prims.string_of_int a)
-                      (String.strcat " "
-                      (String.strcat (Prims.string_of_int b)
-                      (String.strcat " " (Prims.string_of_int c)))))
-  | RNOT a -> String.strcat "tof " (Prims.string_of_int a)
+  | RCNOT (a, b) -> FStar.String.strcat "tof "
+                   (FStar.String.strcat (Prims.string_of_int a)
+                   (FStar.String.strcat " " (Prims.string_of_int b)))
+  | RTOFF (a, b, c) -> FStar.String.strcat "tof "
+                      (FStar.String.strcat (Prims.string_of_int a)
+                      (FStar.String.strcat " "
+                      (FStar.String.strcat (Prims.string_of_int b)
+                      (FStar.String.strcat " " (Prims.string_of_int c)))))
+  | RNOT a -> FStar.String.strcat "tof " (Prims.string_of_int a)
 
 let prettyPrintCircuit = FStar.List.Tot.map prettyPrintGate
 
