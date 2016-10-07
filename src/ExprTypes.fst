@@ -45,6 +45,7 @@ val height_lst   : tlst:(list gExpr) -> Tot int (decreases %[tlst;0])
 val freeIn       : x:string -> tm:gExpr -> Tot bool (decreases %[tm;0])
 val freeIn_lst   : x:string -> lst:list gExpr -> Tot bool (decreases %[lst;1])
 val freeVars     : tm:gExpr -> Tot (set string) (decreases %[tm;0])
+val freeVars_lst : lst:list gExpr -> Tot (set string) (decreases %[lst;1])
 val locsAcc      : set int -> tm:gExpr -> Tot (set int) (decreases %[tm;0])
 val locsAcc_lst  : set int -> lst:list gExpr -> Tot (set int) (decreases %[lst;1])
 val locs         : tm:gExpr -> Tot (set int) (decreases %[tm;0])
@@ -54,14 +55,14 @@ val varMaxTm_lst : lst:list gExpr -> Tot int (decreases %[lst;1])
 
 val replicate       : int -> string -> Tot string
 val append'         : list string -> list string -> Tot (list string)
-val appFront        : string -> list string -> Tot (l:(list string){List.lengthT l > 0})
-val appBack         : string -> list string -> Tot (l:(list string){List.lengthT l > 0})
+val appFront        : string -> list string -> Tot (l:(list string){FStar.List.Tot.length l > 0})
+val appBack         : string -> list string -> Tot (l:(list string){FStar.List.Tot.length l > 0})
 val indent          : int -> list string -> Tot (list string)
 val brackets        : list string -> Tot (list string)
-val hdT             : l:(list 'a){List.lengthT l >= 1} -> Tot 'a
-val tlT             : l:(list 'a){List.lengthT l >= 1} -> Tot (list 'a)
+val hdT             : l:(list 'a){FStar.List.Tot.length l >= 1} -> Tot 'a
+val tlT             : l:(list 'a){FStar.List.Tot.length l >= 1} -> Tot (list 'a)
 val prettyPrintTy   : gType -> Tot string
-val prettyPrint     : gExpr -> Tot (l:(list string){List.lengthT l > 0})
+val prettyPrint     : gExpr -> Tot (l:(list string){FStar.List.Tot.length l > 0})
 val prettyPrint_lst : list gExpr -> Tot (list (list string))
 val show            : gExpr -> Tot string
 
@@ -122,7 +123,30 @@ and freeIn_lst x lst = match lst with
   | [] -> false
   | t::xs -> freeIn x t || freeIn_lst x xs
 
-let freeVars tm = fun x -> freeIn x tm
+let rec freeVars tm = match tm with
+  | LET (s, t1, t2) -> union (freeVars t1) (rem s (freeVars t2))
+  | LAMBDA (s, ty, t) -> rem s (freeVars t)
+  | APPLY (t1, t2) -> union (freeVars t1) (freeVars t2)
+  | IFTHENELSE (t1, t2, t3) -> union (freeVars t1) (union (freeVars t2) (freeVars t3))
+  | SEQUENCE (t1, t2) -> union (freeVars t1) (freeVars t2)
+  | ASSIGN (t1, t2) -> union (freeVars t1) (freeVars t2)
+  | VAR s -> singleton s
+  | UNIT -> empty
+  | BOOL b -> empty
+  | XOR (t1, t2) -> union (freeVars t1) (freeVars t2)
+  | AND (t1, t2) -> union (freeVars t1) (freeVars t2)
+  | ARRAY tlst -> freeVars_lst tlst
+  | GET_ARRAY (t, i) -> freeVars t
+  | APPEND (t1, t2) -> union (freeVars t1) (freeVars t2)
+  | ROT (i, t) -> freeVars t
+  | SLICE (t, i, j) -> freeVars t
+  | ASSERT t -> freeVars t
+  | LOC i -> empty
+  | BEXP bexp -> empty
+  | _ -> empty
+and freeVars_lst lst = match lst with
+  | [] -> empty
+  | t::xs -> union (freeVars t) (freeVars_lst xs)
 
 let rec locsAcc lset tm = match tm with
   | LET (s, t1, t2) -> locsAcc (locsAcc lset t1) t2
@@ -139,7 +163,7 @@ let rec locsAcc lset tm = match tm with
   | ROT (i, t) -> locsAcc lset t
   | SLICE (t, i, j) -> locsAcc lset t
   | ASSERT t -> locsAcc lset t
-  | LOC i -> Set.ins i lset
+  | LOC i -> ins i lset
   | _ -> lset
 and locsAcc_lst lset lst = match lst with
   | [] -> lset
@@ -189,7 +213,7 @@ let rec appBack s lst = match lst with
   | []    -> [s]
   | x::[] -> (String.strcat x s)::[]
   | x::xs -> appBack s xs
-let indent i l = List.mapT (fun s -> String.strcat (replicate i " ") s) l
+let indent i l = FStar.List.Tot.map (fun s -> String.strcat (replicate i " ") s) l
 let brackets s = appFront "(" (appBack ")" s)
 
 let hdT l = match l with
@@ -225,7 +249,7 @@ let rec prettyPrint gexp = match gexp with
   | APPLY (t1, t2) ->
       let st1 = prettyPrint t1 in
       let st2 = prettyPrint t2 in
-        if forSomeT (fun l -> List.lengthT l > 1) ([st1;st2])
+        if forSomeT (fun l -> FStar.List.Tot.length l > 1) ([st1;st2])
         then (brackets st1) @ (indent 2 st2)
         else [String.strcat (hdT st1) (String.strcat " " (hdT st2))]
   | IFTHENELSE (t1, t2, t3) ->
@@ -253,25 +277,25 @@ let rec prettyPrint gexp = match gexp with
       let st2 = prettyPrint t2 in
         brackets (append' st1 (appFront " && " st2))
   | ARRAY tlst ->
-      //let stlst = List.mapT prettyPrint tlst in -- Doesn't work with > 0 annotation
+      //let stlst = FStar.List.Tot.mapT prettyPrint tlst in -- Doesn't work with > 0 annotation
       let stlst = prettyPrint_lst tlst in
-        if forSomeT (fun l -> List.lengthT l > 1) stlst
+        if forSomeT (fun l -> FStar.List.Tot.length l > 1) stlst
         then
           let f stlst lst = stlst @ (appBack "," (indent 2 lst)) in
-            ["["] @ (List.fold_leftT f [] stlst) @ ["]"]
+            ["["] @ (FStar.List.Tot.fold_left f [] stlst) @ ["]"]
         else 
           let f str lst = match lst with
             | [] -> str
             | x::xs -> String.strcat str (String.strcat "," x)
           in
-            [String.strcat (List.fold_leftT f "[" stlst) "]"]
+            [String.strcat (FStar.List.Tot.fold_left f "[" stlst) "]"]
   | GET_ARRAY (t, i) ->
       let st = prettyPrint t in
         appBack (String.strcat ".[" (String.strcat (Prims.string_of_int i) "]")) st
   | APPEND (t1, t2) ->
       let st1 = prettyPrint t1 in
       let st2 = prettyPrint t2 in
-        if forSomeT (fun l -> List.lengthT l > 1) [st1;st2]
+        if forSomeT (fun l -> FStar.List.Tot.length l > 1) [st1;st2]
         then ["append"] @ (indent 2 st1) @ (indent 2 st2)
         else [String.strcat "append" (String.strcat (hdT st1) (String.strcat " " (hdT st2)))]
   | ROT (i, t) ->
@@ -297,9 +321,10 @@ let show gexp =
   let str = prettyPrint gexp in
   String.concat "\n" str
 
+(* Doesn't find FStar.List.iter for some reason 
 let print gexp =
   let str = prettyPrint gexp in
-  List.iter IO.print_string str
+  FStar.List.iter IO.print_string str *)
 
 (* Substitutions *)
 let rec substTy ty i ty' = match ty with
@@ -421,7 +446,7 @@ type evalR : config -> valconfig -> Type =
       inHeap st'' l' b' ->
       evalR (t1, env, st)        (LOC l, st') ->
       evalR (t2, env, st')       (LOC l', st'') ->
-      evalR (XOR (t1, t2), env, st) (LOC (FStar.List.length st''), (b <> b')::st'')
+      evalR (XOR (t1, t2), env, st) (LOC (FStar.FStar.List.Tot.length st''), (b <> b')::st'')
   | EvAnd :
       #t1:gExpr -> #t2:gExpr -> #env:env -> #st:heap ->
       #l:int -> #st':heap -> #b:bool -> #l':int -> #st'':heap -> #b':bool ->
