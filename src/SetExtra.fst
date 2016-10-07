@@ -2,15 +2,18 @@
 module SetExtra
 open FStar.Set
 
-val full         : #a:eqtype -> Tot (set a)
-val diff         : #a:eqtype -> set a -> set a -> Tot (set a)
-val symdiff      : #a:eqtype -> set a -> set a -> Tot (set a)
-val ins          : #a:eqtype -> a -> set a -> Tot (set a)
-val rem          : #a:eqtype -> a -> set a -> Tot (set a)
+val full      : #a:eqtype -> Tot (set a)
+val diff      : #a:eqtype -> set a -> set a -> Tot (set a)
+val symdiff   : #a:eqtype -> set a -> set a -> Tot (set a)
+val ins       : #a:eqtype -> a -> set a -> Tot (set a)
+val rem       : #a:eqtype -> a -> set a -> Tot (set a)
 
 (* This is poor design. Computational sets are needed elsewhere... *)
-val fold : #a:eqtype -> #b:eqtype -> (b -> a -> b) -> b -> set a -> b
-let fold #a #b f b s = admit()
+val fold      : #a:eqtype -> #b:eqtype -> (b -> a -> b) -> b -> set a -> b
+
+(* Specific instances *)
+val lessThan  : i:int -> Tot (set int) (decreases i)
+val greaterEq : int -> Tot (set int)
 
 let full #a         = complement (empty #a)
 let diff #a s s'    = intersect s (complement s')
@@ -18,7 +21,24 @@ let symdiff #a s s' = diff (union s s') (intersect s s')
 let ins #a x s      = union (singleton x) s 
 let rem #a x s      = diff s (singleton x)
 
+let fold #a #b f b s = admit()
+
+let rec lessThan i = if i <= 0 then empty else ins i (lessThan (i-1))
+let greaterEq i = complement (lessThan i)
+
 (** Verification utilities *)
+
+val lessThan_elts : i:int -> j:int ->
+  Lemma (requires True)
+        (ensures (mem i (lessThan j) <==>  i > 0 /\ i < j))
+  [SMTPat (mem i (lessThan j))]
+let rec lessThan_elts i j = if j <= 0 then () else admit() //lessThan_elts (j-1)
+
+val greaterEq_elts : i:int -> j:int ->
+  Lemma (requires True)
+        (ensures (mem i (greaterEq j) <==> i >= j))
+  [SMTPat (mem i (greaterEq j))]
+let greaterEq_elts i j = admit() //lessThan_elts j
 
 (* Subset relation & lemmas *)
 type disjoint (#a:eqtype) (s:set a) (s':set a) = forall x. ~(mem x s /\ mem x s')

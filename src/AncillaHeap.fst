@@ -13,7 +13,7 @@ open PairHeap
 
 type ancHeapRecord = { hp:intHeap; max:int }
 type cond (ah:ancHeapRecord) = 
-  is_heap ah.hp /\ (forall i. (PairHeap.mem i ah.hp ==> i < ah.max))
+  is_heap ah.hp /\ (forall i. (mem i (elts ah.hp) ==> i < ah.max))
 (* Correctness is encoded in the type *)
 type ancHeap = ah:ancHeapRecord{cond ah}
 
@@ -51,7 +51,7 @@ let rec getn_acc ah acc n = match n with
   | n -> let (newah, v) = popMin ah in getn_acc newah (v::acc) (n-1)
 let getn ah n = getn_acc ah [] n
 
-let mem i ah = if i >= ah.max then true else PairHeap.mem i ah.hp
+let mem i ah = if i >= ah.max then true else mem i (PairHeap.elts ah.hp)
 
 (** Verification utilities *)
 val elts      : ancHeap -> Tot (set int)
@@ -60,7 +60,7 @@ val delete_min : ancHeap -> Tot ancHeap
 
 let get_min ah = snd (popMin ah)
 let delete_min ah = fst (popMin ah)
-let elts ah = fun i -> mem i ah
+let elts ah = union (greaterEq (ah.max)) (PairHeap.elts ah.hp)
 
 (* Ancilla heaps with all zero values *)
 type zeroHeap (st:state) (ah:ancHeap) = 
@@ -109,8 +109,8 @@ val zeroHeap_insert : st:state -> ah:ancHeap -> i:int ->
 let zeroHeap_insert st ah i = ()
 
 val zeroHeap_insert_list : st:state -> ah:ancHeap -> lst:list int ->
-  Lemma (requires (zeroHeap st ah /\ (forall i. List.mem i lst ==> lookup st i = false)))
-        (ensures  (zeroHeap st (List.fold_leftT insert ah lst)))
+  Lemma (requires (zeroHeap st ah /\ (forall i. FStar.List.Tot.mem i lst ==> lookup st i = false)))
+        (ensures  (zeroHeap st (FStar.List.Tot.fold_left insert ah lst)))
   (decreases lst)
 let rec zeroHeap_insert_list st ah lst = match lst with
   | [] -> ()
