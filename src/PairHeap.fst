@@ -21,9 +21,8 @@ val insert : intHeap -> int -> Tot intHeap
 val mergePairs : list intHeap -> Tot intHeap
 val deleteMin : hp:intHeap{~(is_Empty hp)} -> Tot intHeap
 val getMin : hp:intHeap{~(is_Empty hp)} -> Tot int
-val mem : int -> hp:intHeap -> Tot bool (decreases %[hp;1])
-val mem_lst : int -> l:(list intHeap) -> Tot bool (decreases %[l;0])
 val elts : intHeap -> Tot (set int)
+val elts_lst : list intHeap -> Tot (set int)
 
 let subheaps hp = match hp with
   | Heap (r, lst) -> lst
@@ -49,14 +48,12 @@ let deleteMin hp = match hp with
 let getMin hp = match hp with
   | Heap (r, _) -> r
 
-let rec mem i hp = match hp with
-  | Empty -> false
-  | Heap (r, lst) -> i = r || mem_lst i lst
-and mem_lst i lst = match lst with
-  | [] -> false
-  | x::xs -> mem i x || mem_lst i xs
-
-let elts hp = fun i -> mem i hp
+let rec elts hp = match hp with 
+  | Empty         -> empty
+  | Heap (r, lst) -> ins r (elts_lst lst)
+and elts_lst lst = match lst with
+  | []   -> empty
+  | x::xs -> union (elts x) (elts_lst xs)
 
 (** Verification utilities *)
 
@@ -74,7 +71,7 @@ type minheap : intHeap -> Type =
   | E_Heap : minheap Empty
   | H_Heap : r:int ->
              lst:list intHeap ->
-             ht:(forall hp. List.mem hp lst ==> minheap hp /\ lt_heap r hp) ->
+             ht:(forall hp. FStar.List.Tot.mem hp lst ==> minheap hp /\ lt_heap r hp) ->
              minheap (Heap (r, lst))
 
 (* Computational version -- i.e. checking a heap is well formed *)
@@ -87,7 +84,7 @@ val is_heap : hp:intHeap -> Tot bool (decreases %[hp;1])
 val is_heap_list : l:(list intHeap) -> Tot bool (decreases %[l;0])
 let rec is_heap hp = match hp with
   | Empty -> true
-  | Heap (i, lst) -> (is_heap_list lst) && (List.for_allT (leq_heap i) lst)
+  | Heap (i, lst) -> (is_heap_list lst) && (FStar.List.Tot.for_all (leq_heap i) lst)
 and is_heap_list lst = match lst with
   | [] -> true
   | x::xs -> (is_heap x) && (is_heap_list xs)
@@ -101,15 +98,15 @@ let rec is_heap_app l1 l2 = match l1 with
   | x::xs -> is_heap_app xs l2
 
 val leq_heap_trans : i:int -> j:int -> l:list intHeap ->
-  Lemma (requires (i <= j /\ List.for_allT (leq_heap j) l))
-        (ensures  (List.for_allT (leq_heap i) l))
+  Lemma (requires (i <= j /\ FStar.List.Tot.for_all (leq_heap j) l))
+        (ensures  (FStar.List.Tot.for_all (leq_heap i) l))
 let rec leq_heap_trans i j l = match l with
   | [] -> ()
   | x::xs -> leq_heap_trans i j xs
 
 val leq_heap_app : i:int -> l1:list intHeap -> l2:list intHeap ->
-  Lemma (requires (List.for_allT (leq_heap i) l1 /\ List.for_allT (leq_heap i) l2))
-        (ensures  (List.for_allT (leq_heap i) (l1@l2)))
+  Lemma (requires (FStar.List.Tot.for_all (leq_heap i) l1 /\ FStar.List.Tot.for_all (leq_heap i) l2))
+        (ensures  (FStar.List.Tot.for_all (leq_heap i) (l1@l2)))
 let rec leq_heap_app i l1 l2 = match l1 with
   | [] -> ()
   | x::xs -> leq_heap_app i xs l2
@@ -153,7 +150,7 @@ val leq_tree_trans : i:int -> j:int ->
         (ensures (forall h. (is_heap (Heap (j, [h]))) ==> (is_heap (Heap (i, [h])))))
 let leq_tree_trans i j = ()
 
-type leq_all (i:int) (hp:intHeap) = forall j. mem j hp ==> i <= j
+type leq_all (i:int) (hp:intHeap) = forall j. mem j (elts hp) ==> i <= j
 
 val leq_all_trans : i:int -> j:int -> hp:intHeap ->
   Lemma (requires (i <= j /\ leq_all j hp))
@@ -162,15 +159,15 @@ let leq_all_trans i j hp = ()
 
 (* Membership properties *)
 val mem_app : l1:list intHeap -> l2:list intHeap ->
-  Lemma (requires true)
-        (ensures  (forall i. mem_lst i (l1@l2) <==> mem_lst i l1 \/ mem_lst i l2))
+  Lemma (requires True)
+        (ensures (Set.equal (elts_lst (l1@l2)) (union (elts_lst l1) (elts_lst l2))))
 let rec mem_app l1 l2 = match l1 with
   | [] -> ()
   | x::xs -> mem_app xs l2
 
 val mem_merge : h1:intHeap -> h2:intHeap ->
-  Lemma (requires true)
-        (ensures (forall i. mem i (merge h1 h2) <==> mem i h1 \/ mem i h2))
+  Lemma (requires True)
+        (ensures (Set.equal (elts (merge h1 h2)) (union (elts h1) (elts h2))))
 let mem_merge h1 h2 = match (h1, h2) with
   | (Empty, _) -> ()
   | (_, Empty) -> ()
@@ -179,31 +176,26 @@ let mem_merge h1 h2 = match (h1, h2) with
     else ()
 
 val mem_mergePairs : l:(list intHeap) ->
-  Lemma (requires true)
-        (ensures  (forall i. mem i (mergePairs l) <==> mem_lst i l))
+  Lemma (requires True)
+        (ensures (Set.equal (elts (mergePairs l)) (elts_lst l)))
 let rec mem_mergePairs l = match l with
   | [] -> ()
   | x::[] -> ()
   | x::y::xs -> mem_merge x y; mem_mergePairs xs; mem_merge (merge x y) (mergePairs xs)
 
-val mem_insert : h:intHeap -> i:int ->
-  Lemma (requires true)
-        (ensures (forall j. mem j (insert h i) <==> j = i \/ mem j h))
-let mem_insert h i = mem_merge h (Heap (i, []))
-
 val elts_insert : h:intHeap -> i:int ->
-  Lemma (requires true)
-	(ensures  (elts (insert h i) = ins i (elts h)))
+  Lemma (requires True)
+	(ensures (Set.equal (elts (insert h i)) (ins i (elts h))))
 let elts_insert h i = ()
 
 (* Correctness properties *)
 val leq_is_min : i:int -> h:intHeap{is_heap h} ->
   Lemma (requires (leq_heap i h))
-        (ensures  (forall j. mem j h ==> i < j))
+        (ensures  (forall j. mem j (elts h) ==> i < j))
   (decreases %[h;1])
 val leq_is_min_list : i:int -> l:(list intHeap){is_heap_list l} ->
-  Lemma (requires (List.for_allT (leq_heap i) l))
-        (ensures  (forall j. mem_lst j l ==> i < j))
+  Lemma (requires (FStar.List.Tot.for_all (leq_heap i) l))
+        (ensures  (forall j. mem j (elts_lst l) ==> i < j))
   (decreases %[l;0])
 let rec leq_is_min i h = match h with
   | Empty -> ()
@@ -213,6 +205,6 @@ and leq_is_min_list i l = match l with
   | x::xs -> leq_is_min i x; leq_is_min_list i xs
 
 val deleteMin_not_in_heap : h:intHeap{is_heap h /\ ~(is_Empty h)} ->
-  Lemma (not (mem (getMin h) (deleteMin h)))
+  Lemma (not (mem (getMin h) (elts (deleteMin h))))
 let deleteMin_not_in_heap h = match h with
   | Heap (r, lst) -> leq_is_min_list r lst; mem_mergePairs lst
