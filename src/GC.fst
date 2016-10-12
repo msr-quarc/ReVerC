@@ -15,15 +15,15 @@ open Interpreter
 
 type circGCState =
   { top    : int;
-    ah     : AncHeap;
-    gates  : list Gate;
+    ah     : ancHeap;
+    gates  : list gate;
     symtab : Total.t int int;
     isanc  : Total.t int bool;
-    cvals  : Total.t int BoolExp }
+    cvals  : Total.t int boolExp }
 
 val circGCInit   : circGCState
 val circGCAlloc  : circGCState -> Tot (int * circGCState)
-val circGCAssign : circGCState -> int -> BoolExp -> Tot circGCState
+val circGCAssign : circGCState -> int -> boolExp -> Tot circGCState
 val circGCEval   : circGCState -> state -> int -> Tot bool
 
 (* The garbage collector needs to:
@@ -121,10 +121,10 @@ let circGCInterp = {
   eval = circGCEval
 }
 
-val allocNcircGC : list GExpr * circGCState -> i:int ->
-  Tot (list GExpr * circGCState) (decreases i)
+val allocNcircGC : list gExpr * circGCState -> i:int ->
+  Tot (list gExpr * circGCState) (decreases i)
 let rec allocNcircGC (locs, cs) i =
-  if i <= 0 then (List.rev locs, cs)
+  if i <= 0 then (FStar.List.Tot.rev locs, cs)
   else
     let (ah', bit) = popMin cs.ah in
     let cs' = { top = cs.top + 1;
@@ -136,7 +136,7 @@ let rec allocNcircGC (locs, cs) i =
     in
       allocNcircGC (((LOC cs.top)::locs), cs') (i-1)
 
-val allocTycircGC : GType -> circGCState -> Tot (result (GExpr * circGCState))
+val allocTycircGC : gType -> circGCState -> Tot (result (gExpr * circGCState))
 let allocTycircGC ty cs = match ty with
   | GBool ->
     let (ah', bit) = popMin cs.ah in
@@ -153,13 +153,13 @@ let allocTycircGC ty cs = match ty with
       Val (ARRAY locs, st')
   | _ -> Err "Invalid parameter type for circuit generation"
 
-val lookup_Lst_gc : Total.t int int -> lst:(list GExpr){isVal_lst lst} -> Tot (list int)
+val lookup_Lst_gc : Total.t int int -> lst:(list gExpr){isVal_lst lst} -> Tot (list int)
 let rec lookup_Lst_gc symtab lst = match lst with
   | [] -> []
   | (LOC l)::xs -> ((lookup symtab l))::(lookup_Lst_gc symtab xs)
 
 (* Scrubs the state with respect to the remainder of the program *)
-let findGarbage gexp cs = Set.diff (keys cs.symtab) (locs gexp)
+let findGarbage gexp cs = SetExtra.diff (keys cs.symtab) (locs gexp)
 let garbageCollector gexp cs = 
   let garbage = findGarbage gexp cs in
   let f cs l = 
@@ -172,9 +172,9 @@ let garbageCollector gexp cs =
 	isanc  = cs'.isanc;
 	cvals  = cs'.cvals }
   in
-    Set.fold f cs garbage
+    SetExtra.fold f cs garbage
 
-val compileGCCirc : config circGCState -> Dv (result (list int * list Gate))
+val compileGCCirc : config circGCState -> Dv (result (list int * list gate))
 let rec compileGCCirc (gexp, cs) =
   let cs = cs in //garbageCollector gexp cs in
   if isVal gexp then match gexp with
@@ -182,7 +182,7 @@ let rec compileGCCirc (gexp, cs) =
     | LAMBDA (x, ty, t) ->
       begin match allocTycircGC ty cs with
         | Err s -> Err s
-        | Val (v, cs') -> compileGCCirc (substGExpr t x v, cs')
+        | Val (v, cs') -> compileGCCirc (substgExpr t x v, cs')
       end
     | LOC l ->
       let bit = lookup cs.symtab l in
@@ -198,8 +198,8 @@ let rec compileGCCirc (gexp, cs) =
 (* Passing proofs are replaced with admit() to speed up interactive verification *)
 
 (* More precisely tuned lemmas *)
-val cvals_vars_lemma : symtab:Total.t int int -> cvals:Total.t int BoolExp ->
-		       bit:int -> exp:BoolExp -> s:set int ->
+val cvals_vars_lemma : symtab:Total.t int int -> cvals:Total.t int boolExp ->
+		       bit:int -> exp:boolExp -> s:set int ->
   Lemma (requires (disjoint (vars exp) s /\ not (Set.mem bit (vars exp)) /\
 		  (forall bit'. Set.mem bit' (vals symtab) ==> 
 		    disjoint (vars (lookup cvals bit')) s)))
@@ -213,8 +213,8 @@ let rec cvals_vars_lemma symtab cvals bit exp s = match symtab.elts with
       substOneVar_elems (lookup cvals (snd x)) bit exp; 
       cvals_vars_lemma symtab' cvals bit exp s
 
-val cvals_vars_lemma2 : symtab:Total.t int int -> cvals:Total.t int BoolExp ->
-		       bit:int -> exp:BoolExp -> s:set int ->
+val cvals_vars_lemma2 : symtab:Total.t int int -> cvals:Total.t int boolExp ->
+		       bit:int -> exp:boolExp -> s:set int ->
   Lemma (requires (disjoint (vars exp) s /\
 		  (forall bit'. Set.mem bit' (vals symtab) ==> 
 		    disjoint (vars (lookup cvals bit')) s)))
@@ -265,7 +265,7 @@ let garbage_partition_lemma cs bit cs' =
           disjoint_subset (elts ah') (elts cs.ah) (vals cs.symtab); // disjoint ah' (vals cs.symtab)
 	  cvals_vars_lemma2 cs.symtab cs.cvals bit (BXor (BVar bit, cval)) (elts ah')
 
-val assign_partition_lemma : cs:circGCState -> l:int -> bexp:BoolExp -> cs':circGCState ->
+val assign_partition_lemma : cs:circGCState -> l:int -> bexp:boolExp -> cs':circGCState ->
   Lemma (requires ((cs' = circGCAssign cs l bexp) /\ 
                    (forall l l'. not (l = l') ==> not (lookup cs.symtab l = lookup cs.symtab l')) /\
 		   (disjoint (vals cs.symtab) (elts cs.ah)) /\
@@ -345,7 +345,7 @@ let garbage_zeroHeap_lemma cs bit init cs' =
 	zeroHeap_subset init cs.ah ah';
 	compile_bexp_zero cs.ah bit cval (evalCirc cs.gates init)
 
-val assign_zeroHeap_lemma : cs:circGCState -> l:int -> bexp:BoolExp -> init:state -> cs':circGCState ->
+val assign_zeroHeap_lemma : cs:circGCState -> l:int -> bexp:boolExp -> init:state -> cs':circGCState ->
   Lemma (requires ((cs' = circGCAssign cs l bexp) /\ 
 		   (zeroHeap init cs.ah) /\
 		   (zeroHeap (evalCirc cs.gates init) cs.ah) /\
@@ -402,8 +402,8 @@ let assign_zeroHeap_lemma cs l bexp init cs' =
 	garbage_zeroHeap_lemma cs'' bit init cs'
 
 (* (internal) Correctness properties *)
-val cvals_update_lemma : symtab:Total.t int int -> cvals:Total.t int BoolExp -> 
-		         bit:int -> exp:BoolExp -> st:state -> st':state ->
+val cvals_update_lemma : symtab:Total.t int int -> cvals:Total.t int boolExp -> 
+		         bit:int -> exp:boolExp -> st:state -> st':state ->
   Lemma (requires (lookup st bit = evalBexp exp st' /\ 
                   (forall bit'. Set.mem bit' (vals symtab) ==> 
 		     agree_on st st' (rem bit (vars (lookup cvals bit'))))))
@@ -417,8 +417,8 @@ let rec cvals_update_lemma symtab cvals bit exp st st' = match symtab.elts with
       subst_value_pres (lookup cvals (snd x)) bit exp st st'; 
       cvals_update_lemma symtab' cvals bit exp st st'
 
-val cvals_agree_lemma : symtab:Total.t int int -> cvals:Total.t int BoolExp -> 
-		         bit:int -> exp:BoolExp -> st:state -> circ:Circuit ->
+val cvals_agree_lemma : symtab:Total.t int int -> cvals:Total.t int boolExp -> 
+		         bit:int -> exp:boolExp -> st:state -> circ:circuit ->
   Lemma (requires (forall bit'. Set.mem bit' (vals symtab) ==> 
 		     disjoint (rem bit (vars (lookup cvals bit'))) (mods circ)))
 	(ensures  (forall bit'. Set.mem bit' (vals symtab) ==> 
@@ -438,8 +438,8 @@ let rec cvals_agree_lemma symtab cvals bit exp st circ = match symtab.elts with
       agree_on_subset st (evalCirc circ st) (complement (mods circ)) (rem bit (vars (lookup cvals bit')));
       cvals_agree_lemma symtab' cvals bit exp st circ
 
-val cvals_lemma : symtab:Total.t int int -> cvals:Total.t int BoolExp -> 
-		  bit:int -> exp:BoolExp -> st:state -> circ:Circuit ->
+val cvals_lemma : symtab:Total.t int int -> cvals:Total.t int boolExp -> 
+		  bit:int -> exp:boolExp -> st:state -> circ:circuit ->
   Lemma (requires (lookup st bit = evalBexp exp (evalCirc circ st) /\
                   (forall bit'. Set.mem bit' (vals symtab) ==> 
 		     disjoint (rem bit (vars (lookup cvals bit'))) (mods circ))))
@@ -506,7 +506,7 @@ let garbage_value_lemma cs bit init cs'=
   //forall bit'. Set.mem bit' (vals cs.symtab) ==> 
   //  evalBexp (lookup cs.cvals bit') st = evalBexp (lookup cs'.cvals bit') st');
 
-type precond3 (cs:circGCState) (l:int) (bexp:BoolExp) (init:state) =
+type precond3 (cs:circGCState) (l:int) (bexp:boolExp) (init:state) =
   (forall l'. not (l' = l) ==> not (lookup cs.symtab l = lookup cs.symtab l')) /\
   (disjoint (vals cs.symtab) (elts cs.ah)) /\
   (zeroHeap (evalCirc cs.gates init) cs.ah) /\
@@ -517,7 +517,7 @@ type precond3 (cs:circGCState) (l:int) (bexp:BoolExp) (init:state) =
   (forall bit. Set.mem bit (vals cs.symtab) ==>
      (evalBexp (BXor (BVar bit, (lookup cs.cvals bit))) (evalCirc cs.gates init) = lookup init bit))
   
-val assign_value_lemma : cs:circGCState -> l:int -> bexp:BoolExp -> init:state -> cs':circGCState ->
+val assign_value_lemma : cs:circGCState -> l:int -> bexp:boolExp -> init:state -> cs':circGCState ->
   Lemma (requires (cs' = circGCAssign cs l bexp /\
                    precond3 cs l bexp init))
 	(ensures  ((lookup (evalCirc cs'.gates init) (lookup cs'.symtab l) = 
@@ -695,7 +695,7 @@ let alloc_pres_valid cs init =
   pop_is_zero (evalCirc cs.gates init) cs.ah;
   minor_lemma1 cs.symtab cs'.symtab loc
 
-val assign_pres_valid : cs:circGCState -> l:int -> bexp:BoolExp -> init:state ->
+val assign_pres_valid : cs:circGCState -> l:int -> bexp:boolExp -> init:state ->
   Lemma (requires (valid_GC_state cs init))
 	(ensures  (valid_GC_state (circGCAssign cs l bexp) init))
 let assign_pres_valid cs l bexp init =
@@ -750,7 +750,7 @@ let alloc_pres_equiv cs bs init =
   alloc_pres_valid cs init;
   lookup_is_valF cs.symtab
 
-val assign_pres_equiv : cs:circGCState -> bs:boolState -> l:int -> bexp:BoolExp -> init:state ->
+val assign_pres_equiv : cs:circGCState -> bs:boolState -> l:int -> bexp:boolExp -> init:state ->
   Lemma (requires (valid_GC_state cs init /\ equiv_state cs bs init))
 	(ensures  (valid_GC_state (circGCAssign cs l bexp) init /\
 	           equiv_state (circGCAssign cs l bexp) (boolAssign bs l bexp) init))
