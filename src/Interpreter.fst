@@ -367,50 +367,7 @@ val step_preservation_lst :
 	    p (snd (getVal (step_lst (lst, st1) i1))) (snd (getVal (step_lst (lst, st2) i2))) init))
   (decreases %[lst;0])
 
-(* F* compiler complains this is not total, no idea what's happening
-let rec step_preservation i1 i2 p h1 h2 gexp st1 st2 init = admit () (*match gexp with
-  | LET (x, t1, t2) -> admit() //step_preservation i1 i2 p h1 h2 t1 st1 st2 init
-  | LAMBDA (x, ty, t) -> ()
-  | APPLY (t1, t2) ->
-    state_equiv_step t1 st st' init;
-    state_equiv_step t2 st st' init
-  | SEQUENCE (t1, t2) ->
-    state_equiv_step t1 st st' init
-  | ASSIGN (t1, t2) ->
-    state_equiv_step t1 st st' init;
-    state_equiv_step t2 st st' init;
-    if (isVal t1 && isBexp t2) then
-      begin match t1 with
-        | LOC l -> state_equiv_assign st st' init l (get_bexp t2)
-        | _ -> ()
-      end
-  | XOR (t1, t2) ->
-    state_equiv_step t1 st st' init;
-    state_equiv_step t2 st st' init
-  | AND (t1, t2) ->
-    state_equiv_step t1 st st' init;
-    state_equiv_step t2 st st' init
-  | BOOL b -> ()
-  | APPEND (t1, t2) ->
-    state_equiv_step t1 st st' init;
-    state_equiv_step t2 st st' init
-  | ROT (i, t) ->
-    state_equiv_step t st st' init
-  | SLICE (t, i, j) ->
-    state_equiv_step t st st' init
-  | ARRAY lst ->
-    state_equiv_step_lst lst st st' init
-  | GET_ARRAY (t, i) ->
-    state_equiv_step t st st' init
-  | ASSERT t ->
-    state_equiv_step t st st' init
-  | BEXP bexp -> state_equiv_alloc st st' init bexp
-  | _ -> ()
-and step_preservation_lst i1 i2 p h1 h2 gexp st1 st2 init = admit() (*match lst with
-  | [] -> ()
-  | x::xs ->
-    state_equiv_step x st st' init;
-    state_equiv_step_lst xs st st' init
-*)
-*)
-*)
+(* Newer version of F* support this kind of a proof, the one used in this branch seems to be exploding
+   just with the declaration skeleton. All work on this proof is now in the fstarupdate branch *)
+let rec step_preservation i1 i2 p h1 h2 gexp st1 st2 init = admit()
+and step_preservation_lst i1 i2 p h1 h2 gexp st1 st2 init = admit()

@@ -194,7 +194,7 @@ let mem_insert h i = mem_merge h (Heap (i, []))
 val elts_insert : h:intHeap -> i:int ->
   Lemma (requires true)
 	(ensures  (elts (insert h i) = ins i (elts h)))
-let elts_insert h i = ()
+let elts_insert h i = lemma_equal_intro (elts (insert h i)) (ins i (elts h))
 
 (* Correctness properties *)
 val leq_is_min : i:int -> h:intHeap{is_heap h} ->

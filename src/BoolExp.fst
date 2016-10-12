@@ -399,6 +399,17 @@ let rec factorAs_correct exp targ st = match exp with
     factorAs_correct x targ st;
     factorAs_correct y targ st
 
+(* Needed to relate two types of membership *)
+val occursInBexp_not_var : i:int -> exp:BoolExp ->
+  Lemma (requires (not (occursInBexp i exp)))
+        (ensures  (not (Set.mem i (vars exp))))
+let rec occursInBexp_not_var i exp = match exp with
+  | BFalse -> ()
+  | BVar x -> ()
+  | BNot x -> occursInBexp_not_var i x
+  | BAnd (x, y) -> occursInBexp_not_var i x; occursInBexp_not_var i y
+  | BXor (x, y) -> occursInBexp_not_var i x; occursInBexp_not_var i y
+
 val factorAs_vars : exp:BoolExp -> targ:int ->
   Lemma (forall exp'. factorAs exp targ = Some exp' ==> subset (vars exp') (rem targ (vars exp)))
 let rec factorAs_vars exp targ = match exp with
@@ -408,7 +419,17 @@ let rec factorAs_vars exp targ = match exp with
   | BAnd (x, y) -> ()
   | BXor (x, y) ->
     factorAs_vars x targ;
-    factorAs_vars y targ
+    factorAs_vars y targ;
+    if not (occursInBexp targ y) then (
+      match factorAs x targ with
+        | None -> ()
+        | Some x' -> occursInBexp_not_var targ y
+    ) else if not (occursInBexp targ x) then (
+      match factorAs y targ with
+        | None -> ()
+        | Some y' -> occursInBexp_not_var targ x
+    ) else
+      ()
 
 (* Super low level proofs about Boolean algebra *)
 val idempotentAnd : x:BoolExp ->

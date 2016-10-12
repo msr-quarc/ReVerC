@@ -20,7 +20,6 @@ type circGCState =
     isanc  : Total.t int bool;
     cvals  : Total.t int BoolExp }
 
-val circGC       : circGCState -> int -> Tot circGCState
 val circGCInit   : circGCState
 val circGCAlloc  : circGCState -> Tot (int * circGCState)
 val circGCAssign : circGCState -> int -> BoolExp -> Tot circGCState
@@ -489,7 +488,7 @@ let garbage_value_lemma cs bit init cs'=
   disjoint_is_subset_compl (vals cs.symtab) (mods circ');
   agree_on_subset st st' (complement (mods circ')) (vals cs.symtab);
   //---------------------------------------------------------------
-  //admitP(forall bit'. Set.mem bit' (vals cs.symtab) ==> 
+  //forall bit'. Set.mem bit' (vals cs.symtab) ==> 
   //  lookup st bit' = lookup st' bit');
   //---------------------------------------------------------------
   compile_bexp_correct cs.ah bit cval st;
@@ -497,13 +496,13 @@ let garbage_value_lemma cs bit init cs'=
   xor_assoc (lookup st bit) (evalBexp cval st) (evalBexp cval st);
   xor_inverse (evalBexp cval st);
   //---------------------------------------------------------------
-  //admitP(b2t(lookup st bit = evalBexp bexp' st'));
+  //b2t(lookup st bit = evalBexp bexp' st'));
   //---------------------------------------------------------------
   compile_mods cs.ah bit cval;
   cvals_agree_lemma cs.symtab cs.cvals bit bexp' st circ';
   cvals_update_lemma cs.symtab cs.cvals bit bexp' st st'
   //---------------------------------------------------------------
-  //admitP(forall bit'. Set.mem bit' (vals cs.symtab) ==> 
+  //forall bit'. Set.mem bit' (vals cs.symtab) ==> 
   //  evalBexp (lookup cs.cvals bit') st = evalBexp (lookup cs'.cvals bit') st');
 
 type precond3 (cs:circGCState) (l:int) (bexp:BoolExp) (init:state) =
