@@ -1,0 +1,181 @@
+[
+  "‚1Ý\u0001%I\u0001ÝÝ™æß‹Š\u0018±",
+  [
+    [ "Partial.t", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "Partial.keys",
+      1,
+      2,
+      1,
+      [
+        "@query", "binder_x_806566e594ee082edd9ae8bb10f748bd_4",
+        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "equality_tok_Prims.LexTop@tok", "equation_Partial.t",
+        "fuel_guarded_inversion_Prims.list", "subterm_ordering_Prims.Cons"
+      ],
+      0
+    ],
+    [
+      "Partial.vals",
+      1,
+      2,
+      1,
+      [
+        "@query", "binder_x_806566e594ee082edd9ae8bb10f748bd_4",
+        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "equality_tok_Prims.LexTop@tok", "equation_Partial.t",
+        "fuel_guarded_inversion_Prims.list", "subterm_ordering_Prims.Cons"
+      ],
+      0
+    ],
+    [ "Partial.defined", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "Partial.find",
+      1,
+      2,
+      1,
+      [
+        "@query", "binder_x_806566e594ee082edd9ae8bb10f748bd_4",
+        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "equation_Partial.t", "fuel_guarded_inversion_Prims.list",
+        "projection_inverse_Prims.Cons_tl", "subterm_ordering_Prims.Cons"
+      ],
+      0
+    ],
+    [
+      "Partial.find",
+      2,
+      2,
+      1,
+      [
+        "@query", "binder_x_273c0cb114efbc10b99731f088b17ae0_2",
+        "equation_Prims.eqtype",
+        "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
+      ],
+      0
+    ],
+    [
+      "Partial.find_def",
+      1,
+      2,
+      1,
+      [
+        "@query", "binder_x_273c0cb114efbc10b99731f088b17ae0_2",
+        "binder_x_273c0cb114efbc10b99731f088b17ae0_3",
+        "binder_x_806566e594ee082edd9ae8bb10f748bd_4",
+        "binder_x_84f47db02f778631390eb82c07c927c2_5", "bool_inversion",
+        "disc_equation_Prims.None", "equation_Prims.eqtype",
+        "fuel_correspondence_Partial.find.fuel_instrumented",
+        "lemma_Prims.invertOption",
+        "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f",
+        "typing_Partial.find", "typing_Prims.is_None", "typing_Prims.is_Some"
+      ],
+      0
+    ],
+    [
+      "Partial.update",
+      1,
+      2,
+      1,
+      [
+        "@query", "binder_x_806566e594ee082edd9ae8bb10f748bd_4",
+        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "equation_Partial.t", "fuel_guarded_inversion_Prims.list",
+        "subterm_ordering_Prims.Cons"
+      ],
+      0
+    ],
+    [
+      "Partial.update",
+      2,
+      2,
+      1,
+      [
+        "@query", "binder_x_273c0cb114efbc10b99731f088b17ae0_2",
+        "equation_Prims.eqtype",
+        "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
+      ],
+      0
+    ],
+    [
+      "Partial.remove",
+      1,
+      2,
+      1,
+      [
+        "@query", "binder_x_806566e594ee082edd9ae8bb10f748bd_4",
+        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "equation_Partial.t", "fuel_guarded_inversion_Prims.list",
+        "projection_inverse_Prims.Cons_tl", "subterm_ordering_Prims.Cons"
+      ],
+      0
+    ],
+    [
+      "Partial.remove",
+      2,
+      2,
+      1,
+      [
+        "@query", "binder_x_273c0cb114efbc10b99731f088b17ae0_2",
+        "equation_Prims.eqtype",
+        "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
+      ],
+      0
+    ],
+    [ "Partial.totalize", 1, 2, 1, [ "@query" ], 0 ],
+    [ "Partial.mapVals", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "Partial.lookup",
+      1,
+      2,
+      1,
+      [
+        "@query", "binder_x_273c0cb114efbc10b99731f088b17ae0_2",
+        "binder_x_273c0cb114efbc10b99731f088b17ae0_3",
+        "binder_x_3cc579da2f777ec826448f8f1d37fb17_5",
+        "binder_x_806566e594ee082edd9ae8bb10f748bd_4", "bool_inversion",
+        "constructor_distinct_PairHeap.Empty", "disc_equation_Prims.Cons",
+        "equation_AncillaHeap.ancHeap", "equation_AncillaHeap.cond",
+        "equation_AncillaHeap.emptyHeap", "equation_Partial.defined",
+        "equation_Partial.t", "equation_Prims.fst", "equation_SetExtra.ins",
+        "equation_with_fuel_PairHeap.is_heap.fuel_instrumented",
+        "equation_with_fuel_Partial.keys.fuel_instrumented",
+        "fuel_correspondence_PairHeap.is_heap.fuel_instrumented",
+        "fuel_correspondence_Partial.keys.fuel_instrumented",
+        "fuel_guarded_inversion_Prims.list",
+        "fuel_irrelevance_Partial.keys.fuel_instrumented",
+        "function_token_typing_AncillaHeap.emptyHeap",
+        "lemma_FStar.Set.mem_empty", "lemma_FStar.Set.mem_singleton",
+        "lemma_FStar.Set.mem_union", "primitive_Prims.op_BarBar",
+        "primitive_Prims.op_Equality",
+        "proj_equation_AncillaHeap.MkancHeapRecord_hp",
+        "proj_equation_Prims.Mktuple2__1",
+        "projection_inverse_AncillaHeap.MkancHeapRecord_hp",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_PairHeap.Empty__a",
+        "projection_inverse_Prims.Cons_hd",
+        "projection_inverse_Prims.Cons_tl",
+        "projection_inverse_Prims.Mktuple2__1",
+        "refinement_interpretation_Tm_refine_456af8f0ed2e6b59cd4a5bb4e67b3c27",
+        "refinement_interpretation_Tm_refine_fbfce57162e7820994b690836f2c41dc",
+        "subterm_ordering_Prims.Cons",
+        "token_correspondence_Partial.keys.fuel_instrumented",
+        "typing_FStar.Set.mem", "typing_FStar.Set.singleton",
+        "typing_Partial.defined"
+      ],
+      0
+    ],
+    [
+      "Partial.lookup",
+      2,
+      2,
+      1,
+      [
+        "@query", "binder_x_273c0cb114efbc10b99731f088b17ae0_2",
+        "equation_Prims.eqtype",
+        "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
+      ],
+      0
+    ]
+  ]
+]

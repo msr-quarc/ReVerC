@@ -1,0 +1,1163 @@
+[
+  "]¾s™!;\u0015\u0005Åv/Wð ¹0",
+  [
+    [
+      "ExprTypes.gType",
+      1,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.HasEq_int",
+        "assumption_Prims.tuple2_haseq", "kinding_ExprTypes.gType@tok"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.GArray._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_ExprTypes.GArray",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_7214b9becfdde0f1c0111158f8a8ab9b"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.GFun._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_ExprTypes.GFun",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_7592be4d0985af553d4c5c7887ad7519"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.GConst._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_ExprTypes.GConst",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_6903d0e6fe28ded5611c4c73dd9d0e0e"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.GVar._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_ExprTypes.GVar",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_7c75a006c001a4b5bedc7e7f66c157c9"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.gExpr",
+      1,
+      2,
+      1,
+      [
+        "@query", "assumption_BoolExp.boolExp_haseq",
+        "assumption_ExprTypes.gType_haseq", "assumption_Prims.HasEq_bool",
+        "assumption_Prims.HasEq_int", "assumption_Prims.HasEq_string",
+        "assumption_Prims.list_haseq", "assumption_Prims.tuple2_haseq",
+        "assumption_Prims.tuple3_haseq",
+        "data_typing_intro_ExprTypes.GBool@tok",
+        "data_typing_intro_ExprTypes.UNIT@tok",
+        "function_token_typing_Prims.int",
+        "function_token_typing_Prims.string", "kinding_ExprTypes.gExpr@tok",
+        "kinding_ExprTypes.gType@tok",
+        "pretyping_6b74f0037009d29c0456341c2163d847",
+        "pretyping_6e858c1adb3849d9ba4233bb4bb6c170"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.LET._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_ExprTypes.LET",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_e7232d7819078f49a10cad49a8be1007"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.LAMBDA._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_ExprTypes.LAMBDA",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_81a20c27659cb207542d64e2dcafa9db"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.APPLY._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_ExprTypes.APPLY",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_27a2e3aefbe6734363b8a634378b1828"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.IFTHENELSE._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_ExprTypes.IFTHENELSE",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_83592fd6c50e241b2cfe6725dad5ff57"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.SEQUENCE._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_ExprTypes.SEQUENCE",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_d9b334977f68140599b98467111810ce"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.ASSIGN._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_ExprTypes.ASSIGN",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_55d33f378b99e47683bf486f272fb6e0"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.VAR._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_ExprTypes.VAR",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_3c80d19a71b5bc018f07f05d3ee49129"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.BOOL._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_ExprTypes.BOOL",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_c74ecd3cc48e507c4c8feb971c0ef212"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.XOR._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_ExprTypes.XOR",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_1f4caa6587606c6466cc0e2f251c8959"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.AND._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_ExprTypes.AND",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_71a8705204c712d8863ac26db0a234c3"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.ARRAY._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_ExprTypes.ARRAY",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_4cb10c0bd1872f74a8e29c471a421ea3"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.GET_ARRAY._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_ExprTypes.GET_ARRAY",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_140b8cb1a0f37d735fa5253469e5ea53"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.APPEND._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_ExprTypes.APPEND",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_cb490170f2618b48c9220afd603ca8fb"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.ROT._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_ExprTypes.ROT",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_7322e8cd957ced8850b8b7266a898c97"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.SLICE._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_ExprTypes.SLICE",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_621eafa0bddaa7b574bab85bb97e8e7a"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.ASSERT._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_ExprTypes.ASSERT",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_9566268f14be7dfc037cd34a54e159b4"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.LOC._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_ExprTypes.LOC",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_9961bb181f5e9bbebe7e5bf64aca61fe"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.BEXP._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_ExprTypes.BEXP",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_e44cff15c3529fd88a090be7f4b4c766"
+      ],
+      0
+    ],
+    [ "ExprTypes.height", 1, 2, 1, [ "@query" ], 0 ],
+    [ "ExprTypes.height_lst", 1, 2, 1, [ "@query" ], 0 ],
+    [ "ExprTypes.freeIn", 1, 2, 1, [ "@query" ], 0 ],
+    [ "ExprTypes.freeIn_lst", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "ExprTypes.freeVars",
+      1,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.freeVars_lst",
+      1,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.locsAcc",
+      1,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "ExprTypes.locsAcc_lst",
+      1,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "ExprTypes.locs",
+      1,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [ "ExprTypes.varMaxTm", 1, 2, 1, [ "@query" ], 0 ],
+    [ "ExprTypes.varMaxTm_lst", 1, 2, 1, [ "@query" ], 0 ],
+    [ "ExprTypes.substgExpr", 1, 2, 1, [ "@query" ], 0 ],
+    [ "ExprTypes.substgExpr_lst", 1, 2, 1, [ "@query" ], 0 ],
+    [ "ExprTypes.substTyIngExpr", 1, 2, 1, [ "@query" ], 0 ],
+    [ "ExprTypes.substTyIngExpr_lst", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "ExprTypes.height",
+      2,
+      2,
+      2,
+      [
+        "@query", "binder_x_6b74f0037009d29c0456341c2163d847_0",
+        "data_elim_ExprTypes.AND", "data_elim_ExprTypes.APPEND",
+        "data_elim_ExprTypes.APPLY", "data_elim_ExprTypes.ASSIGN",
+        "data_elim_ExprTypes.GET_ARRAY", "data_elim_ExprTypes.IFTHENELSE",
+        "data_elim_ExprTypes.LAMBDA", "data_elim_ExprTypes.LET",
+        "data_elim_ExprTypes.ROT", "data_elim_ExprTypes.SEQUENCE",
+        "data_elim_ExprTypes.SLICE", "data_elim_ExprTypes.XOR",
+        "data_typing_intro_ExprTypes.GBool@tok",
+        "equality_tok_Prims.LexTop@tok",
+        "pretyping_6e858c1adb3849d9ba4233bb4bb6c170",
+        "pretyping_ce036b6b736ef4e0bc3a9ff132a12aed",
+        "subterm_ordering_ExprTypes.AND",
+        "subterm_ordering_ExprTypes.APPEND",
+        "subterm_ordering_ExprTypes.APPLY",
+        "subterm_ordering_ExprTypes.ARRAY",
+        "subterm_ordering_ExprTypes.ASSERT",
+        "subterm_ordering_ExprTypes.ASSIGN",
+        "subterm_ordering_ExprTypes.GET_ARRAY",
+        "subterm_ordering_ExprTypes.IFTHENELSE",
+        "subterm_ordering_ExprTypes.LAMBDA",
+        "subterm_ordering_ExprTypes.LET", "subterm_ordering_ExprTypes.ROT",
+        "subterm_ordering_ExprTypes.SEQUENCE",
+        "subterm_ordering_ExprTypes.SLICE", "subterm_ordering_ExprTypes.XOR",
+        "subterm_ordering_Prims.Mktuple2", "subterm_ordering_Prims.Mktuple3"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.height",
+      3,
+      2,
+      1,
+      [
+        "@query", "binder_x_84a62770dc4fae20d5c368546b439b5f_0",
+        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "equality_tok_Prims.LexTop@tok", "fuel_guarded_inversion_Prims.list",
+        "subterm_ordering_Prims.Cons"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.freeIn",
+      2,
+      2,
+      2,
+      [
+        "@query", "binder_x_6b74f0037009d29c0456341c2163d847_1",
+        "binder_x_e305d6918cd355c7fb12a280e2690851_0",
+        "data_elim_ExprTypes.AND", "data_elim_ExprTypes.APPEND",
+        "data_elim_ExprTypes.APPLY", "data_elim_ExprTypes.ASSIGN",
+        "data_elim_ExprTypes.GET_ARRAY", "data_elim_ExprTypes.IFTHENELSE",
+        "data_elim_ExprTypes.LAMBDA", "data_elim_ExprTypes.LET",
+        "data_elim_ExprTypes.ROT", "data_elim_ExprTypes.SEQUENCE",
+        "data_elim_ExprTypes.SLICE", "data_elim_ExprTypes.XOR",
+        "data_typing_intro_ExprTypes.GBool@tok",
+        "equality_tok_Prims.LexTop@tok",
+        "pretyping_6e858c1adb3849d9ba4233bb4bb6c170",
+        "pretyping_ce036b6b736ef4e0bc3a9ff132a12aed",
+        "subterm_ordering_ExprTypes.AND",
+        "subterm_ordering_ExprTypes.APPEND",
+        "subterm_ordering_ExprTypes.APPLY",
+        "subterm_ordering_ExprTypes.ARRAY",
+        "subterm_ordering_ExprTypes.ASSERT",
+        "subterm_ordering_ExprTypes.ASSIGN",
+        "subterm_ordering_ExprTypes.GET_ARRAY",
+        "subterm_ordering_ExprTypes.IFTHENELSE",
+        "subterm_ordering_ExprTypes.LAMBDA",
+        "subterm_ordering_ExprTypes.LET", "subterm_ordering_ExprTypes.ROT",
+        "subterm_ordering_ExprTypes.SEQUENCE",
+        "subterm_ordering_ExprTypes.SLICE", "subterm_ordering_ExprTypes.XOR",
+        "subterm_ordering_Prims.Mktuple2", "subterm_ordering_Prims.Mktuple3"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.freeIn",
+      3,
+      2,
+      1,
+      [
+        "@query", "binder_x_84a62770dc4fae20d5c368546b439b5f_1",
+        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "equality_tok_Prims.LexTop@tok", "fuel_guarded_inversion_Prims.list",
+        "projection_inverse_Prims.Cons_hd",
+        "projection_inverse_Prims.Cons_tl", "subterm_ordering_Prims.Cons"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.freeIn",
+      4,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.freeIn",
+      5,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.freeIn",
+      6,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.freeVars",
+      2,
+      2,
+      2,
+      [
+        "@query", "binder_x_6b74f0037009d29c0456341c2163d847_0",
+        "data_elim_ExprTypes.AND", "data_elim_ExprTypes.APPEND",
+        "data_elim_ExprTypes.APPLY", "data_elim_ExprTypes.ASSIGN",
+        "data_elim_ExprTypes.GET_ARRAY", "data_elim_ExprTypes.IFTHENELSE",
+        "data_elim_ExprTypes.LAMBDA", "data_elim_ExprTypes.LET",
+        "data_elim_ExprTypes.ROT", "data_elim_ExprTypes.SEQUENCE",
+        "data_elim_ExprTypes.SLICE", "data_elim_ExprTypes.XOR",
+        "data_typing_intro_ExprTypes.GBool@tok",
+        "equality_tok_Prims.LexTop@tok",
+        "pretyping_6e858c1adb3849d9ba4233bb4bb6c170",
+        "pretyping_ce036b6b736ef4e0bc3a9ff132a12aed",
+        "subterm_ordering_ExprTypes.AND",
+        "subterm_ordering_ExprTypes.APPEND",
+        "subterm_ordering_ExprTypes.APPLY",
+        "subterm_ordering_ExprTypes.ARRAY",
+        "subterm_ordering_ExprTypes.ASSERT",
+        "subterm_ordering_ExprTypes.ASSIGN",
+        "subterm_ordering_ExprTypes.GET_ARRAY",
+        "subterm_ordering_ExprTypes.IFTHENELSE",
+        "subterm_ordering_ExprTypes.LAMBDA",
+        "subterm_ordering_ExprTypes.LET", "subterm_ordering_ExprTypes.ROT",
+        "subterm_ordering_ExprTypes.SEQUENCE",
+        "subterm_ordering_ExprTypes.SLICE", "subterm_ordering_ExprTypes.XOR",
+        "subterm_ordering_Prims.Mktuple2", "subterm_ordering_Prims.Mktuple3"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.freeVars",
+      3,
+      2,
+      1,
+      [
+        "@query", "binder_x_84a62770dc4fae20d5c368546b439b5f_0",
+        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "equality_tok_Prims.LexTop@tok", "fuel_guarded_inversion_Prims.list",
+        "subterm_ordering_Prims.Cons"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.freeVars",
+      4,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.freeVars",
+      5,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.freeVars",
+      6,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.freeVars",
+      7,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.freeVars",
+      8,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.freeVars",
+      9,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.freeVars",
+      10,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.freeVars",
+      11,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.freeVars",
+      12,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.freeVars",
+      13,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.freeVars",
+      14,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.freeVars",
+      15,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.freeVars",
+      16,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.freeVars",
+      17,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.freeVars",
+      18,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.freeVars",
+      19,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.freeVars",
+      20,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.freeVars",
+      21,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.freeVars",
+      22,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.locsAcc",
+      2,
+      2,
+      2,
+      [
+        "@query", "binder_x_6b74f0037009d29c0456341c2163d847_1",
+        "data_elim_ExprTypes.AND", "data_elim_ExprTypes.APPEND",
+        "data_elim_ExprTypes.APPLY", "data_elim_ExprTypes.ASSIGN",
+        "data_elim_ExprTypes.GET_ARRAY", "data_elim_ExprTypes.IFTHENELSE",
+        "data_elim_ExprTypes.LAMBDA", "data_elim_ExprTypes.LET",
+        "data_elim_ExprTypes.ROT", "data_elim_ExprTypes.SEQUENCE",
+        "data_elim_ExprTypes.SLICE", "data_elim_ExprTypes.XOR",
+        "data_typing_intro_ExprTypes.GBool@tok",
+        "equality_tok_Prims.LexTop@tok",
+        "pretyping_6e858c1adb3849d9ba4233bb4bb6c170",
+        "pretyping_ce036b6b736ef4e0bc3a9ff132a12aed",
+        "subterm_ordering_ExprTypes.AND",
+        "subterm_ordering_ExprTypes.APPEND",
+        "subterm_ordering_ExprTypes.APPLY",
+        "subterm_ordering_ExprTypes.ARRAY",
+        "subterm_ordering_ExprTypes.ASSERT",
+        "subterm_ordering_ExprTypes.ASSIGN",
+        "subterm_ordering_ExprTypes.GET_ARRAY",
+        "subterm_ordering_ExprTypes.IFTHENELSE",
+        "subterm_ordering_ExprTypes.LAMBDA",
+        "subterm_ordering_ExprTypes.LET", "subterm_ordering_ExprTypes.ROT",
+        "subterm_ordering_ExprTypes.SEQUENCE",
+        "subterm_ordering_ExprTypes.SLICE", "subterm_ordering_ExprTypes.XOR",
+        "subterm_ordering_Prims.Mktuple2", "subterm_ordering_Prims.Mktuple3"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.locsAcc",
+      3,
+      2,
+      1,
+      [
+        "@query", "binder_x_84a62770dc4fae20d5c368546b439b5f_1",
+        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "equality_tok_Prims.LexTop@tok", "fuel_guarded_inversion_Prims.list",
+        "projection_inverse_Prims.Cons_hd", "subterm_ordering_Prims.Cons"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.locsAcc",
+      4,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "ExprTypes.locs",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "ExprTypes.varMaxTy",
+      1,
+      2,
+      2,
+      [
+        "@query", "binder_x_6e858c1adb3849d9ba4233bb4bb6c170_0",
+        "data_elim_ExprTypes.GFun", "data_typing_intro_ExprTypes.GBool@tok",
+        "disc_equation_ExprTypes.GArray", "disc_equation_ExprTypes.GBool",
+        "disc_equation_ExprTypes.GConst", "disc_equation_ExprTypes.GFun",
+        "disc_equation_ExprTypes.GUnit", "disc_equation_ExprTypes.GVar",
+        "equality_tok_Prims.LexTop@tok",
+        "fuel_guarded_inversion_ExprTypes.gType",
+        "pretyping_6e858c1adb3849d9ba4233bb4bb6c170",
+        "subterm_ordering_ExprTypes.GConst",
+        "subterm_ordering_ExprTypes.GFun", "subterm_ordering_Prims.Mktuple2"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.varMaxTm",
+      2,
+      2,
+      2,
+      [
+        "@query", "binder_x_6b74f0037009d29c0456341c2163d847_0",
+        "data_elim_ExprTypes.AND", "data_elim_ExprTypes.APPEND",
+        "data_elim_ExprTypes.APPLY", "data_elim_ExprTypes.ASSIGN",
+        "data_elim_ExprTypes.GET_ARRAY", "data_elim_ExprTypes.IFTHENELSE",
+        "data_elim_ExprTypes.LAMBDA", "data_elim_ExprTypes.LET",
+        "data_elim_ExprTypes.ROT", "data_elim_ExprTypes.SEQUENCE",
+        "data_elim_ExprTypes.SLICE", "data_elim_ExprTypes.XOR",
+        "data_typing_intro_ExprTypes.GBool@tok",
+        "equality_tok_Prims.LexTop@tok",
+        "pretyping_6e858c1adb3849d9ba4233bb4bb6c170",
+        "pretyping_ce036b6b736ef4e0bc3a9ff132a12aed",
+        "subterm_ordering_ExprTypes.AND",
+        "subterm_ordering_ExprTypes.APPEND",
+        "subterm_ordering_ExprTypes.APPLY",
+        "subterm_ordering_ExprTypes.ARRAY",
+        "subterm_ordering_ExprTypes.ASSERT",
+        "subterm_ordering_ExprTypes.ASSIGN",
+        "subterm_ordering_ExprTypes.GET_ARRAY",
+        "subterm_ordering_ExprTypes.IFTHENELSE",
+        "subterm_ordering_ExprTypes.LAMBDA",
+        "subterm_ordering_ExprTypes.LET", "subterm_ordering_ExprTypes.ROT",
+        "subterm_ordering_ExprTypes.SEQUENCE",
+        "subterm_ordering_ExprTypes.SLICE", "subterm_ordering_ExprTypes.XOR",
+        "subterm_ordering_Prims.Mktuple2", "subterm_ordering_Prims.Mktuple3"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.varMaxTm",
+      3,
+      2,
+      1,
+      [
+        "@query", "binder_x_84a62770dc4fae20d5c368546b439b5f_0",
+        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "equality_tok_Prims.LexTop@tok", "fuel_guarded_inversion_Prims.list",
+        "subterm_ordering_Prims.Cons"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.replicate",
+      1,
+      2,
+      1,
+      [
+        "@query", "binder_x_6d0180d4fcd10237cf0d87dd345d77cc_0",
+        "int_inversion", "int_typing", "primitive_Prims.op_LessThanOrEqual",
+        "primitive_Prims.op_Subtraction", "projection_inverse_BoxInt_proj_0",
+        "well-founded-ordering-on-nat"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.append'",
+      1,
+      2,
+      1,
+      [
+        "@query", "binder_x_a186ce44c6e2798ac268e43592882258_0",
+        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "fuel_guarded_inversion_Prims.list",
+        "proj_equation_Prims.Mktuple2__1",
+        "projection_inverse_Prims.Mktuple2__1", "subterm_ordering_Prims.Cons"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.appFront",
+      1,
+      2,
+      1,
+      [
+        "@query", "constructor_distinct_Prims.Cons",
+        "constructor_distinct_Prims.Nil", "disc_equation_Prims.Cons",
+        "disc_equation_Prims.Nil", "equation_Prims.nat",
+        "equation_with_fuel_FStar.List.Tot.length.fuel_instrumented",
+        "fuel_correspondence_FStar.List.Tot.length.fuel_instrumented",
+        "fuel_guarded_inversion_Prims.list",
+        "fuel_irrelevance_FStar.List.Tot.length.fuel_instrumented",
+        "function_token_typing_Prims.string",
+        "pretyping_ce036b6b736ef4e0bc3a9ff132a12aed",
+        "primitive_Prims.op_Addition", "projection_inverse_BoxInt_proj_0",
+        "projection_inverse_Prims.Cons_a",
+        "projection_inverse_Prims.Cons_hd",
+        "projection_inverse_Prims.Cons_tl",
+        "refinement_interpretation_Tm_refine_ba523126f67e00e7cd55f0b92f16681d",
+        "string_inversion",
+        "token_correspondence_FStar.List.Tot.length.fuel_instrumented"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.appBack",
+      1,
+      2,
+      1,
+      [
+        "@query", "binder_x_a186ce44c6e2798ac268e43592882258_1",
+        "binder_x_e305d6918cd355c7fb12a280e2690851_0",
+        "constructor_distinct_Prims.Cons", "constructor_distinct_Prims.Nil",
+        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "equality_tok_Prims.LexTop@tok",
+        "equation_with_fuel_FStar.List.Tot.length.fuel_instrumented",
+        "fuel_correspondence_FStar.List.Tot.length.fuel_instrumented",
+        "fuel_guarded_inversion_Prims.list", "primitive_Prims.op_Addition",
+        "projection_inverse_BoxInt_proj_0",
+        "projection_inverse_Prims.Cons_a",
+        "projection_inverse_Prims.Cons_hd",
+        "projection_inverse_Prims.Cons_tl", "projection_inverse_Prims.Nil_a",
+        "string_inversion", "subterm_ordering_Prims.Cons"
+      ],
+      0
+    ],
+    [ "ExprTypes.indent", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "ExprTypes.hdT",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_Prims.Cons",
+        "equation_with_fuel_FStar.List.Tot.length.fuel_instrumented",
+        "fuel_correspondence_FStar.List.Tot.length.fuel_instrumented",
+        "fuel_guarded_inversion_Prims.list",
+        "projection_inverse_BoxInt_proj_0",
+        "refinement_interpretation_Tm_refine_4d95cfa1ff072ae5b704e3b94d51efe0"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.tlT",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_Prims.Cons",
+        "equation_with_fuel_FStar.List.Tot.length.fuel_instrumented",
+        "fuel_correspondence_FStar.List.Tot.length.fuel_instrumented",
+        "fuel_guarded_inversion_Prims.list",
+        "projection_inverse_BoxInt_proj_0",
+        "refinement_interpretation_Tm_refine_4d95cfa1ff072ae5b704e3b94d51efe0"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.prettyPrintTy",
+      1,
+      2,
+      2,
+      [
+        "@query", "binder_x_6e858c1adb3849d9ba4233bb4bb6c170_0",
+        "constructor_distinct_ExprTypes.GArray",
+        "constructor_distinct_ExprTypes.GBool",
+        "constructor_distinct_ExprTypes.GConst",
+        "constructor_distinct_ExprTypes.GFun",
+        "constructor_distinct_ExprTypes.GUnit",
+        "constructor_distinct_ExprTypes.GVar", "data_elim_ExprTypes.GFun",
+        "data_typing_intro_ExprTypes.GBool@tok",
+        "disc_equation_ExprTypes.GArray", "disc_equation_ExprTypes.GBool",
+        "disc_equation_ExprTypes.GConst", "disc_equation_ExprTypes.GFun",
+        "disc_equation_ExprTypes.GUnit", "disc_equation_ExprTypes.GVar",
+        "equality_tok_ExprTypes.GBool@tok",
+        "equality_tok_ExprTypes.GUnit@tok",
+        "fuel_guarded_inversion_ExprTypes.gType",
+        "pretyping_6e858c1adb3849d9ba4233bb4bb6c170",
+        "subterm_ordering_ExprTypes.GConst",
+        "subterm_ordering_ExprTypes.GFun", "subterm_ordering_Prims.Mktuple2"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.prettyPrint",
+      1,
+      2,
+      2,
+      [
+        "@query", "binder_x_6b74f0037009d29c0456341c2163d847_0",
+        "constructor_distinct_Prims.Cons", "constructor_distinct_Prims.Nil",
+        "constructor_distinct_Prims.list", "constructor_distinct_Prims.unit",
+        "constructor_distinct_Tm_unit", "data_elim_ExprTypes.AND",
+        "data_elim_ExprTypes.APPEND", "data_elim_ExprTypes.APPLY",
+        "data_elim_ExprTypes.ASSIGN", "data_elim_ExprTypes.GET_ARRAY",
+        "data_elim_ExprTypes.IFTHENELSE", "data_elim_ExprTypes.LAMBDA",
+        "data_elim_ExprTypes.LET", "data_elim_ExprTypes.ROT",
+        "data_elim_ExprTypes.SEQUENCE", "data_elim_ExprTypes.SLICE",
+        "data_elim_ExprTypes.XOR", "data_elim_Prims.Cons",
+        "data_typing_intro_ExprTypes.GBool@tok",
+        "disc_equation_ExprTypes.LET", "disc_equation_Prims.Cons",
+        "disc_equation_Prims.Nil", "equation_AncillaHeap.ancHeap",
+        "equation_AncillaHeap.cond", "equation_AncillaHeap.emptyHeap",
+        "equation_ExprTypes.appFront", "equation_ExprTypes.brackets",
+        "equation_ExprTypes.indent",
+        "equation_FStar.List.Tot.compare_of_bool", "equation_Prims._assert",
+        "equation_Prims.nat",
+        "equation_with_fuel_ExprTypes.append_.fuel_instrumented",
+        "equation_with_fuel_FStar.List.Tot.append.fuel_instrumented",
+        "equation_with_fuel_FStar.List.Tot.length.fuel_instrumented",
+        "fuel_correspondence_ExprTypes.appBack.fuel_instrumented",
+        "fuel_correspondence_ExprTypes.append_.fuel_instrumented",
+        "fuel_correspondence_FStar.List.Tot.append.fuel_instrumented",
+        "fuel_correspondence_FStar.List.Tot.length.fuel_instrumented",
+        "fuel_guarded_inversion_Prims.list",
+        "fuel_irrelevance_FStar.List.Tot.append.fuel_instrumented",
+        "fuel_irrelevance_FStar.List.Tot.length.fuel_instrumented",
+        "function_token_typing_AncillaHeap.emptyHeap",
+        "function_token_typing_Prims.string", "int_inversion", "int_typing",
+        "pretyping_3862c4e8ff39bfc3871b6a47e7ff5b2e",
+        "pretyping_6e858c1adb3849d9ba4233bb4bb6c170",
+        "pretyping_ce036b6b736ef4e0bc3a9ff132a12aed",
+        "pretyping_f8666440faa91836cc5a13998af863fc",
+        "primitive_Prims.op_Addition", "primitive_Prims.op_Equality",
+        "primitive_Prims.op_LessThan", "primitive_Prims.op_Subtraction",
+        "proj_equation_AncillaHeap.MkancHeapRecord_max",
+        "projection_inverse_AncillaHeap.MkancHeapRecord_max",
+        "projection_inverse_BoxInt_proj_0",
+        "projection_inverse_Prims.Cons_a",
+        "projection_inverse_Prims.Cons_hd",
+        "projection_inverse_Prims.Cons_tl",
+        "projection_inverse_Prims.Mktuple2__1",
+        "projection_inverse_Prims.Nil_a",
+        "refinement_interpretation_Tm_refine_2a4909b61caefa2b821bf95cd31087b3",
+        "refinement_interpretation_Tm_refine_456af8f0ed2e6b59cd4a5bb4e67b3c27",
+        "refinement_interpretation_Tm_refine_ba523126f67e00e7cd55f0b92f16681d",
+        "string_inversion", "string_typing",
+        "subterm_ordering_ExprTypes.AND",
+        "subterm_ordering_ExprTypes.APPEND",
+        "subterm_ordering_ExprTypes.APPLY",
+        "subterm_ordering_ExprTypes.ARRAY",
+        "subterm_ordering_ExprTypes.ASSERT",
+        "subterm_ordering_ExprTypes.ASSIGN",
+        "subterm_ordering_ExprTypes.GET_ARRAY",
+        "subterm_ordering_ExprTypes.IFTHENELSE",
+        "subterm_ordering_ExprTypes.LAMBDA",
+        "subterm_ordering_ExprTypes.LET", "subterm_ordering_ExprTypes.ROT",
+        "subterm_ordering_ExprTypes.SEQUENCE",
+        "subterm_ordering_ExprTypes.SLICE", "subterm_ordering_ExprTypes.XOR",
+        "subterm_ordering_Prims.Mktuple2", "subterm_ordering_Prims.Mktuple3",
+        "token_correspondence_FStar.List.Tot.append.fuel_instrumented",
+        "token_correspondence_FStar.List.Tot.length.fuel_instrumented",
+        "token_correspondence_Prims.op_LessThan", "typing_ExprTypes.appBack",
+        "typing_ExprTypes.appFront", "typing_ExprTypes.append_",
+        "typing_ExprTypes.brackets", "typing_ExprTypes.indent",
+        "typing_FStar.List.Tot.append", "typing_FStar.List.Tot.length",
+        "unit_typing"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.prettyPrint",
+      2,
+      2,
+      1,
+      [
+        "@query", "binder_x_84a62770dc4fae20d5c368546b439b5f_0",
+        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "fuel_guarded_inversion_Prims.list", "subterm_ordering_Prims.Cons"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.substTy",
+      1,
+      2,
+      2,
+      [
+        "@query", "binder_x_6e858c1adb3849d9ba4233bb4bb6c170_0",
+        "data_elim_ExprTypes.GFun", "data_typing_intro_ExprTypes.GBool@tok",
+        "disc_equation_ExprTypes.GArray", "disc_equation_ExprTypes.GBool",
+        "disc_equation_ExprTypes.GConst", "disc_equation_ExprTypes.GFun",
+        "disc_equation_ExprTypes.GUnit", "disc_equation_ExprTypes.GVar",
+        "equality_tok_Prims.LexTop@tok",
+        "fuel_guarded_inversion_ExprTypes.gType",
+        "pretyping_6e858c1adb3849d9ba4233bb4bb6c170",
+        "subterm_ordering_ExprTypes.GConst",
+        "subterm_ordering_ExprTypes.GFun", "subterm_ordering_Prims.Mktuple2"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.substTy",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "ExprTypes.substgExpr",
+      2,
+      2,
+      2,
+      [
+        "@query", "binder_x_6b74f0037009d29c0456341c2163d847_0",
+        "binder_x_e305d6918cd355c7fb12a280e2690851_1",
+        "data_elim_ExprTypes.AND", "data_elim_ExprTypes.APPEND",
+        "data_elim_ExprTypes.APPLY", "data_elim_ExprTypes.ASSIGN",
+        "data_elim_ExprTypes.GET_ARRAY", "data_elim_ExprTypes.IFTHENELSE",
+        "data_elim_ExprTypes.LAMBDA", "data_elim_ExprTypes.LET",
+        "data_elim_ExprTypes.ROT", "data_elim_ExprTypes.SEQUENCE",
+        "data_elim_ExprTypes.SLICE", "data_elim_ExprTypes.XOR",
+        "data_typing_intro_ExprTypes.GBool@tok",
+        "data_typing_intro_ExprTypes.UNIT@tok",
+        "equality_tok_Prims.LexTop@tok",
+        "pretyping_6b74f0037009d29c0456341c2163d847",
+        "pretyping_6e858c1adb3849d9ba4233bb4bb6c170",
+        "pretyping_ce036b6b736ef4e0bc3a9ff132a12aed",
+        "subterm_ordering_ExprTypes.AND",
+        "subterm_ordering_ExprTypes.APPEND",
+        "subterm_ordering_ExprTypes.APPLY",
+        "subterm_ordering_ExprTypes.ARRAY",
+        "subterm_ordering_ExprTypes.ASSERT",
+        "subterm_ordering_ExprTypes.ASSIGN",
+        "subterm_ordering_ExprTypes.GET_ARRAY",
+        "subterm_ordering_ExprTypes.IFTHENELSE",
+        "subterm_ordering_ExprTypes.LAMBDA",
+        "subterm_ordering_ExprTypes.LET", "subterm_ordering_ExprTypes.ROT",
+        "subterm_ordering_ExprTypes.SEQUENCE",
+        "subterm_ordering_ExprTypes.SLICE", "subterm_ordering_ExprTypes.XOR",
+        "subterm_ordering_Prims.Mktuple2", "subterm_ordering_Prims.Mktuple3"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.substgExpr",
+      3,
+      2,
+      1,
+      [
+        "@query", "binder_x_84a62770dc4fae20d5c368546b439b5f_0",
+        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "equality_tok_Prims.LexTop@tok", "fuel_guarded_inversion_Prims.list",
+        "subterm_ordering_Prims.Cons"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.substgExpr",
+      4,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.substgExpr",
+      5,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.substgExpr",
+      6,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "ExprTypes.substTyIngExpr",
+      2,
+      2,
+      2,
+      [
+        "@query", "binder_x_6b74f0037009d29c0456341c2163d847_0",
+        "data_elim_ExprTypes.AND", "data_elim_ExprTypes.APPEND",
+        "data_elim_ExprTypes.APPLY", "data_elim_ExprTypes.ASSIGN",
+        "data_elim_ExprTypes.GET_ARRAY", "data_elim_ExprTypes.IFTHENELSE",
+        "data_elim_ExprTypes.LAMBDA", "data_elim_ExprTypes.LET",
+        "data_elim_ExprTypes.ROT", "data_elim_ExprTypes.SEQUENCE",
+        "data_elim_ExprTypes.SLICE", "data_elim_ExprTypes.XOR",
+        "data_typing_intro_ExprTypes.GBool@tok",
+        "data_typing_intro_ExprTypes.UNIT@tok",
+        "equality_tok_Prims.LexTop@tok",
+        "pretyping_6b74f0037009d29c0456341c2163d847",
+        "pretyping_6e858c1adb3849d9ba4233bb4bb6c170",
+        "pretyping_ce036b6b736ef4e0bc3a9ff132a12aed",
+        "subterm_ordering_ExprTypes.AND",
+        "subterm_ordering_ExprTypes.APPEND",
+        "subterm_ordering_ExprTypes.APPLY",
+        "subterm_ordering_ExprTypes.ARRAY",
+        "subterm_ordering_ExprTypes.ASSERT",
+        "subterm_ordering_ExprTypes.ASSIGN",
+        "subterm_ordering_ExprTypes.GET_ARRAY",
+        "subterm_ordering_ExprTypes.IFTHENELSE",
+        "subterm_ordering_ExprTypes.LAMBDA",
+        "subterm_ordering_ExprTypes.LET", "subterm_ordering_ExprTypes.ROT",
+        "subterm_ordering_ExprTypes.SEQUENCE",
+        "subterm_ordering_ExprTypes.SLICE", "subterm_ordering_ExprTypes.XOR",
+        "subterm_ordering_Prims.Mktuple2", "subterm_ordering_Prims.Mktuple3"
+      ],
+      0
+    ],
+    [
+      "ExprTypes.substTyIngExpr",
+      3,
+      2,
+      1,
+      [
+        "@query", "binder_x_84a62770dc4fae20d5c368546b439b5f_0",
+        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "equality_tok_Prims.LexTop@tok", "fuel_guarded_inversion_Prims.list",
+        "projection_inverse_Prims.Cons_hd",
+        "projection_inverse_Prims.Cons_tl", "subterm_ordering_Prims.Cons"
+      ],
+      0
+    ]
+  ]
+]

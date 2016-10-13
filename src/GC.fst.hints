@@ -1,0 +1,829 @@
+[
+  "”=Û\u00120¼\u000föç\u0016Í“\u0015#lŠ",
+  [
+    [
+      "GC.circGCState",
+      1,
+      2,
+      1,
+      [
+        "@query", "assumption_BoolExp.boolExp_haseq",
+        "assumption_Prims.HasEq_bool", "assumption_Prims.HasEq_int"
+      ],
+      0
+    ],
+    [
+      "GC.circGCState",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCState",
+      3,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.HasEq_bool", "assumption_Prims.HasEq_int"
+      ],
+      0
+    ],
+    [
+      "GC.circGCState",
+      4,
+      2,
+      1,
+      [
+        "@query", "assumption_BoolExp.boolExp_haseq",
+        "assumption_Prims.HasEq_int"
+      ],
+      0
+    ],
+    [
+      "GC.circGCState",
+      5,
+      2,
+      1,
+      [
+        "@query", "assumption_BoolExp.boolExp_haseq",
+        "assumption_Prims.HasEq_bool", "assumption_Prims.HasEq_int"
+      ],
+      0
+    ],
+    [
+      "GC.circGCState",
+      6,
+      2,
+      1,
+      [
+        "@query", "assumption_AncillaHeap.ancHeapRecord_haseq",
+        "assumption_BoolExp.boolExp_haseq", "assumption_Circuit.gate_haseq",
+        "assumption_Prims.HasEq_bool", "assumption_Prims.HasEq_int",
+        "assumption_Prims.list_haseq", "assumption_Total.t_haseq",
+        "data_elim_Total.Mkt", "equation_AncillaHeap.ancHeap",
+        "equation_Prims.eqtype", "fuel_guarded_inversion_Total.t",
+        "function_token_typing_Prims.bool",
+        "haseqTm_refine_456af8f0ed2e6b59cd4a5bb4e67b3c27",
+        "kinding_BoolExp.boolExp@tok", "kinding_Circuit.gate@tok",
+        "pretyping_ae567c2fb75be05905677af440075565",
+        "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
+      ],
+      0
+    ],
+    [
+      "GC.MkcircGCState.symtab",
+      1,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.MkcircGCState.isanc",
+      1,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.HasEq_bool", "assumption_Prims.HasEq_int"
+      ],
+      0
+    ],
+    [
+      "GC.MkcircGCState.cvals",
+      1,
+      2,
+      1,
+      [
+        "@query", "assumption_BoolExp.boolExp_haseq",
+        "assumption_Prims.HasEq_int"
+      ],
+      0
+    ],
+    [
+      "GC.garbageCollect",
+      1,
+      2,
+      1,
+      [
+        "@query", "bool_inversion", "data_elim_GC.MkcircGCState",
+        "data_elim_Total.Mkt", "equality_tok_BoolExp.BFalse@tok",
+        "equation_Prims.eqtype", "equation_Total.lookup",
+        "fuel_guarded_inversion_GC.circGCState",
+        "fuel_guarded_inversion_Total.t",
+        "pretyping_3ad6abd43c9a73c5e7f6675387388c43",
+        "pretyping_ae567c2fb75be05905677af440075565",
+        "pretyping_f537159ed795b314b4e58c260361ae86",
+        "proj_equation_GC.MkcircGCState_cvals",
+        "proj_equation_GC.MkcircGCState_isanc",
+        "typing_GC.MkcircGCState.cvals", "typing_GC.MkcircGCState.isanc",
+        "typing_Total.lookup", "typing_tok_BoolExp.BFalse@tok"
+      ],
+      0
+    ],
+    [
+      "GC.garbageCollect",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_BoolExp.boolExp_haseq" ],
+      0
+    ],
+    [
+      "GC.garbageCollect",
+      3,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.garbageCollect",
+      4,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.garbageCollect",
+      5,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_bool" ],
+      0
+    ],
+    [
+      "GC.garbageCollect",
+      6,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.garbageCollect",
+      7,
+      2,
+      1,
+      [ "@query", "assumption_BoolExp.boolExp_haseq" ],
+      0
+    ],
+    [
+      "GC.garbageCollect",
+      8,
+      2,
+      1,
+      [ "@query", "assumption_BoolExp.boolExp_haseq" ],
+      0
+    ],
+    [
+      "GC.garbageCollect",
+      9,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.garbageCollect",
+      10,
+      2,
+      1,
+      [ "@query", "assumption_BoolExp.boolExp_haseq" ],
+      0
+    ],
+    [
+      "GC.garbageCollect",
+      11,
+      2,
+      1,
+      [ "@query", "assumption_BoolExp.boolExp_haseq" ],
+      0
+    ],
+    [
+      "GC.garbageCollect",
+      12,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCInit",
+      1,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCInit",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCInit",
+      3,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_bool" ],
+      0
+    ],
+    [
+      "GC.circGCInit",
+      4,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCInit",
+      5,
+      2,
+      1,
+      [ "@query", "assumption_BoolExp.boolExp_haseq" ],
+      0
+    ],
+    [
+      "GC.circGCInit",
+      6,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [ "GC.circGCInit", 7, 2, 1, [ "@query" ], 0 ],
+    [ "GC.circGCAlloc", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "GC.circGCAlloc",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCAlloc",
+      3,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCAlloc",
+      4,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_bool" ],
+      0
+    ],
+    [
+      "GC.circGCAlloc",
+      5,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCAlloc",
+      6,
+      2,
+      1,
+      [ "@query", "assumption_BoolExp.boolExp_haseq" ],
+      0
+    ],
+    [
+      "GC.circGCAlloc",
+      7,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [ "GC.circGCAssign", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "GC.circGCAssign",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      3,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      4,
+      2,
+      1,
+      [ "@query", "assumption_BoolExp.boolExp_haseq" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      5,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      6,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_bool" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      7,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      8,
+      2,
+      1,
+      [ "@query", "assumption_BoolExp.boolExp_haseq" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      9,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      10,
+      2,
+      1,
+      [ "@query", "assumption_BoolExp.boolExp_haseq" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      11,
+      2,
+      1,
+      [ "@query", "assumption_BoolExp.boolExp_haseq" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      12,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      13,
+      2,
+      1,
+      [ "@query", "assumption_BoolExp.boolExp_haseq" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      14,
+      2,
+      1,
+      [ "@query", "assumption_BoolExp.boolExp_haseq" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      15,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      16,
+      2,
+      1,
+      [ "@query", "assumption_BoolExp.boolExp_haseq" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      17,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      18,
+      2,
+      1,
+      [ "@query", "assumption_BoolExp.boolExp_haseq" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      19,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      20,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      21,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      22,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_bool" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      23,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      24,
+      2,
+      1,
+      [ "@query", "assumption_BoolExp.boolExp_haseq" ],
+      0
+    ],
+    [
+      "GC.circGCAssign",
+      25,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCEval",
+      1,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_bool" ],
+      0
+    ],
+    [
+      "GC.circGCEval",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCEval",
+      3,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCEval",
+      4,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.circGCInterp",
+      1,
+      2,
+      1,
+      [ "@query", "assumption_GC.circGCState_haseq" ],
+      0
+    ],
+    [
+      "GC.allocNcircGC",
+      1,
+      2,
+      1,
+      [
+        "@query", "binder_x_6d0180d4fcd10237cf0d87dd345d77cc_1",
+        "equality_tok_Prims.LexTop@tok", "int_inversion", "int_typing",
+        "primitive_Prims.op_LessThanOrEqual",
+        "primitive_Prims.op_Subtraction", "projection_inverse_BoxInt_proj_0",
+        "well-founded-ordering-on-nat"
+      ],
+      0
+    ],
+    [
+      "GC.allocNcircGC",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.allocNcircGC",
+      3,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.allocNcircGC",
+      4,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_bool" ],
+      0
+    ],
+    [
+      "GC.allocNcircGC",
+      5,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.allocNcircGC",
+      6,
+      2,
+      1,
+      [ "@query", "assumption_BoolExp.boolExp_haseq" ],
+      0
+    ],
+    [
+      "GC.allocNcircGC",
+      7,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [ "GC.allocTycircGC", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "GC.allocTycircGC",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.allocTycircGC",
+      3,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.allocTycircGC",
+      4,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_bool" ],
+      0
+    ],
+    [
+      "GC.allocTycircGC",
+      5,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.allocTycircGC",
+      6,
+      2,
+      1,
+      [ "@query", "assumption_BoolExp.boolExp_haseq" ],
+      0
+    ],
+    [
+      "GC.allocTycircGC",
+      7,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.lookup_Lst_gc",
+      1,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.lookup_Lst_gc",
+      2,
+      2,
+      1,
+      [
+        "@query", "binder_x_45b5ec812472bc4115943497241d5053_1",
+        "binder_x_5905ed9e4dad1ba4ed49ce64b8c65d78_0", "bool_inversion",
+        "constructor_distinct_PairHeap.Empty", "disc_equation_ExprTypes.LOC",
+        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "equality_tok_Prims.LexTop@tok", "equation_AncillaHeap.ancHeap",
+        "equation_AncillaHeap.cond", "equation_AncillaHeap.emptyHeap",
+        "equation_with_fuel_Interpreter.isVal_lst.fuel_instrumented",
+        "equation_with_fuel_PairHeap.is_heap.fuel_instrumented",
+        "fuel_correspondence_Interpreter.isVal_lst.fuel_instrumented",
+        "fuel_correspondence_PairHeap.is_heap.fuel_instrumented",
+        "fuel_guarded_inversion_Total.t",
+        "fuel_irrelevance_Interpreter.isVal_lst.fuel_instrumented",
+        "function_token_typing_AncillaHeap.emptyHeap",
+        "proj_equation_AncillaHeap.MkancHeapRecord_hp",
+        "proj_equation_Prims.Cons_hd",
+        "projection_inverse_AncillaHeap.MkancHeapRecord_hp",
+        "projection_inverse_PairHeap.Empty__a",
+        "projection_inverse_Prims.Cons_tl",
+        "refinement_interpretation_Tm_refine_456af8f0ed2e6b59cd4a5bb4e67b3c27",
+        "refinement_interpretation_Tm_refine_fc003454349819ae5ed8a644efa3342e",
+        "subterm_ordering_Prims.Cons", "typing_Interpreter.isVal_lst"
+      ],
+      0
+    ],
+    [
+      "GC.lookup_Lst_gc",
+      3,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.lookup_Lst_gc",
+      4,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [ "GC.findGarbage", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "GC.findGarbage",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.findGarbage",
+      3,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.findGarbage",
+      4,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.garbageCollector",
+      1,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.garbageCollector",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.garbageCollector",
+      3,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.garbageCollector",
+      4,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.garbageCollector",
+      5,
+      2,
+      1,
+      [ "@query", "assumption_GC.circGCState_haseq" ],
+      0
+    ],
+    [
+      "GC.garbageCollector",
+      6,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.compileGCCirc",
+      1,
+      2,
+      1,
+      [
+        "@query", "bool_inversion", "constructor_distinct_ExprTypes.ARRAY",
+        "disc_equation_ExprTypes.ARRAY", "disc_equation_ExprTypes.LAMBDA",
+        "disc_equation_ExprTypes.LOC", "disc_equation_ExprTypes.UNIT",
+        "disc_equation_Util.Err", "disc_equation_Util.Val",
+        "equation_GC.allocTycircGC", "equation_Interpreter.config",
+        "equation_with_fuel_Interpreter.isVal.fuel_instrumented",
+        "equation_with_fuel_Interpreter.isVal_lst.fuel_instrumented",
+        "fuel_correspondence_Interpreter.isVal.fuel_instrumented",
+        "fuel_correspondence_Interpreter.isVal_lst.fuel_instrumented",
+        "fuel_guarded_inversion_Util.result",
+        "fuel_irrelevance_Interpreter.isVal_lst.fuel_instrumented",
+        "projection_inverse_ExprTypes.ARRAY__0", "typing_GC.allocTycircGC",
+        "typing_Interpreter.isVal_lst"
+      ],
+      0
+    ],
+    [
+      "GC.compileGCCirc",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.compileGCCirc",
+      3,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "GC.compileGCCirc",
+      4,
+      2,
+      1,
+      [ "@query", "assumption_GC.circGCState_haseq" ],
+      0
+    ]
+  ]
+]

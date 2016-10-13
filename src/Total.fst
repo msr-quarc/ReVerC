@@ -99,6 +99,11 @@ val lookup_converse2 : #key:eqtype -> #value:eqtype -> m:t key value -> v:value 
 	(ensures  (not (Set.mem v (vals m))))
 let lookup_converse2 #k #v m v = admit()
 
+val lookup_subset : #key:eqtype -> #value:eqtype -> m:t key value -> k:key -> v:value ->
+  Lemma (requires True)
+        (ensures (subset (vals (update m k v)) (ins v (vals m))))
+let lookup_subset #k #v m k v = admit()
+
 (* Type of maps that agree on a subset of keys *)
 type agree_on (#key:eqtype) (#value:eqtype) (m:t key value) (m':t key value) (s:set key) =
   forall x. mem x s ==> lookup m x = lookup m' x

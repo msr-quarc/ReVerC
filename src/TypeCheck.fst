@@ -15,91 +15,91 @@ open ExprTypes
    framework may be used later to better effect when features
    are added *)
 
-type ctxt = Partial.t string GType
+type ctxt = Partial.t string gType
 
-type wellTypedCtxt : ctxt -> string -> GType -> Type =
-  | Ctxt_zero : s:string -> ty:GType -> xs:ctxt -> wellTypedCtxt ((s, ty)::xs) s ty
-  | Ctxt_succ : s:string -> ty:GType -> x:(string * GType){~(fst x = s)} -> xs:ctxt ->
+type wellTypedCtxt : ctxt -> string -> gType -> Type =
+  | Ctxt_zero : s:string -> ty:gType -> xs:ctxt -> wellTypedCtxt ((s, ty)::xs) s ty
+  | Ctxt_succ : s:string -> ty:gType -> x:(string * gType){~(fst x = s)} -> xs:ctxt ->
                 wellTypedCtxt xs s ty ->
                 wellTypedCtxt (x::xs) s ty
 
-type subType : GType -> GType -> Type =
-  | Sub_refl : #t1:GType -> subType t1 t1
+type subType : gType -> gType -> Type =
+  | Sub_refl : #t1:gType -> subType t1 t1
   | Sub_arry : n:nat -> m:fin n -> subType (GArray n) (GArray m)
-  | Sub_lam  : #t1:GType -> #t2:GType -> #s1:GType -> #s2:GType ->
+  | Sub_lam  : #t1:gType -> #t2:gType -> #s1:gType -> #s2:gType ->
                subType s1 t1 ->
                subType t2 s2 ->
                subType (GFun (t1, t2)) (GFun (s1, s2))
 
-type wellTyped : ctxt -> GExpr -> GType -> Type =
-  | Wt_let : #ctx:ctxt -> #s:string -> #t1:GExpr -> #t2:GExpr -> #ty1:GType -> #ty2:GType ->
+type wellTyped : ctxt -> gExpr -> gType -> Type =
+  | Wt_let : #ctx:ctxt -> #s:string -> #t1:gExpr -> #t2:gExpr -> #ty1:gType -> #ty2:gType ->
              wellTyped ctx t1 ty1 ->
              wellTyped ((s, ty1)::ctx) t2 ty2 ->
              wellTyped ctx (LET (s, t1, t2)) ty2
-  | Wt_lam : #ctx:ctxt -> #s:string -> #ty1:GType -> #t:GExpr -> #ty2:GType ->
+  | Wt_lam : #ctx:ctxt -> #s:string -> #ty1:gType -> #t:gExpr -> #ty2:gType ->
              wellTyped ((s, ty1)::ctx) t ty2 ->
              wellTyped ctx (LAMBDA (s, ty1, t)) (GFun (ty1, ty2))
-  | Wt_apl : #ctx:ctxt -> #t1:GExpr -> #t2:GExpr -> #ty1:GType -> #ty2:GType -> #ty3:GType ->
+  | Wt_apl : #ctx:ctxt -> #t1:gExpr -> #t2:gExpr -> #ty1:gType -> #ty2:gType -> #ty3:gType ->
              wellTyped ctx t1 (GFun (ty1, ty2)) ->
              wellTyped ctx t2 ty3 ->
              subType ty3 ty1 ->
              wellTyped ctx (APPLY (t1, t2)) ty2
-  | Wt_ite : #ctx:ctxt -> #t1:GExpr -> #t2:GExpr -> #t3:GExpr -> #ty1:GType -> #ty2:GType -> #ty3:GType ->
+  | Wt_ite : #ctx:ctxt -> #t1:gExpr -> #t2:gExpr -> #t3:gExpr -> #ty1:gType -> #ty2:gType -> #ty3:gType ->
              wellTyped ctx t1 GBool ->
              wellTyped ctx t2 ty1 ->
              wellTyped ctx t3 ty2 ->
              subType ty1 ty3 ->
              subType ty2 ty3 ->
              wellTyped ctx (IFTHENELSE (t1, t2, t3)) ty3
-  | Wt_seq : #ctx:ctxt -> #t1:GExpr -> #t2:GExpr -> #ty:GType ->
+  | Wt_seq : #ctx:ctxt -> #t1:gExpr -> #t2:gExpr -> #ty:gType ->
              wellTyped ctx t1 GUnit ->
              wellTyped ctx t2 ty ->
              wellTyped ctx (SEQUENCE (t1, t2)) ty
-  | Wt_ass : #ctx:ctxt -> #t1:GExpr -> #t2:GExpr ->
+  | Wt_ass : #ctx:ctxt -> #t1:gExpr -> #t2:gExpr ->
              wellTyped ctx t1 GBool ->
              wellTyped ctx t2 GBool ->
              wellTyped ctx (ASSIGN (t1, t2)) GUnit
   | Wt_unt : #ctx:ctxt -> wellTyped ctx UNIT GUnit
-  | Wt_xor : #ctx:ctxt -> #t1:GExpr -> #t2:GExpr ->
+  | Wt_xor : #ctx:ctxt -> #t1:gExpr -> #t2:gExpr ->
              wellTyped ctx t1 GBool ->
              wellTyped ctx t2 GBool ->
              wellTyped ctx (XOR (t1, t2)) GBool
-  | Wt_and : #ctx:ctxt -> #t1:GExpr -> #t2:GExpr ->
+  | Wt_and : #ctx:ctxt -> #t1:gExpr -> #t2:gExpr ->
              wellTyped ctx t1 GBool ->
              wellTyped ctx t2 GBool ->
              wellTyped ctx (AND (t1, t2)) GBool
   | Wt_bl  : #ctx:ctxt -> b:bool -> wellTyped ctx (BOOL b) GBool
-  | Wt_apn : #ctx:ctxt -> #t1:GExpr -> #t2:GExpr -> #n:nat -> #m:nat ->
+  | Wt_apn : #ctx:ctxt -> #t1:gExpr -> #t2:gExpr -> #n:nat -> #m:nat ->
              wellTyped ctx t1 (GArray n) ->
              wellTyped ctx t2 (GArray m) ->
              wellTyped ctx (APPEND (t1, t2)) (GArray (n + m))
-  | Wt_rot : #ctx:ctxt -> #t:GExpr -> #n:nat -> i:fin n ->
+  | Wt_rot : #ctx:ctxt -> #t:gExpr -> #n:nat -> i:fin n ->
              wellTyped ctx t (GArray n) ->
              wellTyped ctx (ROT (i, t)) (GArray n)
-  | Wt_slc : #ctx:ctxt -> #t:GExpr -> #n:nat -> i:nat -> j:nat{i <= j && j < n} ->
+  | Wt_slc : #ctx:ctxt -> #t:gExpr -> #n:nat -> i:nat -> j:nat{i <= j && j < n} ->
              wellTyped ctx t (GArray n) ->
              wellTyped ctx (SLICE (t, i, j)) (GArray (j - i))
   | Wt_arz : #ctx:ctxt -> wellTyped ctx (ARRAY []) (GArray 0)
-  | Wt_ars : #ctx:ctxt -> #t:GExpr -> #ts:list GExpr -> #n:nat ->
+  | Wt_ars : #ctx:ctxt -> #t:gExpr -> #ts:list gExpr -> #n:nat ->
              wellTyped ctx t GBool ->
              wellTyped ctx (ARRAY ts) (GArray n) ->
              wellTyped ctx (ARRAY (t::ts)) (GArray (n+1))
-  | Wt_gta : #ctx:ctxt -> #t:GExpr -> #n:nat -> i:fin n ->
+  | Wt_gta : #ctx:ctxt -> #t:gExpr -> #n:nat -> i:fin n ->
              wellTyped ctx t (GArray n) ->
              wellTyped ctx (GET_ARRAY (t, i)) GBool
-  | Wt_get : #ctx:ctxt -> #s:string -> #ty:GType ->
+  | Wt_get : #ctx:ctxt -> #s:string -> #ty:gType ->
              wellTypedCtxt ctx s ty ->
              wellTyped ctx (VAR s) ty
-  | Wt_ast : #ctx:ctxt -> #t:GExpr ->
+  | Wt_ast : #ctx:ctxt -> #t:gExpr ->
              wellTyped ctx t GBool ->
              wellTyped ctx (ASSERT t) GUnit
   | Wt_loc : #ctx:ctxt -> i:int ->
              wellTyped ctx (LOC i) GBool
-  | Wt_bex : #ctx:ctxt -> bexp:BoolExp ->
+  | Wt_bex : #ctx:ctxt -> bexp:boolExp ->
              wellTyped ctx (BEXP bexp) GBool
 
-val subtype : t1:GType -> t2:GType -> Tot bool
-val suptype : t1:GType -> t2:GType -> Tot bool
+val subtype : t1:gType -> t2:gType -> Tot bool
+val suptype : t1:gType -> t2:gType -> Tot bool
 let rec subtype t1 t2 = if t1 = t2 then true else match (t1, t2) with
   | (GArray i, GArray j) -> j <= i
   | (GConst t1, GConst t2) -> subtype t1 t2
@@ -111,13 +111,13 @@ and suptype t1 t2 = if t1 = t2 then true else match (t1, t2) with
   | (GFun (t1, t2), GFun (s1, s2)) -> (subtype t1 s1) && (suptype t2 s2)
   | _ -> false
 
-val welltyctx_imp_findctx : ctx:ctxt -> s:string -> ty:GType -> wellTypedCtxt ctx s ty ->
+val welltyctx_imp_findctx : ctx:ctxt -> s:string -> ty:gType -> wellTypedCtxt ctx s ty ->
   Lemma (find ctx s = Some ty)
 let rec welltyctx_imp_findctx ctx s ty h = match h with
   | Ctxt_zero s ty xs -> ()
   | Ctxt_succ s ty x xs h' -> welltyctx_imp_findctx xs s ty h'
 
-val findctx_imp_welltyctx : ctx:ctxt -> s:string -> ty:GType -> h:unit{find ctx s = Some ty} ->
+val findctx_imp_welltyctx : ctx:ctxt -> s:string -> ty:gType -> h:unit{find ctx s = Some ty} ->
   wellTypedCtxt ctx s ty
 let rec findctx_imp_welltyctx ctx s ty h = match ctx with
   | (x,y)::xs -> if x = s && y = ty
@@ -159,7 +159,7 @@ let rec normalize iexp = match iexp with
     end
   | _ -> iexp
 
-val totExp : GType -> Tot tExp
+val totExp : gType -> Tot tExp
 let rec totExp ty = match ty with
   | GUnit -> TUnit
   | GBool -> TBool
@@ -168,8 +168,8 @@ let rec totExp ty = match ty with
   | GConst ty -> totExp ty
   | GFun (ty1, ty2) -> TArrow (totExp ty1, totExp ty2)
 
-val toGType : tExp -> GType
-let rec toGType texp = match texp with
+val togType : tExp -> gType
+let rec togType texp = match texp with
   | TUnit -> GUnit
   | TBool -> GBool
   | TVar i -> GVar i
@@ -178,7 +178,7 @@ let rec toGType texp = match texp with
       | ILit n -> GArray n
       | _ -> GArray 0
     end
-  | TArrow (texp1, texp2) -> GFun (toGType texp1, toGType texp2)
+  | TArrow (texp1, texp2) -> GFun (togType texp1, togType texp2)
 
 (* Constraints (equality or less than) over type expressions *)
 type constraint =
@@ -187,8 +187,8 @@ type constraint =
 
 type ctxt' = Partial.t string tExp
 
-val inferTypes : int -> ctxt' -> tm:GExpr -> Tot (int * list constraint * list constraint * tExp) (decreases %[tm;0])
-val inferTypes_lst : int -> ctxt' -> l:list GExpr -> Tot (int * list constraint * list constraint) (decreases %[l;1])
+val inferTypes : int -> ctxt' -> tm:gExpr -> Tot (int * list constraint * list constraint * tExp) (decreases %[tm;0])
+val inferTypes_lst : int -> ctxt' -> l:list gExpr -> Tot (int * list constraint * list constraint) (decreases %[l;1])
 let rec inferTypes top ctx gexp = match gexp with
   | LET (x, t1, t2) ->
     let (top', ec1, lc1, ty1) = inferTypes top ctx t1 in
@@ -236,7 +236,7 @@ let rec inferTypes top ctx gexp = match gexp with
       (top'', e1::e2::(ec1@ec2), lc1@lc2, TBool)
   | ARRAY tlst ->
     let (top', ec, lc) = inferTypes_lst top ctx tlst in
-      (top', ec, lc, TArray (ILit (FStar.List.lengthT tlst)))
+      (top', ec, lc, TArray (ILit (FStar.List.Tot.length tlst)))
   | GET_ARRAY (t, i) ->
     let (top', ec1, lc1, ty1) = inferTypes top ctx t in
     let e1 = TCons (ty1, TArray (IVar top')) in
@@ -389,7 +389,7 @@ let rec unify_eq top eqs bnds subs = match eqs with
 
 let rec applySubs subs tm = match subs with
   | [] -> tm
-  | (TCons (TVar i, texp))::xs -> applySubs xs (substTyInGExpr tm i (toGType texp))
+  | (TCons (TVar i, texp))::xs -> applySubs xs (substTyIngExpr tm i (togType texp))
   | _ -> failwith "impossible"
 
 let annotate tm =

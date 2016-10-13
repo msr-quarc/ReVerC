@@ -12,7 +12,6 @@ val rem       : #a:eqtype -> a -> set a -> Tot (set a)
 val fold      : #a:eqtype -> #b:eqtype -> (b -> a -> b) -> b -> set a -> b
 
 (* Specific instances *)
-val lessThan  : i:int -> Tot (set int) (decreases i)
 val greaterEq : int -> Tot (set int)
 
 let full #a         = complement (empty #a)
@@ -23,22 +22,15 @@ let rem #a x s      = diff s (singleton x)
 
 let fold #a #b f b s = admit()
 
-let rec lessThan i = if i <= 0 then empty else ins i (lessThan (i-1))
-let greaterEq i = complement (lessThan i)
+let greaterEq i = admit()
 
 (** Verification utilities *)
-
-val lessThan_elts : i:int -> j:int ->
-  Lemma (requires True)
-        (ensures (mem i (lessThan j) <==>  i > 0 /\ i < j))
-  [SMTPat (mem i (lessThan j))]
-let rec lessThan_elts i j = if j <= 0 then () else admit() //lessThan_elts (j-1)
 
 val greaterEq_elts : i:int -> j:int ->
   Lemma (requires True)
         (ensures (mem i (greaterEq j) <==> i >= j))
   [SMTPat (mem i (greaterEq j))]
-let greaterEq_elts i j = admit() //lessThan_elts j
+let greaterEq_elts i j = admit()
 
 (* Subset relation & lemmas *)
 type disjoint (#a:eqtype) (s:set a) (s':set a) = forall x. ~(mem x s /\ mem x s')

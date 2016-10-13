@@ -1,0 +1,2486 @@
+[
+  "»Iï1æ\u0003fü¨Ow\u0019ly]¨",
+  [
+    [
+      "TypeCheck.ctxt",
+      1,
+      2,
+      1,
+      [
+        "@query", "assumption_ExprTypes.gType_haseq",
+        "assumption_Prims.HasEq_string"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.wellTypedCtxt",
+      1,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [ "TypeCheck.wellTypedCtxt", 2, 2, 1, [ "@query" ], 0 ],
+    [ "TypeCheck.wellTypedCtxt", 3, 2, 1, [ "@query" ], 0 ],
+    [ "TypeCheck.wellTypedCtxt", 4, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.wellTypedCtxt",
+      5,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "TypeCheck.wellTypedCtxt",
+      6,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "TypeCheck.wellTypedCtxt",
+      7,
+      2,
+      1,
+      [
+        "@query", "assumption_ExprTypes.gType_haseq",
+        "assumption_Prims.HasEq_string", "assumption_Prims.list_haseq",
+        "assumption_Prims.tuple2_haseq", "equation_Partial.t",
+        "equation_TypeCheck.ctxt", "function_token_typing_Prims.string",
+        "haseqTm_refine_b9851af6b58c2f445f41f7800849b0c1",
+        "kinding_ExprTypes.gType@tok", "kinding_Prims.tuple2@tok",
+        "pretyping_6e858c1adb3849d9ba4233bb4bb6c170",
+        "pretyping_ce036b6b736ef4e0bc3a9ff132a12aed"
+      ],
+      0
+    ],
+    [ "TypeCheck.Ctxt_zero.s", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Ctxt_zero.s",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Ctxt_zero",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_f556bb1a84818e0cd8e7ac63b9dc994f",
+        "string_inversion"
+      ],
+      0
+    ],
+    [ "TypeCheck.Ctxt_zero.ty", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Ctxt_zero.ty",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Ctxt_zero",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_f556bb1a84818e0cd8e7ac63b9dc994f",
+        "string_inversion"
+      ],
+      0
+    ],
+    [ "TypeCheck.Ctxt_zero.xs", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Ctxt_zero.xs",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Ctxt_zero",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_f556bb1a84818e0cd8e7ac63b9dc994f",
+        "string_inversion"
+      ],
+      0
+    ],
+    [ "TypeCheck.Ctxt_succ.s", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Ctxt_succ.s",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Ctxt_succ",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_2fe48e89c6ce44b1f4e211356f272b5d",
+        "string_inversion"
+      ],
+      0
+    ],
+    [ "TypeCheck.Ctxt_succ.ty", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Ctxt_succ.ty",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Ctxt_succ",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_2fe48e89c6ce44b1f4e211356f272b5d",
+        "string_inversion"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.Ctxt_succ.x",
+      1,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [ "TypeCheck.Ctxt_succ.x", 2, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Ctxt_succ.x",
+      3,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Ctxt_succ",
+        "pretyping_ce036b6b736ef4e0bc3a9ff132a12aed",
+        "proj_equation_TypeCheck.Ctxt_succ_s",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Ctxt_succ_s",
+        "refinement_interpretation_Tm_refine_2fe48e89c6ce44b1f4e211356f272b5d",
+        "refinement_interpretation_Tm_refine_b9851af6b58c2f445f41f7800849b0c1",
+        "string_inversion"
+      ],
+      0
+    ],
+    [ "TypeCheck.Ctxt_succ.xs", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Ctxt_succ.xs",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Ctxt_succ",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_2fe48e89c6ce44b1f4e211356f272b5d",
+        "string_inversion"
+      ],
+      0
+    ],
+    [ "TypeCheck.Ctxt_succ._4", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Ctxt_succ._4",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Ctxt_succ",
+        "proj_equation_TypeCheck.Ctxt_succ_s",
+        "proj_equation_TypeCheck.Ctxt_succ_ty",
+        "proj_equation_TypeCheck.Ctxt_succ_xs",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Ctxt_succ_s",
+        "projection_inverse_TypeCheck.Ctxt_succ_ty",
+        "projection_inverse_TypeCheck.Ctxt_succ_xs",
+        "refinement_interpretation_Tm_refine_2fe48e89c6ce44b1f4e211356f272b5d",
+        "string_inversion"
+      ],
+      0
+    ],
+    [ "TypeCheck.subType", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.subType",
+      2,
+      2,
+      1,
+      [
+        "@query", "assumption_ExprTypes.gType_haseq",
+        "assumption_Prims.HasEq_int", "equation_Prims.nat",
+        "equation_Util.fin",
+        "haseqTm_refine_2fd2ca5ba5888b39b1231badbe38fb2e",
+        "haseqTm_refine_ba523126f67e00e7cd55f0b92f16681d"
+      ],
+      0
+    ],
+    [ "TypeCheck.Sub_refl.t1", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Sub_refl.t1",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Sub_refl",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_2cc3bb9b0bf099a67544d3d8d764f38d"
+      ],
+      0
+    ],
+    [ "TypeCheck.Sub_arry.n", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Sub_arry.n",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Sub_arry",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_7d08d5e70d6cc171d74f57e0cd06ce74"
+      ],
+      0
+    ],
+    [ "TypeCheck.Sub_arry.m", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Sub_arry.m",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Sub_arry",
+        "proj_equation_TypeCheck.Sub_arry_n",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Sub_arry_n",
+        "refinement_interpretation_Tm_refine_7d08d5e70d6cc171d74f57e0cd06ce74"
+      ],
+      0
+    ],
+    [ "TypeCheck.Sub_lam.t1", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Sub_lam.t1",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Sub_lam",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_cc490ce5fbfbc378639db86b58272705"
+      ],
+      0
+    ],
+    [ "TypeCheck.Sub_lam.t2", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Sub_lam.t2",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Sub_lam",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_cc490ce5fbfbc378639db86b58272705"
+      ],
+      0
+    ],
+    [ "TypeCheck.Sub_lam.s1", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Sub_lam.s1",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Sub_lam",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_cc490ce5fbfbc378639db86b58272705"
+      ],
+      0
+    ],
+    [ "TypeCheck.Sub_lam.s2", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Sub_lam.s2",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Sub_lam",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_cc490ce5fbfbc378639db86b58272705"
+      ],
+      0
+    ],
+    [ "TypeCheck.Sub_lam._4", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Sub_lam._4",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Sub_lam",
+        "proj_equation_TypeCheck.Sub_lam_s1",
+        "proj_equation_TypeCheck.Sub_lam_t1",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Sub_lam_s1",
+        "projection_inverse_TypeCheck.Sub_lam_t1",
+        "refinement_interpretation_Tm_refine_cc490ce5fbfbc378639db86b58272705"
+      ],
+      0
+    ],
+    [ "TypeCheck.Sub_lam._5", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Sub_lam._5",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Sub_lam",
+        "proj_equation_TypeCheck.Sub_lam_s2",
+        "proj_equation_TypeCheck.Sub_lam_t2",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Sub_lam_s2",
+        "projection_inverse_TypeCheck.Sub_lam_t2",
+        "refinement_interpretation_Tm_refine_cc490ce5fbfbc378639db86b58272705"
+      ],
+      0
+    ],
+    [ "TypeCheck.wellTyped", 1, 2, 1, [ "@query" ], 0 ],
+    [ "TypeCheck.wellTyped", 2, 2, 1, [ "@query" ], 0 ],
+    [ "TypeCheck.wellTyped", 3, 2, 1, [ "@query" ], 0 ],
+    [ "TypeCheck.wellTyped", 4, 2, 1, [ "@query" ], 0 ],
+    [ "TypeCheck.wellTyped", 5, 2, 1, [ "@query" ], 0 ],
+    [ "TypeCheck.wellTyped", 6, 2, 1, [ "@query" ], 0 ],
+    [ "TypeCheck.wellTyped", 7, 2, 1, [ "@query" ], 0 ],
+    [ "TypeCheck.wellTyped", 8, 2, 1, [ "@query" ], 0 ],
+    [ "TypeCheck.wellTyped", 9, 2, 1, [ "@query" ], 0 ],
+    [ "TypeCheck.wellTyped", 10, 2, 1, [ "@query" ], 0 ],
+    [ "TypeCheck.wellTyped", 11, 2, 1, [ "@query" ], 0 ],
+    [ "TypeCheck.wellTyped", 12, 2, 1, [ "@query" ], 0 ],
+    [ "TypeCheck.wellTyped", 13, 2, 1, [ "@query" ], 0 ],
+    [ "TypeCheck.wellTyped", 14, 2, 1, [ "@query" ], 0 ],
+    [ "TypeCheck.wellTyped", 15, 2, 1, [ "@query" ], 0 ],
+    [ "TypeCheck.wellTyped", 16, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.wellTyped",
+      17,
+      2,
+      1,
+      [
+        "@query", "assumption_BoolExp.boolExp_haseq",
+        "assumption_ExprTypes.gExpr_haseq",
+        "assumption_ExprTypes.gType_haseq", "assumption_Prims.HasEq_bool",
+        "assumption_Prims.HasEq_int", "assumption_Prims.HasEq_string",
+        "assumption_Prims.list_haseq", "assumption_Prims.tuple2_haseq",
+        "assumption_TypeCheck.subType_haseq",
+        "assumption_TypeCheck.wellTypedCtxt_haseq",
+        "data_typing_intro_ExprTypes.ARRAY@tok",
+        "data_typing_intro_ExprTypes.GArray@tok",
+        "data_typing_intro_ExprTypes.GFun@tok",
+        "data_typing_intro_Prims.Cons@tok",
+        "data_typing_intro_Prims.Mktuple2@tok",
+        "equality_tok_ExprTypes.GBool@tok",
+        "equality_tok_ExprTypes.GUnit@tok", "equation_Partial.t",
+        "equation_Prims.nat", "equation_TypeCheck.ctxt", "equation_Util.fin",
+        "function_token_typing_Prims.string",
+        "haseqTm_refine_2fd2ca5ba5888b39b1231badbe38fb2e",
+        "haseqTm_refine_a99e7c683ce6e482de33d3db03b8b71c",
+        "haseqTm_refine_ba523126f67e00e7cd55f0b92f16681d", "int_inversion",
+        "kinding_ExprTypes.gExpr@tok", "kinding_ExprTypes.gType@tok",
+        "kinding_Prims.tuple2@tok",
+        "pretyping_6b74f0037009d29c0456341c2163d847",
+        "pretyping_6e858c1adb3849d9ba4233bb4bb6c170",
+        "refinement_interpretation_Tm_refine_ba523126f67e00e7cd55f0b92f16681d",
+        "typing_tok_ExprTypes.GBool@tok", "typing_tok_ExprTypes.GUnit@tok"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_let.ctx", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_let.ctx",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_let",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_15538909e33e4a70c91da0e34629dc13"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_let.s", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_let.s",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_let",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_15538909e33e4a70c91da0e34629dc13"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_let.t1", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_let.t1",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_let",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_15538909e33e4a70c91da0e34629dc13"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_let.t2", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_let.t2",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_let",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_15538909e33e4a70c91da0e34629dc13"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_let.ty1", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_let.ty1",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_let",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_15538909e33e4a70c91da0e34629dc13"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_let.ty2", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_let.ty2",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_let",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_15538909e33e4a70c91da0e34629dc13"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_let._6", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_let._6",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_let",
+        "proj_equation_TypeCheck.Wt_let_ctx",
+        "proj_equation_TypeCheck.Wt_let_t1",
+        "proj_equation_TypeCheck.Wt_let_ty1",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_let_ctx",
+        "projection_inverse_TypeCheck.Wt_let_t1",
+        "projection_inverse_TypeCheck.Wt_let_ty1",
+        "refinement_interpretation_Tm_refine_15538909e33e4a70c91da0e34629dc13"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_let._7", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_let._7",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_let",
+        "proj_equation_TypeCheck.Wt_let_ctx",
+        "proj_equation_TypeCheck.Wt_let_s",
+        "proj_equation_TypeCheck.Wt_let_t2",
+        "proj_equation_TypeCheck.Wt_let_ty1",
+        "proj_equation_TypeCheck.Wt_let_ty2",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_let_ctx",
+        "projection_inverse_TypeCheck.Wt_let_s",
+        "projection_inverse_TypeCheck.Wt_let_t2",
+        "projection_inverse_TypeCheck.Wt_let_ty1",
+        "projection_inverse_TypeCheck.Wt_let_ty2",
+        "refinement_interpretation_Tm_refine_15538909e33e4a70c91da0e34629dc13"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_lam.ctx", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_lam.ctx",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_lam",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_0edb7cc39d2be3e47e29d55157ac2490"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_lam.s", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_lam.s",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_lam",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_0edb7cc39d2be3e47e29d55157ac2490"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_lam.ty1", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_lam.ty1",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_lam",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_0edb7cc39d2be3e47e29d55157ac2490"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_lam.t", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_lam.t",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_lam",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_0edb7cc39d2be3e47e29d55157ac2490"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_lam.ty2", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_lam.ty2",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_lam",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_0edb7cc39d2be3e47e29d55157ac2490"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_lam._5", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_lam._5",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_lam",
+        "proj_equation_TypeCheck.Wt_lam_ctx",
+        "proj_equation_TypeCheck.Wt_lam_s",
+        "proj_equation_TypeCheck.Wt_lam_t",
+        "proj_equation_TypeCheck.Wt_lam_ty1",
+        "proj_equation_TypeCheck.Wt_lam_ty2",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_lam_ctx",
+        "projection_inverse_TypeCheck.Wt_lam_s",
+        "projection_inverse_TypeCheck.Wt_lam_t",
+        "projection_inverse_TypeCheck.Wt_lam_ty1",
+        "projection_inverse_TypeCheck.Wt_lam_ty2",
+        "refinement_interpretation_Tm_refine_0edb7cc39d2be3e47e29d55157ac2490"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_apl.ctx", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_apl.ctx",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_apl",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_807469ea374dd5c03ef5ce5bfca17394"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_apl.t1", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_apl.t1",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_apl",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_807469ea374dd5c03ef5ce5bfca17394"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_apl.t2", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_apl.t2",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_apl",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_807469ea374dd5c03ef5ce5bfca17394"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_apl.ty1", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_apl.ty1",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_apl",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_807469ea374dd5c03ef5ce5bfca17394"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_apl.ty2", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_apl.ty2",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_apl",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_807469ea374dd5c03ef5ce5bfca17394"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_apl.ty3", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_apl.ty3",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_apl",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_807469ea374dd5c03ef5ce5bfca17394"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_apl._6", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_apl._6",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_apl",
+        "proj_equation_TypeCheck.Wt_apl_ctx",
+        "proj_equation_TypeCheck.Wt_apl_t1",
+        "proj_equation_TypeCheck.Wt_apl_ty1",
+        "proj_equation_TypeCheck.Wt_apl_ty2",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_apl_ctx",
+        "projection_inverse_TypeCheck.Wt_apl_t1",
+        "projection_inverse_TypeCheck.Wt_apl_ty1",
+        "projection_inverse_TypeCheck.Wt_apl_ty2",
+        "refinement_interpretation_Tm_refine_807469ea374dd5c03ef5ce5bfca17394"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_apl._7", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_apl._7",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_apl",
+        "proj_equation_TypeCheck.Wt_apl_ctx",
+        "proj_equation_TypeCheck.Wt_apl_t2",
+        "proj_equation_TypeCheck.Wt_apl_ty3",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_apl_ctx",
+        "projection_inverse_TypeCheck.Wt_apl_t2",
+        "projection_inverse_TypeCheck.Wt_apl_ty3",
+        "refinement_interpretation_Tm_refine_807469ea374dd5c03ef5ce5bfca17394"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_apl._8", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_apl._8",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_apl",
+        "proj_equation_TypeCheck.Wt_apl_ty1",
+        "proj_equation_TypeCheck.Wt_apl_ty3",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_apl_ty1",
+        "projection_inverse_TypeCheck.Wt_apl_ty3",
+        "refinement_interpretation_Tm_refine_807469ea374dd5c03ef5ce5bfca17394"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ite.ctx", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ite.ctx",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ite",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_7854229f7b6552c459c33c958de4b87a"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ite.t1", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ite.t1",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ite",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_7854229f7b6552c459c33c958de4b87a"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ite.t2", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ite.t2",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ite",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_7854229f7b6552c459c33c958de4b87a"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ite.t3", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ite.t3",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ite",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_7854229f7b6552c459c33c958de4b87a"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ite.ty1", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ite.ty1",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ite",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_7854229f7b6552c459c33c958de4b87a"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ite.ty2", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ite.ty2",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ite",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_7854229f7b6552c459c33c958de4b87a"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ite.ty3", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ite.ty3",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ite",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_7854229f7b6552c459c33c958de4b87a"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ite._7", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ite._7",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ite",
+        "proj_equation_TypeCheck.Wt_ite_ctx",
+        "proj_equation_TypeCheck.Wt_ite_t1",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_ite_ctx",
+        "projection_inverse_TypeCheck.Wt_ite_t1",
+        "refinement_interpretation_Tm_refine_7854229f7b6552c459c33c958de4b87a"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ite._8", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ite._8",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ite",
+        "proj_equation_TypeCheck.Wt_ite_ctx",
+        "proj_equation_TypeCheck.Wt_ite_t2",
+        "proj_equation_TypeCheck.Wt_ite_ty1",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_ite_ctx",
+        "projection_inverse_TypeCheck.Wt_ite_t2",
+        "projection_inverse_TypeCheck.Wt_ite_ty1",
+        "refinement_interpretation_Tm_refine_7854229f7b6552c459c33c958de4b87a"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ite._9", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ite._9",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ite",
+        "proj_equation_TypeCheck.Wt_ite_ctx",
+        "proj_equation_TypeCheck.Wt_ite_t3",
+        "proj_equation_TypeCheck.Wt_ite_ty2",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_ite_ctx",
+        "projection_inverse_TypeCheck.Wt_ite_t3",
+        "projection_inverse_TypeCheck.Wt_ite_ty2",
+        "refinement_interpretation_Tm_refine_7854229f7b6552c459c33c958de4b87a"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ite._10", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ite._10",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ite",
+        "proj_equation_TypeCheck.Wt_ite_ty1",
+        "proj_equation_TypeCheck.Wt_ite_ty3",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_ite_ty1",
+        "projection_inverse_TypeCheck.Wt_ite_ty3",
+        "refinement_interpretation_Tm_refine_7854229f7b6552c459c33c958de4b87a"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ite._11", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ite._11",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ite",
+        "proj_equation_TypeCheck.Wt_ite_ty2",
+        "proj_equation_TypeCheck.Wt_ite_ty3",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_ite_ty2",
+        "projection_inverse_TypeCheck.Wt_ite_ty3",
+        "refinement_interpretation_Tm_refine_7854229f7b6552c459c33c958de4b87a"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_seq.ctx", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_seq.ctx",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_seq",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_60c5964100f98b71555d26af15fa8294"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_seq.t1", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_seq.t1",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_seq",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_60c5964100f98b71555d26af15fa8294"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_seq.t2", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_seq.t2",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_seq",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_60c5964100f98b71555d26af15fa8294"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_seq.ty", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_seq.ty",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_seq",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_60c5964100f98b71555d26af15fa8294"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_seq._4", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_seq._4",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_seq",
+        "proj_equation_TypeCheck.Wt_seq_ctx",
+        "proj_equation_TypeCheck.Wt_seq_t1",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_seq_ctx",
+        "projection_inverse_TypeCheck.Wt_seq_t1",
+        "refinement_interpretation_Tm_refine_60c5964100f98b71555d26af15fa8294"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_seq._5", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_seq._5",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_seq",
+        "proj_equation_TypeCheck.Wt_seq_ctx",
+        "proj_equation_TypeCheck.Wt_seq_t2",
+        "proj_equation_TypeCheck.Wt_seq_ty",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_seq_ctx",
+        "projection_inverse_TypeCheck.Wt_seq_t2",
+        "projection_inverse_TypeCheck.Wt_seq_ty",
+        "refinement_interpretation_Tm_refine_60c5964100f98b71555d26af15fa8294"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ass.ctx", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ass.ctx",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ass",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_c645b40e29ae52002110008e3b4e71ee"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ass.t1", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ass.t1",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ass",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_c645b40e29ae52002110008e3b4e71ee"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ass.t2", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ass.t2",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ass",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_c645b40e29ae52002110008e3b4e71ee"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ass._3", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ass._3",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ass",
+        "proj_equation_TypeCheck.Wt_ass_ctx",
+        "proj_equation_TypeCheck.Wt_ass_t1",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_ass_ctx",
+        "projection_inverse_TypeCheck.Wt_ass_t1",
+        "refinement_interpretation_Tm_refine_c645b40e29ae52002110008e3b4e71ee"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ass._4", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ass._4",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ass",
+        "proj_equation_TypeCheck.Wt_ass_ctx",
+        "proj_equation_TypeCheck.Wt_ass_t2",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_ass_ctx",
+        "projection_inverse_TypeCheck.Wt_ass_t2",
+        "refinement_interpretation_Tm_refine_c645b40e29ae52002110008e3b4e71ee"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_unt.ctx", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_unt.ctx",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_unt",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_0242fbbc6e0c4266074d1a598ff5f228"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_xor.ctx", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_xor.ctx",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_xor",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_5d49e58f104a99eea8b261809bbc392e"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_xor.t1", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_xor.t1",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_xor",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_5d49e58f104a99eea8b261809bbc392e"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_xor.t2", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_xor.t2",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_xor",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_5d49e58f104a99eea8b261809bbc392e"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_xor._3", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_xor._3",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_xor",
+        "proj_equation_TypeCheck.Wt_xor_ctx",
+        "proj_equation_TypeCheck.Wt_xor_t1",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_xor_ctx",
+        "projection_inverse_TypeCheck.Wt_xor_t1",
+        "refinement_interpretation_Tm_refine_5d49e58f104a99eea8b261809bbc392e"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_xor._4", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_xor._4",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_xor",
+        "proj_equation_TypeCheck.Wt_xor_ctx",
+        "proj_equation_TypeCheck.Wt_xor_t2",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_xor_ctx",
+        "projection_inverse_TypeCheck.Wt_xor_t2",
+        "refinement_interpretation_Tm_refine_5d49e58f104a99eea8b261809bbc392e"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_and.ctx", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_and.ctx",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_and",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_13eb655ecc7b63a315d11ac09771fdce"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_and.t1", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_and.t1",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_and",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_13eb655ecc7b63a315d11ac09771fdce"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_and.t2", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_and.t2",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_and",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_13eb655ecc7b63a315d11ac09771fdce"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_and._3", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_and._3",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_and",
+        "proj_equation_TypeCheck.Wt_and_ctx",
+        "proj_equation_TypeCheck.Wt_and_t1",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_and_ctx",
+        "projection_inverse_TypeCheck.Wt_and_t1",
+        "refinement_interpretation_Tm_refine_13eb655ecc7b63a315d11ac09771fdce"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_and._4", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_and._4",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_and",
+        "proj_equation_TypeCheck.Wt_and_ctx",
+        "proj_equation_TypeCheck.Wt_and_t2",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_and_ctx",
+        "projection_inverse_TypeCheck.Wt_and_t2",
+        "refinement_interpretation_Tm_refine_13eb655ecc7b63a315d11ac09771fdce"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_bl.ctx", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_bl.ctx",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_bl",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_28c52bcca772758fec3659b6f6cf2f95"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_bl.b", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_bl.b",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_bl",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_28c52bcca772758fec3659b6f6cf2f95"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_apn.ctx", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_apn.ctx",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_apn",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_ba2548cc72588f6cb723bf730673c913"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_apn.t1", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_apn.t1",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_apn",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_ba2548cc72588f6cb723bf730673c913"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_apn.t2", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_apn.t2",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_apn",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_ba2548cc72588f6cb723bf730673c913"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_apn.n", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_apn.n",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_apn",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_ba2548cc72588f6cb723bf730673c913"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_apn.m", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_apn.m",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_apn",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_ba2548cc72588f6cb723bf730673c913"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_apn._5", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_apn._5",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_apn",
+        "proj_equation_TypeCheck.Wt_apn_ctx",
+        "proj_equation_TypeCheck.Wt_apn_n",
+        "proj_equation_TypeCheck.Wt_apn_t1",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_apn_ctx",
+        "projection_inverse_TypeCheck.Wt_apn_n",
+        "projection_inverse_TypeCheck.Wt_apn_t1",
+        "refinement_interpretation_Tm_refine_ba2548cc72588f6cb723bf730673c913"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_apn._6", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_apn._6",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_apn",
+        "proj_equation_TypeCheck.Wt_apn_ctx",
+        "proj_equation_TypeCheck.Wt_apn_m",
+        "proj_equation_TypeCheck.Wt_apn_t2",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_apn_ctx",
+        "projection_inverse_TypeCheck.Wt_apn_m",
+        "projection_inverse_TypeCheck.Wt_apn_t2",
+        "refinement_interpretation_Tm_refine_ba2548cc72588f6cb723bf730673c913"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_rot.ctx", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_rot.ctx",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_rot",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_fc8f8782f29100d0a349ec8448815e98"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_rot.t", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_rot.t",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_rot",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_fc8f8782f29100d0a349ec8448815e98"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_rot.n", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_rot.n",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_rot",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_fc8f8782f29100d0a349ec8448815e98"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_rot.i", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_rot.i",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_rot",
+        "proj_equation_TypeCheck.Wt_rot_n",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_rot_n",
+        "refinement_interpretation_Tm_refine_fc8f8782f29100d0a349ec8448815e98"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_rot._4", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_rot._4",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_rot",
+        "proj_equation_TypeCheck.Wt_rot_ctx",
+        "proj_equation_TypeCheck.Wt_rot_n",
+        "proj_equation_TypeCheck.Wt_rot_t",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_rot_ctx",
+        "projection_inverse_TypeCheck.Wt_rot_n",
+        "projection_inverse_TypeCheck.Wt_rot_t",
+        "refinement_interpretation_Tm_refine_fc8f8782f29100d0a349ec8448815e98"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_slc.ctx", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_slc.ctx",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_slc",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_b4f21c303b1fc329f0ae75acd0207d35"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_slc.t", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_slc.t",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_slc",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_b4f21c303b1fc329f0ae75acd0207d35"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_slc.n", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_slc.n",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_slc",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_b4f21c303b1fc329f0ae75acd0207d35"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_slc.i", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_slc.i",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_slc",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_b4f21c303b1fc329f0ae75acd0207d35"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_slc.j", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_slc.j",
+      2,
+      2,
+      1,
+      [
+        "@query", "constructor_distinct_PairHeap.Empty",
+        "data_elim_TypeCheck.Wt_slc", "disc_equation_TypeCheck.Wt_slc",
+        "equation_AncillaHeap.ancHeap", "equation_AncillaHeap.cond",
+        "equation_AncillaHeap.emptyHeap", "equation_Prims.nat",
+        "equation_with_fuel_PairHeap.is_heap.fuel_instrumented",
+        "fuel_correspondence_PairHeap.is_heap.fuel_instrumented",
+        "function_token_typing_AncillaHeap.emptyHeap",
+        "primitive_Prims.op_LessThan", "primitive_Prims.op_LessThanOrEqual",
+        "proj_equation_AncillaHeap.MkancHeapRecord_hp",
+        "proj_equation_TypeCheck.Wt_slc_i",
+        "proj_equation_TypeCheck.Wt_slc_n",
+        "projection_inverse_AncillaHeap.MkancHeapRecord_hp",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_PairHeap.Empty__a",
+        "projection_inverse_TypeCheck.Wt_slc_j",
+        "refinement_interpretation_Tm_refine_456af8f0ed2e6b59cd4a5bb4e67b3c27",
+        "refinement_interpretation_Tm_refine_a99e7c683ce6e482de33d3db03b8b71c",
+        "refinement_interpretation_Tm_refine_b4f21c303b1fc329f0ae75acd0207d35"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_slc._5", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_slc._5",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_slc",
+        "proj_equation_TypeCheck.Wt_slc_ctx",
+        "proj_equation_TypeCheck.Wt_slc_n",
+        "proj_equation_TypeCheck.Wt_slc_t",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_slc_ctx",
+        "projection_inverse_TypeCheck.Wt_slc_n",
+        "projection_inverse_TypeCheck.Wt_slc_t",
+        "refinement_interpretation_Tm_refine_b4f21c303b1fc329f0ae75acd0207d35"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_arz.ctx", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_arz.ctx",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_arz",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_e7640604ce86244c8e77b276a7d022bb"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ars.ctx", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ars.ctx",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ars",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_84cb8ee775feb2c5221f4403f1e891ce"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ars.t", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ars.t",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ars",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_84cb8ee775feb2c5221f4403f1e891ce"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ars.ts", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ars.ts",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ars",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_84cb8ee775feb2c5221f4403f1e891ce"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ars.n", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ars.n",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ars",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_84cb8ee775feb2c5221f4403f1e891ce"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ars._4", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ars._4",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ars",
+        "proj_equation_TypeCheck.Wt_ars_ctx",
+        "proj_equation_TypeCheck.Wt_ars_t",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_ars_ctx",
+        "projection_inverse_TypeCheck.Wt_ars_t",
+        "refinement_interpretation_Tm_refine_84cb8ee775feb2c5221f4403f1e891ce"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ars._5", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ars._5",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ars",
+        "proj_equation_TypeCheck.Wt_ars_ctx",
+        "proj_equation_TypeCheck.Wt_ars_n",
+        "proj_equation_TypeCheck.Wt_ars_ts",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_ars_ctx",
+        "projection_inverse_TypeCheck.Wt_ars_n",
+        "projection_inverse_TypeCheck.Wt_ars_ts",
+        "refinement_interpretation_Tm_refine_84cb8ee775feb2c5221f4403f1e891ce"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_gta.ctx", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_gta.ctx",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_gta",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_de7951444b98f839ef2b3132e801e6ca"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_gta.t", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_gta.t",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_gta",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_de7951444b98f839ef2b3132e801e6ca"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_gta.n", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_gta.n",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_gta",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_de7951444b98f839ef2b3132e801e6ca"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_gta.i", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_gta.i",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_gta",
+        "proj_equation_TypeCheck.Wt_gta_n",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_gta_n",
+        "refinement_interpretation_Tm_refine_de7951444b98f839ef2b3132e801e6ca"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_gta._4", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_gta._4",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_gta",
+        "proj_equation_TypeCheck.Wt_gta_ctx",
+        "proj_equation_TypeCheck.Wt_gta_n",
+        "proj_equation_TypeCheck.Wt_gta_t",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_gta_ctx",
+        "projection_inverse_TypeCheck.Wt_gta_n",
+        "projection_inverse_TypeCheck.Wt_gta_t",
+        "refinement_interpretation_Tm_refine_de7951444b98f839ef2b3132e801e6ca"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_get.ctx", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_get.ctx",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_get",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_9ff4f871b990087ed006792c2788d054"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_get.s", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_get.s",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_get",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_9ff4f871b990087ed006792c2788d054"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_get.ty", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_get.ty",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_get",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_9ff4f871b990087ed006792c2788d054"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_get._3", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_get._3",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_get",
+        "proj_equation_TypeCheck.Wt_get_ctx",
+        "proj_equation_TypeCheck.Wt_get_s",
+        "proj_equation_TypeCheck.Wt_get_ty",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_get_ctx",
+        "projection_inverse_TypeCheck.Wt_get_s",
+        "projection_inverse_TypeCheck.Wt_get_ty",
+        "refinement_interpretation_Tm_refine_9ff4f871b990087ed006792c2788d054"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ast.ctx", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ast.ctx",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ast",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_fc6a14de6f45d0243413a9db326ead4b"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ast.t", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ast.t",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ast",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_fc6a14de6f45d0243413a9db326ead4b"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_ast._2", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_ast._2",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_ast",
+        "proj_equation_TypeCheck.Wt_ast_ctx",
+        "proj_equation_TypeCheck.Wt_ast_t",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_TypeCheck.Wt_ast_ctx",
+        "projection_inverse_TypeCheck.Wt_ast_t",
+        "refinement_interpretation_Tm_refine_fc6a14de6f45d0243413a9db326ead4b"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_loc.ctx", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_loc.ctx",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_loc",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_f87d0ecf28a2300535b3b5aa7d96ea9b"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_loc.i", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_loc.i",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_loc",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_f87d0ecf28a2300535b3b5aa7d96ea9b"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_bex.ctx", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_bex.ctx",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_bex",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_60e1e7641e3e646d90afccb1b4dc8ee1"
+      ],
+      0
+    ],
+    [ "TypeCheck.Wt_bex.bexp", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.Wt_bex.bexp",
+      2,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.Wt_bex",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_60e1e7641e3e646d90afccb1b4dc8ee1"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.subtype",
+      1,
+      2,
+      2,
+      [
+        "@query", "binder_x_6e858c1adb3849d9ba4233bb4bb6c170_0",
+        "constructor_distinct_PairHeap.Empty", "data_elim_ExprTypes.GFun",
+        "data_typing_intro_ExprTypes.GBool@tok",
+        "equation_with_fuel_PairHeap.is_heap.fuel_instrumented",
+        "pretyping_6e858c1adb3849d9ba4233bb4bb6c170",
+        "proj_equation_AncillaHeap.MkancHeapRecord_hp",
+        "projection_inverse_AncillaHeap.MkancHeapRecord_hp",
+        "projection_inverse_PairHeap.Empty__a",
+        "projection_inverse_Prims.Mktuple2__1",
+        "subterm_ordering_ExprTypes.GConst",
+        "subterm_ordering_ExprTypes.GFun", "subterm_ordering_Prims.Mktuple2"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.subtype",
+      2,
+      2,
+      2,
+      [
+        "@query", "binder_x_6e858c1adb3849d9ba4233bb4bb6c170_0",
+        "constructor_distinct_PairHeap.Empty", "data_elim_ExprTypes.GFun",
+        "data_typing_intro_ExprTypes.GBool@tok",
+        "equation_with_fuel_PairHeap.is_heap.fuel_instrumented",
+        "pretyping_6e858c1adb3849d9ba4233bb4bb6c170",
+        "proj_equation_AncillaHeap.MkancHeapRecord_hp",
+        "projection_inverse_AncillaHeap.MkancHeapRecord_hp",
+        "projection_inverse_PairHeap.Empty__a",
+        "projection_inverse_Prims.Mktuple2__1",
+        "subterm_ordering_ExprTypes.GConst",
+        "subterm_ordering_ExprTypes.GFun", "subterm_ordering_Prims.Mktuple2"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.subtype",
+      3,
+      2,
+      1,
+      [ "@query", "assumption_ExprTypes.gType_haseq" ],
+      0
+    ],
+    [
+      "TypeCheck.subtype",
+      4,
+      2,
+      1,
+      [ "@query", "assumption_ExprTypes.gType_haseq" ],
+      0
+    ],
+    [
+      "TypeCheck.welltyctx_imp_findctx",
+      1,
+      2,
+      1,
+      [
+        "@query", "assumption_ExprTypes.gType_haseq",
+        "assumption_Prims.option_haseq", "kinding_ExprTypes.gType@tok"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.welltyctx_imp_findctx",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_ExprTypes.gType_haseq" ],
+      0
+    ],
+    [
+      "TypeCheck.welltyctx_imp_findctx",
+      3,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [ "TypeCheck.welltyctx_imp_findctx", 4, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.welltyctx_imp_findctx",
+      5,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.HasEq_int",
+        "binder_x_10141105a3ac9763d6763cd2fa012058_3",
+        "binder_x_5eac41624a697c6d29c7a318e8cb9a68_0", "bool_inversion",
+        "constructor_distinct_PairHeap.Empty",
+        "constructor_distinct_Prims.Cons",
+        "constructor_distinct_TypeCheck.Ctxt_zero",
+        "data_elim_TypeCheck.Ctxt_succ",
+        "data_typing_intro_ExprTypes.GBool@tok",
+        "disc_equation_TypeCheck.Ctxt_succ",
+        "disc_equation_TypeCheck.Ctxt_zero", "equation_AncillaHeap.ancHeap",
+        "equation_AncillaHeap.cond", "equation_AncillaHeap.emptyHeap",
+        "equation_FStar.List.Tot.test_sort", "equation_Partial.t",
+        "equation_Prims._assert", "equation_Prims.eqtype",
+        "equation_Prims.fst", "equation_Prims.snd",
+        "equation_TypeCheck.ctxt",
+        "equation_with_fuel_PairHeap.is_heap.fuel_instrumented",
+        "equation_with_fuel_Partial.find.fuel_instrumented",
+        "fuel_correspondence_PairHeap.is_heap.fuel_instrumented",
+        "fuel_correspondence_Partial.find.fuel_instrumented",
+        "fuel_guarded_inversion_TypeCheck.wellTypedCtxt",
+        "fuel_irrelevance_Partial.find.fuel_instrumented",
+        "function_token_typing_AncillaHeap.emptyHeap",
+        "function_token_typing_FStar.List.Tot.test_sort",
+        "function_token_typing_Prims.int", "int_typing",
+        "pretyping_6e858c1adb3849d9ba4233bb4bb6c170",
+        "primitive_Prims.op_Equality",
+        "proj_equation_AncillaHeap.MkancHeapRecord_hp",
+        "proj_equation_AncillaHeap.MkancHeapRecord_max",
+        "proj_equation_Prims.Mktuple2__1", "proj_equation_Prims.Mktuple2__2",
+        "projection_inverse_AncillaHeap.MkancHeapRecord_hp",
+        "projection_inverse_AncillaHeap.MkancHeapRecord_max",
+        "projection_inverse_PairHeap.Empty__a",
+        "projection_inverse_Prims.Cons_a",
+        "projection_inverse_Prims.Cons_hd",
+        "projection_inverse_Prims.Cons_tl",
+        "projection_inverse_Prims.Mktuple2__1",
+        "projection_inverse_Prims.Mktuple2__2",
+        "projection_inverse_TypeCheck.Ctxt_succ_xs",
+        "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f",
+        "refinement_interpretation_Tm_refine_456af8f0ed2e6b59cd4a5bb4e67b3c27",
+        "refinement_interpretation_Tm_refine_b9851af6b58c2f445f41f7800849b0c1",
+        "subterm_ordering_Prims.Cons",
+        "typing_AncillaHeap.MkancHeapRecord.hp", "typing_FStar.Set.mem",
+        "typing_PairHeap.elts"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.findctx_imp_welltyctx",
+      1,
+      2,
+      1,
+      [
+        "@query", "assumption_ExprTypes.gType_haseq",
+        "assumption_Prims.option_haseq", "kinding_ExprTypes.gType@tok"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.findctx_imp_welltyctx",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_ExprTypes.gType_haseq" ],
+      0
+    ],
+    [
+      "TypeCheck.findctx_imp_welltyctx",
+      3,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [ "TypeCheck.findctx_imp_welltyctx", 4, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.findctx_imp_welltyctx",
+      5,
+      2,
+      1,
+      [
+        "@query", "bool_inversion", "constructor_distinct_PairHeap.Empty",
+        "constructor_distinct_Prims.Cons", "constructor_distinct_Prims.None",
+        "constructor_distinct_Prims.Some", "constructor_distinct_Tm_unit",
+        "disc_equation_Prims.Cons", "equation_AncillaHeap.ancHeap",
+        "equation_AncillaHeap.cond", "equation_AncillaHeap.emptyHeap",
+        "equation_Prims.fst", "equation_Prims.snd",
+        "equation_with_fuel_PairHeap.is_heap.fuel_instrumented",
+        "equation_with_fuel_Partial.find.fuel_instrumented",
+        "fuel_correspondence_PairHeap.is_heap.fuel_instrumented",
+        "fuel_correspondence_Partial.find.fuel_instrumented",
+        "fuel_irrelevance_Partial.find.fuel_instrumented",
+        "function_token_typing_AncillaHeap.emptyHeap",
+        "pretyping_6e858c1adb3849d9ba4233bb4bb6c170",
+        "pretyping_ce036b6b736ef4e0bc3a9ff132a12aed",
+        "primitive_Prims.op_AmpAmp", "primitive_Prims.op_Equality",
+        "proj_equation_AncillaHeap.MkancHeapRecord_hp",
+        "proj_equation_Prims.Mktuple2__1", "proj_equation_Prims.Mktuple2__2",
+        "proj_equation_Prims.V_v",
+        "projection_inverse_AncillaHeap.MkancHeapRecord_hp",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_PairHeap.Empty__a",
+        "projection_inverse_Prims.Cons_a",
+        "projection_inverse_Prims.Cons_hd",
+        "projection_inverse_Prims.Cons_tl",
+        "projection_inverse_Prims.Mktuple2__1",
+        "projection_inverse_Prims.Mktuple2__2",
+        "projection_inverse_Prims.Some_v", "projection_inverse_Prims.V_v",
+        "refinement_interpretation_Tm_refine_456af8f0ed2e6b59cd4a5bb4e67b3c27",
+        "refinement_interpretation_Tm_refine_8b9b783b2888d058df00fc38b388d8b1"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.findctx_imp_welltyctx",
+      6,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "TypeCheck.findctx_imp_welltyctx",
+      7,
+      2,
+      1,
+      [ "@query", "assumption_ExprTypes.gType_haseq" ],
+      0
+    ],
+    [
+      "TypeCheck.iExp",
+      1,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.HasEq_int",
+        "assumption_Prims.tuple2_haseq", "kinding_TypeCheck.iExp@tok"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.ILit._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.ILit",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_a031e489a09ffb2f539a9446aaf2433b"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.IVar._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.IVar",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_cb7a0b2972bebe07b193e250b1cae38f"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.IPlus._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.IPlus",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_2661ec11da1171aefe3017eaeac37204"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.IMinus._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.IMinus",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_1b03ac8d6f9fcd6f1723fa7a8f2ad526"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.tExp",
+      1,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.HasEq_int",
+        "assumption_Prims.tuple2_haseq", "assumption_TypeCheck.iExp_haseq",
+        "kinding_TypeCheck.tExp@tok"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.TVar._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.TVar",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_c95609251ded74c447b9dd2f8317328e"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.TArray._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.TArray",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_5241c11104f7c2ba88644c6079e09c83"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.TArrow._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.TArrow",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_5a25afc3245aa3373b784fe697ddb284"
+      ],
+      0
+    ],
+    [ "TypeCheck.normalize", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.totExp",
+      1,
+      2,
+      2,
+      [
+        "@query", "binder_x_6e858c1adb3849d9ba4233bb4bb6c170_0",
+        "constructor_distinct_ExprTypes.GBool", "data_elim_ExprTypes.GFun",
+        "data_typing_intro_ExprTypes.GBool@tok",
+        "disc_equation_ExprTypes.GArray", "disc_equation_ExprTypes.GBool",
+        "disc_equation_ExprTypes.GConst", "disc_equation_ExprTypes.GFun",
+        "disc_equation_ExprTypes.GUnit", "disc_equation_ExprTypes.GVar",
+        "equality_tok_TypeCheck.TBool@tok",
+        "equality_tok_TypeCheck.TUnit@tok",
+        "fuel_guarded_inversion_ExprTypes.gType",
+        "pretyping_6e858c1adb3849d9ba4233bb4bb6c170",
+        "subterm_ordering_ExprTypes.GConst",
+        "subterm_ordering_ExprTypes.GFun", "subterm_ordering_Prims.Mktuple2"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.togType",
+      1,
+      2,
+      1,
+      [
+        "@query", "constructor_distinct_TypeCheck.TBool",
+        "constructor_distinct_TypeCheck.TUnit",
+        "disc_equation_TypeCheck.TArray", "disc_equation_TypeCheck.TArrow",
+        "disc_equation_TypeCheck.TBool", "disc_equation_TypeCheck.TUnit",
+        "disc_equation_TypeCheck.TVar", "equality_tok_TypeCheck.TUnit@tok",
+        "fuel_guarded_inversion_TypeCheck.tExp"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.constraint",
+      1,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.tuple2_haseq",
+        "assumption_TypeCheck.iExp_haseq", "assumption_TypeCheck.tExp_haseq",
+        "data_typing_intro_TypeCheck.TBool@tok",
+        "kinding_TypeCheck.iExp@tok", "kinding_TypeCheck.tExp@tok",
+        "pretyping_f1c4f2334fc2e83193e8bba807f2c6e7"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.ICons._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.ICons",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_bf835aee8084faa6c2f303328859a0d4"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.TCons._0",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.TCons",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_7c435bd1ede1e538cf9d747177b9f7cd"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.ctxt'",
+      1,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.HasEq_string",
+        "assumption_TypeCheck.tExp_haseq"
+      ],
+      0
+    ],
+    [ "TypeCheck.inferTypes", 1, 2, 1, [ "@query" ], 0 ],
+    [ "TypeCheck.inferTypes_lst", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.inferTypes",
+      2,
+      2,
+      2,
+      [
+        "@query", "assumption_Prims.HasEq_string",
+        "assumption_TypeCheck.tExp_haseq",
+        "binder_x_6b74f0037009d29c0456341c2163d847_2",
+        "binder_x_af8ed9698d909a6c29c73dba16b67f3b_1", "bool_inversion",
+        "data_elim_ExprTypes.AND", "data_elim_ExprTypes.APPEND",
+        "data_elim_ExprTypes.APPLY", "data_elim_ExprTypes.ASSIGN",
+        "data_elim_ExprTypes.GET_ARRAY", "data_elim_ExprTypes.IFTHENELSE",
+        "data_elim_ExprTypes.LAMBDA", "data_elim_ExprTypes.LET",
+        "data_elim_ExprTypes.ROT", "data_elim_ExprTypes.SEQUENCE",
+        "data_elim_ExprTypes.SLICE", "data_elim_ExprTypes.XOR",
+        "data_typing_intro_ExprTypes.GBool@tok", "disc_equation_Prims.None",
+        "equality_tok_Prims.LexTop@tok", "equation_Prims.eqtype",
+        "equation_TypeCheck.ctxt_",
+        "fuel_correspondence_Partial.find.fuel_instrumented",
+        "function_token_typing_Prims.string", "kinding_TypeCheck.tExp@tok",
+        "lemma_Prims.invertOption",
+        "pretyping_6e858c1adb3849d9ba4233bb4bb6c170",
+        "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f",
+        "subterm_ordering_ExprTypes.AND",
+        "subterm_ordering_ExprTypes.APPEND",
+        "subterm_ordering_ExprTypes.APPLY",
+        "subterm_ordering_ExprTypes.ARRAY",
+        "subterm_ordering_ExprTypes.ASSERT",
+        "subterm_ordering_ExprTypes.ASSIGN",
+        "subterm_ordering_ExprTypes.GET_ARRAY",
+        "subterm_ordering_ExprTypes.IFTHENELSE",
+        "subterm_ordering_ExprTypes.LAMBDA",
+        "subterm_ordering_ExprTypes.LET", "subterm_ordering_ExprTypes.ROT",
+        "subterm_ordering_ExprTypes.SEQUENCE",
+        "subterm_ordering_ExprTypes.SLICE", "subterm_ordering_ExprTypes.XOR",
+        "subterm_ordering_Prims.Mktuple2", "subterm_ordering_Prims.Mktuple3",
+        "token_correspondence_Partial.find.fuel_instrumented",
+        "typing_Partial.find", "typing_Prims.is_None", "typing_Prims.is_Some"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.inferTypes",
+      3,
+      2,
+      1,
+      [
+        "@query", "binder_x_84a62770dc4fae20d5c368546b439b5f_2",
+        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "equality_tok_Prims.LexTop@tok", "fuel_guarded_inversion_Prims.list",
+        "projection_inverse_Prims.Cons_hd",
+        "projection_inverse_Prims.Cons_tl", "subterm_ordering_Prims.Cons"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.inferTypes",
+      4,
+      2,
+      1,
+      [ "@query", "assumption_TypeCheck.tExp_haseq" ],
+      0
+    ],
+    [
+      "TypeCheck.inferTypes",
+      5,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_string" ],
+      0
+    ],
+    [
+      "TypeCheck.substiExp",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_TypeCheck.ILit",
+        "disc_equation_TypeCheck.IMinus", "disc_equation_TypeCheck.IPlus",
+        "disc_equation_TypeCheck.IVar",
+        "fuel_guarded_inversion_TypeCheck.iExp"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.substiExp",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "TypeCheck.substtExp",
+      1,
+      2,
+      1,
+      [
+        "@query", "constructor_distinct_TypeCheck.TBool",
+        "disc_equation_TypeCheck.TArray", "disc_equation_TypeCheck.TArrow",
+        "disc_equation_TypeCheck.TBool", "disc_equation_TypeCheck.TUnit",
+        "disc_equation_TypeCheck.TVar",
+        "fuel_guarded_inversion_TypeCheck.tExp"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.substtExp",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [ "TypeCheck.substiExpIntExp", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "TypeCheck.iSubst",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "disc_equation_TypeCheck.ICons", "disc_equation_TypeCheck.TCons",
+        "fuel_guarded_inversion_Prims.list",
+        "fuel_guarded_inversion_TypeCheck.constraint",
+        "kinding_TypeCheck.constraint@tok", "proj_equation_Prims.Cons_hd",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_5f5fd1baf8ea34bf72e4012bafe805ec",
+        "typing_Prims.Cons.hd"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.tSubst",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "fuel_guarded_inversion_Prims.list"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.mergeLower",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "fuel_guarded_inversion_Prims.list"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.mergeLower",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "TypeCheck.mergeLower",
+      3,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "TypeCheck.unify_bnds",
+      1,
+      2,
+      1,
+      [
+        "@query", "bool_inversion", "bool_typing", "data_elim_Prims.V",
+        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "disc_equation_Prims.None", "disc_equation_Prims.Some",
+        "disc_equation_Prims.V", "disc_equation_TypeCheck.ICons",
+        "disc_equation_TypeCheck.TCons", "fuel_guarded_inversion_Prims.list",
+        "fuel_guarded_inversion_TypeCheck.constraint",
+        "kinding_TypeCheck.constraint@tok", "kinding_TypeCheck.iExp@tok",
+        "lemma_Prims.invertOption",
+        "pretyping_d2a66379e00e726f40edd5ef17e35688",
+        "proj_equation_Prims.Cons_hd", "proj_equation_Prims.V_v",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_5f5fd1baf8ea34bf72e4012bafe805ec",
+        "typing_Prims.Cons.hd"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.unify_eq",
+      1,
+      2,
+      1,
+      [
+        "@query", "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "disc_equation_TypeCheck.ICons", "disc_equation_TypeCheck.TCons",
+        "fuel_guarded_inversion_Prims.list",
+        "fuel_guarded_inversion_TypeCheck.constraint",
+        "kinding_TypeCheck.constraint@tok", "proj_equation_Prims.Cons_hd",
+        "projection_inverse_BoxBool_proj_0",
+        "refinement_interpretation_Tm_refine_5f5fd1baf8ea34bf72e4012bafe805ec",
+        "typing_Prims.Cons.hd"
+      ],
+      0
+    ],
+    [
+      "TypeCheck.unify_eq",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [ "TypeCheck.applySubs", 1, 2, 1, [ "@query" ], 0 ]
+  ]
+]

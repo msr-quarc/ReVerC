@@ -1,0 +1,162 @@
+[
+  "ª\u007f\u0000\u0013ˇçJd\t›™Å\u0019⁄&Ê",
+  [
+    [
+      "SetExtra.greaterEq",
+      1,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [ "SetExtra.ins", 1, 2, 1, [ "@query" ], 0 ],
+    [ "SetExtra.rem", 1, 2, 1, [ "@query" ], 0 ],
+    [ "SetExtra.fold", 1, 2, 1, [ "@query" ], 0 ],
+    [ "SetExtra.greaterEq", 2, 2, 1, [ "@query" ], 0 ],
+    [
+      "SetExtra.greaterEq",
+      3,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "SetExtra.greaterEq_elts",
+      1,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "SetExtra.greaterEq_elts",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [ "SetExtra.greaterEq_elts", 3, 2, 1, [ "@query" ], 0 ],
+    [ "SetExtra.greaterEq_elts", 4, 2, 1, [ "@query" ], 0 ],
+    [ "SetExtra.disjoint", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "SetExtra.subset_trans",
+      1,
+      2,
+      1,
+      [
+        "@query", "equation_FStar.Set.subset", "lemma_FStar.Set.mem_subset",
+        "unit_typing"
+      ],
+      0
+    ],
+    [ "SetExtra.subset_ins", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "SetExtra.subset_ins",
+      2,
+      2,
+      1,
+      [
+        "@query", "bool_inversion", "equation_FStar.Set.subset",
+        "equation_SetExtra.ins", "lemma_FStar.Set.mem_union",
+        "primitive_Prims.op_BarBar", "typing_FStar.Set.mem",
+        "typing_FStar.Set.singleton", "unit_typing"
+      ],
+      0
+    ],
+    [ "SetExtra.ins_rem_equal", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "SetExtra.ins_rem_equal",
+      2,
+      2,
+      1,
+      [
+        "@query", "equation_SetExtra.diff", "equation_SetExtra.ins",
+        "equation_SetExtra.rem", "lemma_FStar.Set.lemma_equal_elim",
+        "lemma_FStar.Set.mem_complement", "lemma_FStar.Set.mem_intersect",
+        "lemma_FStar.Set.mem_singleton", "lemma_FStar.Set.mem_union",
+        "primitive_Prims.op_AmpAmp", "primitive_Prims.op_BarBar",
+        "primitive_Prims.op_Negation", "projection_inverse_BoxBool_proj_0",
+        "typing_FStar.Set.complement", "typing_FStar.Set.singleton"
+      ],
+      0
+    ],
+    [ "SetExtra.ins_subset_pres", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "SetExtra.ins_subset_pres",
+      2,
+      2,
+      1,
+      [
+        "@query", "equation_FStar.Set.subset", "equation_SetExtra.ins",
+        "lemma_FStar.Set.mem_subset", "lemma_FStar.Set.mem_union",
+        "primitive_Prims.op_BarBar", "projection_inverse_BoxBool_proj_0",
+        "typing_FStar.Set.singleton", "typing_SetExtra.ins", "unit_typing"
+      ],
+      0
+    ],
+    [
+      "SetExtra.disjoint_subset",
+      1,
+      2,
+      1,
+      [
+        "@query", "equation_FStar.Set.subset", "equation_SetExtra.disjoint",
+        "unit_typing"
+      ],
+      0
+    ],
+    [
+      "SetExtra.disjoint_union",
+      1,
+      2,
+      1,
+      [
+        "@query", "equation_SetExtra.disjoint", "lemma_FStar.Set.mem_union",
+        "primitive_Prims.op_BarBar", "projection_inverse_BoxBool_proj_0",
+        "unit_typing"
+      ],
+      0
+    ],
+    [
+      "SetExtra.disjoint_is_subset_compl",
+      1,
+      2,
+      1,
+      [
+        "@query", "bool_inversion", "equation_FStar.Set.subset",
+        "equation_SetExtra.disjoint", "lemma_FStar.Set.mem_complement",
+        "primitive_Prims.op_Negation", "projection_inverse_BoxBool_proj_0",
+        "typing_FStar.Set.mem", "unit_typing"
+      ],
+      0
+    ],
+    [
+      "SetExtra.subset_compl_reverse",
+      1,
+      2,
+      1,
+      [
+        "@query", "bool_inversion", "equation_FStar.Set.subset",
+        "lemma_FStar.Set.mem_complement", "primitive_Prims.op_Negation",
+        "projection_inverse_BoxBool_proj_0", "typing_FStar.Set.mem",
+        "unit_typing"
+      ],
+      0
+    ],
+    [
+      "SetExtra.union_equal",
+      1,
+      2,
+      1,
+      [
+        "@query", "bool_inversion", "lemma_FStar.Set.lemma_equal_intro",
+        "lemma_FStar.Set.mem_union", "primitive_Prims.op_BarBar",
+        "typing_FStar.Set.empty", "typing_FStar.Set.mem",
+        "typing_FStar.Set.union", "unit_typing"
+      ],
+      0
+    ]
+  ]
+]

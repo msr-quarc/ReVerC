@@ -1,0 +1,651 @@
+[
+  "kши4NЯ<\u0018~\n\u0019€\u0013=Y∞",
+  [
+    [ "Interpreter.Mkinterpretation.alloc", 1, 2, 1, [ "@query" ], 0 ],
+    [ "Interpreter.Mkinterpretation.assign", 1, 2, 1, [ "@query" ], 0 ],
+    [ "Interpreter.Mkinterpretation.eval", 1, 2, 1, [ "@query" ], 0 ],
+    [ "Interpreter.isVal", 1, 2, 1, [ "@query" ], 0 ],
+    [ "Interpreter.isVal_lst", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "Interpreter.isVal",
+      2,
+      2,
+      1,
+      [
+        "@query", "binder_x_6b74f0037009d29c0456341c2163d847_0",
+        "constructor_distinct_PairHeap.Empty",
+        "equality_tok_Prims.LexTop@tok",
+        "equation_with_fuel_PairHeap.is_heap.fuel_instrumented",
+        "proj_equation_AncillaHeap.MkancHeapRecord_hp",
+        "projection_inverse_AncillaHeap.MkancHeapRecord_hp",
+        "projection_inverse_PairHeap.Empty__a",
+        "subterm_ordering_ExprTypes.ARRAY"
+      ],
+      0
+    ],
+    [
+      "Interpreter.isVal",
+      3,
+      2,
+      1,
+      [
+        "@query", "binder_x_84a62770dc4fae20d5c368546b439b5f_0",
+        "constructor_distinct_PairHeap.Empty",
+        "equality_tok_Prims.LexTop@tok",
+        "equation_with_fuel_PairHeap.is_heap.fuel_instrumented",
+        "proj_equation_AncillaHeap.MkancHeapRecord_hp",
+        "projection_inverse_AncillaHeap.MkancHeapRecord_hp",
+        "projection_inverse_PairHeap.Empty__a", "subterm_ordering_Prims.Cons"
+      ],
+      0
+    ],
+    [
+      "Interpreter.isBexp",
+      1,
+      2,
+      1,
+      [
+        "@query", "constructor_distinct_PairHeap.Empty",
+        "equation_with_fuel_PairHeap.is_heap.fuel_instrumented",
+        "proj_equation_AncillaHeap.MkancHeapRecord_hp",
+        "projection_inverse_AncillaHeap.MkancHeapRecord_hp",
+        "projection_inverse_PairHeap.Empty__a"
+      ],
+      0
+    ],
+    [
+      "Interpreter.get_bexp",
+      1,
+      2,
+      1,
+      [
+        "@query", "bool_inversion", "disc_equation_ExprTypes.BEXP",
+        "disc_equation_ExprTypes.BOOL", "disc_equation_ExprTypes.LOC",
+        "equality_tok_BoolExp.BFalse@tok", "equation_Interpreter.isBexp",
+        "refinement_interpretation_Tm_refine_9a3e6054d1a54bd3d9d44a420bf3452f",
+        "typing_Interpreter.isBexp"
+      ],
+      0
+    ],
+    [ "Interpreter.step", 1, 2, 1, [ "@query" ], 0 ],
+    [ "Interpreter.step_lst", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "Interpreter.step",
+      2,
+      2,
+      2,
+      [
+        "@query", "bool_inversion", "bool_typing",
+        "constructor_distinct_PairHeap.Empty", "data_elim_ExprTypes.AND",
+        "data_elim_ExprTypes.APPEND", "data_elim_ExprTypes.APPLY",
+        "data_elim_ExprTypes.ASSIGN", "data_elim_ExprTypes.GET_ARRAY",
+        "data_elim_ExprTypes.LET", "data_elim_ExprTypes.ROT",
+        "data_elim_ExprTypes.SEQUENCE", "data_elim_ExprTypes.SLICE",
+        "data_elim_ExprTypes.XOR", "equality_tok_BoolExp.BFalse@tok",
+        "equality_tok_Prims.LexTop@tok", "equation_AncillaHeap.ancHeap",
+        "equation_AncillaHeap.cond", "equation_AncillaHeap.emptyHeap",
+        "equation_Prims.fst",
+        "equation_with_fuel_PairHeap.is_heap.fuel_instrumented",
+        "fuel_correspondence_PairHeap.is_heap.fuel_instrumented",
+        "function_token_typing_AncillaHeap.emptyHeap",
+        "pretyping_6b74f0037009d29c0456341c2163d847",
+        "primitive_Prims.op_AmpAmp", "primitive_Prims.op_GreaterThanOrEqual",
+        "primitive_Prims.op_LessThan", "primitive_Prims.op_LessThanOrEqual",
+        "primitive_Prims.op_Negation",
+        "proj_equation_AncillaHeap.MkancHeapRecord_hp",
+        "proj_equation_Prims.Mktuple2__1",
+        "projection_inverse_AncillaHeap.MkancHeapRecord_hp",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_PairHeap.Empty__a",
+        "projection_inverse_Prims.Mktuple2__1",
+        "refinement_interpretation_Tm_refine_456af8f0ed2e6b59cd4a5bb4e67b3c27",
+        "subterm_ordering_ExprTypes.AND",
+        "subterm_ordering_ExprTypes.APPEND",
+        "subterm_ordering_ExprTypes.APPLY",
+        "subterm_ordering_ExprTypes.ASSERT",
+        "subterm_ordering_ExprTypes.ASSIGN",
+        "subterm_ordering_ExprTypes.GET_ARRAY",
+        "subterm_ordering_ExprTypes.LET", "subterm_ordering_ExprTypes.ROT",
+        "subterm_ordering_ExprTypes.SEQUENCE",
+        "subterm_ordering_ExprTypes.SLICE", "subterm_ordering_ExprTypes.XOR",
+        "subterm_ordering_Prims.Mktuple2", "subterm_ordering_Prims.Mktuple3"
+      ],
+      0
+    ],
+    [
+      "Interpreter.step",
+      3,
+      2,
+      1,
+      [
+        "@query", "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "equality_tok_Prims.LexTop@tok", "equation_Prims.fst",
+        "fuel_guarded_inversion_Prims.list",
+        "pretyping_3862c4e8ff39bfc3871b6a47e7ff5b2e",
+        "proj_equation_Prims.Mktuple2__1",
+        "projection_inverse_Prims.Mktuple2__1", "subterm_ordering_Prims.Cons"
+      ],
+      0
+    ],
+    [
+      "Interpreter.boolState",
+      1,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.HasEq_bool", "assumption_Prims.HasEq_int"
+      ],
+      0
+    ],
+    [
+      "Interpreter.boolInit",
+      1,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.HasEq_bool", "assumption_Prims.HasEq_int"
+      ],
+      0
+    ],
+    [
+      "Interpreter.boolInit",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_bool" ],
+      0
+    ],
+    [
+      "Interpreter.boolInit",
+      3,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [ "Interpreter.boolInit", 4, 2, 1, [ "@query" ], 0 ],
+    [ "Interpreter.boolAlloc", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "Interpreter.boolAlloc",
+      2,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.HasEq_bool", "assumption_Prims.HasEq_int"
+      ],
+      0
+    ],
+    [
+      "Interpreter.boolAlloc",
+      3,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_bool" ],
+      0
+    ],
+    [
+      "Interpreter.boolAlloc",
+      4,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [ "Interpreter.boolAssign", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "Interpreter.boolAssign",
+      2,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.HasEq_bool", "assumption_Prims.HasEq_int"
+      ],
+      0
+    ],
+    [
+      "Interpreter.boolAssign",
+      3,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_bool" ],
+      0
+    ],
+    [
+      "Interpreter.boolAssign",
+      4,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [ "Interpreter.boolEval", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "Interpreter.boolEval",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_bool" ],
+      0
+    ],
+    [
+      "Interpreter.boolEval",
+      3,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "Interpreter.boolInterp",
+      1,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.HasEq_bool",
+        "assumption_Prims.HasEq_int", "assumption_Prims.tuple2_haseq",
+        "assumption_Total.t_haseq", "equation_Interpreter.boolState",
+        "equation_Prims.eqtype", "equation_Total.state",
+        "function_token_typing_Prims.bool",
+        "function_token_typing_Prims.int",
+        "function_token_typing_Total.state",
+        "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
+      ],
+      0
+    ],
+    [
+      "Interpreter.substVal",
+      1,
+      2,
+      1,
+      [
+        "@query", "binder_x_9e791e0e7c31c999b5e35341dea99f2f_0",
+        "bool_inversion", "constructor_distinct_PairHeap.Empty",
+        "disc_equation_ExprTypes.ARRAY", "disc_equation_ExprTypes.LAMBDA",
+        "disc_equation_ExprTypes.LOC", "disc_equation_ExprTypes.UNIT",
+        "equation_AncillaHeap.ancHeap", "equation_AncillaHeap.cond",
+        "equation_AncillaHeap.emptyHeap",
+        "equation_with_fuel_Interpreter.isVal.fuel_instrumented",
+        "equation_with_fuel_PairHeap.is_heap.fuel_instrumented",
+        "fuel_correspondence_Interpreter.isVal.fuel_instrumented",
+        "fuel_correspondence_Interpreter.isVal_lst.fuel_instrumented",
+        "fuel_correspondence_PairHeap.is_heap.fuel_instrumented",
+        "fuel_irrelevance_Interpreter.isVal_lst.fuel_instrumented",
+        "function_token_typing_AncillaHeap.emptyHeap",
+        "proj_equation_AncillaHeap.MkancHeapRecord_hp",
+        "projection_inverse_AncillaHeap.MkancHeapRecord_hp",
+        "projection_inverse_ExprTypes.ARRAY__0",
+        "projection_inverse_PairHeap.Empty__a",
+        "refinement_interpretation_Tm_refine_456af8f0ed2e6b59cd4a5bb4e67b3c27",
+        "refinement_interpretation_Tm_refine_79f9df3462c069f4e3891754d542d6cd",
+        "subterm_ordering_ExprTypes.ARRAY", "typing_Interpreter.isVal"
+      ],
+      0
+    ],
+    [
+      "Interpreter.substVal",
+      2,
+      2,
+      1,
+      [
+        "@query", "binder_x_45b5ec812472bc4115943497241d5053_0",
+        "bool_inversion", "constructor_distinct_PairHeap.Empty",
+        "disc_equation_ExprTypes.LOC", "disc_equation_Prims.Cons",
+        "disc_equation_Prims.Nil", "equation_AncillaHeap.ancHeap",
+        "equation_AncillaHeap.cond", "equation_AncillaHeap.emptyHeap",
+        "equation_with_fuel_Interpreter.isVal_lst.fuel_instrumented",
+        "equation_with_fuel_PairHeap.is_heap.fuel_instrumented",
+        "fuel_correspondence_Interpreter.isVal_lst.fuel_instrumented",
+        "fuel_correspondence_PairHeap.is_heap.fuel_instrumented",
+        "fuel_irrelevance_Interpreter.isVal_lst.fuel_instrumented",
+        "function_token_typing_AncillaHeap.emptyHeap",
+        "proj_equation_AncillaHeap.MkancHeapRecord_hp",
+        "proj_equation_Prims.Cons_hd",
+        "projection_inverse_AncillaHeap.MkancHeapRecord_hp",
+        "projection_inverse_PairHeap.Empty__a",
+        "projection_inverse_Prims.Cons_a",
+        "projection_inverse_Prims.Cons_hd",
+        "projection_inverse_Prims.Cons_tl",
+        "refinement_interpretation_Tm_refine_456af8f0ed2e6b59cd4a5bb4e67b3c27",
+        "refinement_interpretation_Tm_refine_fc003454349819ae5ed8a644efa3342e",
+        "subterm_ordering_Prims.Cons", "typing_Interpreter.isVal_lst"
+      ],
+      0
+    ],
+    [
+      "Interpreter.substVal",
+      3,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_bool" ],
+      0
+    ],
+    [
+      "Interpreter.substVal",
+      4,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "Interpreter.substVal",
+      5,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.HasEq_bool", "assumption_Prims.HasEq_int"
+      ],
+      0
+    ],
+    [
+      "Interpreter.substVal",
+      6,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_bool" ],
+      0
+    ],
+    [
+      "Interpreter.substVal",
+      7,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0
+    ],
+    [
+      "Interpreter.substVal",
+      8,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.HasEq_bool", "assumption_Prims.HasEq_int"
+      ],
+      0
+    ],
+    [
+      "Interpreter.evalBool",
+      1,
+      2,
+      1,
+      [
+        "@query", "constructor_distinct_PairHeap.Empty",
+        "disc_equation_Util.Err", "disc_equation_Util.Val",
+        "equation_AncillaHeap.ancHeap", "equation_AncillaHeap.cond",
+        "equation_AncillaHeap.emptyHeap", "equation_Interpreter.boolState",
+        "equation_Interpreter.config",
+        "equation_with_fuel_PairHeap.is_heap.fuel_instrumented",
+        "fuel_correspondence_PairHeap.is_heap.fuel_instrumented",
+        "fuel_guarded_inversion_Util.result",
+        "function_token_typing_AncillaHeap.emptyHeap",
+        "pretyping_f40d5dbeaae259349d0c14affec2cc5e",
+        "pretyping_f537159ed795b314b4e58c260361ae86",
+        "proj_equation_AncillaHeap.MkancHeapRecord_hp",
+        "proj_equation_Prims.V_v",
+        "projection_inverse_AncillaHeap.MkancHeapRecord_hp",
+        "projection_inverse_PairHeap.Empty__a",
+        "projection_inverse_Prims.V_v", "projection_inverse_Util.Err__0",
+        "projection_inverse_Util.Err__a",
+        "refinement_interpretation_Tm_refine_456af8f0ed2e6b59cd4a5bb4e67b3c27"
+      ],
+      0
+    ],
+    [
+      "Interpreter.evalBool",
+      2,
+      2,
+      1,
+      [
+        "@query", "data_elim_Interpreter.Mkinterpretation",
+        "equation_Interpreter.boolInterp", "equation_Interpreter.boolState",
+        "equation_Prims.eqtype",
+        "function_token_typing_Interpreter.boolInterp",
+        "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
+      ],
+      0
+    ],
+    [
+      "Interpreter.alloc_preservation",
+      1,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.HasEq_bool", "assumption_Prims.HasEq_int"
+      ],
+      0
+    ],
+    [
+      "Interpreter.alloc_preservation",
+      2,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.HasEq_bool", "assumption_Prims.HasEq_int"
+      ],
+      0
+    ],
+    [
+      "Interpreter.alloc_preservation",
+      3,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.HasEq_bool", "assumption_Prims.HasEq_int"
+      ],
+      0
+    ],
+    [
+      "Interpreter.assign_preservation",
+      1,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.HasEq_bool", "assumption_Prims.HasEq_int"
+      ],
+      0
+    ],
+    [
+      "Interpreter.assign_preservation",
+      2,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.HasEq_bool", "assumption_Prims.HasEq_int"
+      ],
+      0
+    ],
+    [
+      "Interpreter.assign_preservation",
+      3,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.HasEq_bool", "assumption_Prims.HasEq_int"
+      ],
+      0
+    ],
+    [
+      "Interpreter.step_preservation",
+      1,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.HasEq_bool", "assumption_Prims.HasEq_int"
+      ],
+      0
+    ],
+    [
+      "Interpreter.step_preservation_lst",
+      1,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.HasEq_bool", "assumption_Prims.HasEq_int"
+      ],
+      0
+    ],
+    [
+      "Interpreter.step_preservation",
+      2,
+      2,
+      2,
+      [
+        "@query", "binder_x_273c0cb114efbc10b99731f088b17ae0_4",
+        "binder_x_273c0cb114efbc10b99731f088b17ae0_5",
+        "binder_x_2e6b21be01102984882d2a065d3443cc_12",
+        "binder_x_41f5ae9088b2770d81d5d68f08fd1ee8_13",
+        "binder_x_6b74f0037009d29c0456341c2163d847_11",
+        "binder_x_a751c02fb709cf73a36f73ce33504a3a_7",
+        "binder_x_e1223da8218c79d0dd6b0b969e8e6ca3_6", "bool_inversion",
+        "constructor_distinct_ExprTypes.AND",
+        "constructor_distinct_ExprTypes.APPEND",
+        "constructor_distinct_ExprTypes.APPLY",
+        "constructor_distinct_ExprTypes.ASSERT",
+        "constructor_distinct_ExprTypes.ASSIGN",
+        "constructor_distinct_ExprTypes.BOOL",
+        "constructor_distinct_ExprTypes.GET_ARRAY",
+        "constructor_distinct_ExprTypes.LAMBDA",
+        "constructor_distinct_ExprTypes.LET",
+        "constructor_distinct_ExprTypes.ROT",
+        "constructor_distinct_ExprTypes.SEQUENCE",
+        "constructor_distinct_ExprTypes.SLICE",
+        "constructor_distinct_ExprTypes.XOR",
+        "constructor_distinct_PairHeap.Empty",
+        "constructor_distinct_Prims.Mktuple2",
+        "constructor_distinct_Prims.Mktuple3",
+        "constructor_distinct_Tm_unit", "constructor_distinct_Util.Err",
+        "constructor_distinct_Util.Val", "data_elim_ExprTypes.AND",
+        "data_elim_ExprTypes.APPEND", "data_elim_ExprTypes.APPLY",
+        "data_elim_ExprTypes.ASSIGN", "data_elim_ExprTypes.GET_ARRAY",
+        "data_elim_ExprTypes.LET", "data_elim_ExprTypes.ROT",
+        "data_elim_ExprTypes.SEQUENCE", "data_elim_ExprTypes.SLICE",
+        "data_elim_ExprTypes.XOR", "data_elim_Util.Val",
+        "data_typing_intro_Prims.Mktuple2@tok",
+        "disc_equation_ExprTypes.AND", "disc_equation_ExprTypes.APPEND",
+        "disc_equation_ExprTypes.APPLY", "disc_equation_ExprTypes.ARRAY",
+        "disc_equation_ExprTypes.ASSERT", "disc_equation_ExprTypes.ASSIGN",
+        "disc_equation_ExprTypes.BEXP", "disc_equation_ExprTypes.BOOL",
+        "disc_equation_ExprTypes.GET_ARRAY", "disc_equation_ExprTypes.LET",
+        "disc_equation_ExprTypes.LOC", "disc_equation_ExprTypes.ROT",
+        "disc_equation_ExprTypes.SEQUENCE", "disc_equation_ExprTypes.SLICE",
+        "disc_equation_ExprTypes.XOR", "disc_equation_Util.Err",
+        "disc_equation_Util.Val", "equality_tok_ExprTypes.UNIT@tok",
+        "equality_tok_Prims.LexTop@tok", "equation_AncillaHeap.ancHeap",
+        "equation_AncillaHeap.cond", "equation_AncillaHeap.emptyHeap",
+        "equation_FStar.List.Tot.test_sort", "equation_Interpreter.config",
+        "equation_Prims._assert", "equation_Prims.eqtype",
+        "equation_Prims.snd", "equation_Util.bindT", "equation_Util.getVal",
+        "equation_with_fuel_Interpreter.isVal.fuel_instrumented",
+        "equation_with_fuel_Interpreter.step.fuel_instrumented",
+        "equation_with_fuel_PairHeap.is_heap.fuel_instrumented",
+        "fuel_correspondence_Interpreter.isVal.fuel_instrumented",
+        "fuel_correspondence_Interpreter.step.fuel_instrumented",
+        "fuel_correspondence_PairHeap.is_heap.fuel_instrumented",
+        "fuel_guarded_inversion_Interpreter.interpretation",
+        "fuel_guarded_inversion_Prims.tuple2",
+        "fuel_guarded_inversion_Util.result",
+        "fuel_irrelevance_Interpreter.step.fuel_instrumented",
+        "function_token_typing_AncillaHeap.emptyHeap",
+        "function_token_typing_FStar.List.Tot.test_sort",
+        "interpretation_Tm_abs_04873810b9e77f481ce545cf6a1c6187",
+        "interpretation_Tm_abs_1d7a5f72f1a1f2055ffb8b2926e498e0",
+        "interpretation_Tm_abs_23cefe1d4507f93de5e18cbe452567d0",
+        "interpretation_Tm_abs_32c000ca4ed24ddbb97b10b86f7d0459",
+        "interpretation_Tm_abs_46128c3983262b67d5b56304c1dd9f53",
+        "interpretation_Tm_abs_6d24619f773d474639c26e4f2702389c",
+        "interpretation_Tm_abs_8689f137ba4f7d62b108c2e65f7601dc",
+        "interpretation_Tm_abs_8808f1f0e4bf0ef0f57b0d44e3d32a19",
+        "interpretation_Tm_abs_94d8b0fd9a59574739a537f96ac91c2d",
+        "interpretation_Tm_abs_97a51d250dadce1c5d0aa5485e7cd26f",
+        "interpretation_Tm_abs_9e19f8325466368ed9c7c0e493007111",
+        "interpretation_Tm_abs_a491fcfa783f6845945be67cdd5a26d9",
+        "interpretation_Tm_abs_afe533e5e320457fdf6822c93107e974",
+        "interpretation_Tm_abs_bcae9801fc68ce0385d50550f6feea33",
+        "interpretation_Tm_abs_cbda7e034f5921c2c6e7f08e6eabed2e",
+        "interpretation_Tm_abs_eced997745618c0896ed38d305ced86f",
+        "kinding_ExprTypes.gExpr@tok", "primitive_Prims.op_AmpAmp",
+        "primitive_Prims.op_LessThan", "primitive_Prims.op_Negation",
+        "proj_equation_AncillaHeap.MkancHeapRecord_hp",
+        "proj_equation_Prims.Mktuple2__2",
+        "projection_inverse_AncillaHeap.MkancHeapRecord_hp",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_BoxInt_proj_0",
+        "projection_inverse_ExprTypes.AND__0",
+        "projection_inverse_ExprTypes.APPEND__0",
+        "projection_inverse_ExprTypes.APPLY__0",
+        "projection_inverse_ExprTypes.ASSERT__0",
+        "projection_inverse_ExprTypes.ASSIGN__0",
+        "projection_inverse_ExprTypes.GET_ARRAY__0",
+        "projection_inverse_ExprTypes.LET__0",
+        "projection_inverse_ExprTypes.ROT__0",
+        "projection_inverse_ExprTypes.SEQUENCE__0",
+        "projection_inverse_ExprTypes.SLICE__0",
+        "projection_inverse_ExprTypes.XOR__0",
+        "projection_inverse_PairHeap.Empty__a",
+        "projection_inverse_Prims.Mktuple2__1",
+        "projection_inverse_Prims.Mktuple2__2",
+        "projection_inverse_Prims.Mktuple2__a",
+        "projection_inverse_Prims.Mktuple2__b",
+        "projection_inverse_Prims.Mktuple3__1",
+        "projection_inverse_Prims.Mktuple3__2",
+        "projection_inverse_Prims.Mktuple3__3",
+        "projection_inverse_Prims.Mktuple3__a",
+        "projection_inverse_Prims.Mktuple3__b",
+        "projection_inverse_Prims.Mktuple3__c",
+        "projection_inverse_Util.Err__0", "projection_inverse_Util.Err__a",
+        "projection_inverse_Util.Val__0", "projection_inverse_Util.Val__a",
+        "refinement_interpretation_Tm_refine_095c0cd410e6bb612fdb7c43138832b0",
+        "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f",
+        "refinement_interpretation_Tm_refine_456af8f0ed2e6b59cd4a5bb4e67b3c27",
+        "subterm_ordering_ExprTypes.AND",
+        "subterm_ordering_ExprTypes.APPEND",
+        "subterm_ordering_ExprTypes.APPLY",
+        "subterm_ordering_ExprTypes.ASSERT",
+        "subterm_ordering_ExprTypes.ASSIGN",
+        "subterm_ordering_ExprTypes.GET_ARRAY",
+        "subterm_ordering_ExprTypes.LET", "subterm_ordering_ExprTypes.ROT",
+        "subterm_ordering_ExprTypes.SEQUENCE",
+        "subterm_ordering_ExprTypes.SLICE", "subterm_ordering_ExprTypes.XOR",
+        "subterm_ordering_Prims.Mktuple2", "subterm_ordering_Prims.Mktuple3",
+        "token_correspondence_Interpreter.step.fuel_instrumented",
+        "token_correspondence_Prims.op_LessThan",
+        "typing_AncillaHeap.MkancHeapRecord.hp", "typing_Interpreter.config",
+        "typing_Interpreter.isBexp", "typing_Interpreter.isVal",
+        "typing_Interpreter.step", "typing_PairHeap.is_heap",
+        "typing_Util.getVal"
+      ],
+      0
+    ],
+    [
+      "Interpreter.step_preservation",
+      3,
+      2,
+      1,
+      [
+        "@query", "binder_x_84a62770dc4fae20d5c368546b439b5f_11",
+        "binder_x_a751c02fb709cf73a36f73ce33504a3a_7",
+        "binder_x_e1223da8218c79d0dd6b0b969e8e6ca3_6",
+        "constructor_distinct_Prims.Mktuple2",
+        "constructor_distinct_Prims.Nil", "constructor_distinct_Util.Val",
+        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "disc_equation_Util.Val", "equation_FStar.List.Tot.test_sort",
+        "equation_Interpreter.listconfig", "equation_Prims._assert",
+        "equation_Prims.snd", "equation_Util.getVal",
+        "equation_with_fuel_Interpreter.step_lst.fuel_instrumented",
+        "fuel_correspondence_Interpreter.step_lst.fuel_instrumented",
+        "fuel_guarded_inversion_Interpreter.interpretation",
+        "fuel_guarded_inversion_Prims.list",
+        "function_token_typing_FStar.List.Tot.test_sort",
+        "proj_equation_Prims.Mktuple2__2",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_Prims.Mktuple2__1",
+        "projection_inverse_Prims.Mktuple2__2",
+        "projection_inverse_Prims.Mktuple2__a",
+        "projection_inverse_Prims.Mktuple2__b",
+        "projection_inverse_Prims.Nil_a", "projection_inverse_Util.Val__0",
+        "projection_inverse_Util.Val__a"
+      ],
+      0
+    ]
+  ]
+]

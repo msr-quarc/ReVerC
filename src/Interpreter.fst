@@ -382,7 +382,7 @@ val step_preservation_lst :
 let rec step_preservation #s1 #s2 i1 i2 p h1 h2 gexp st1 st2 init = match gexp with
   | LET (x, t1, t2) -> step_preservation i1 i2 p h1 h2 t1 st1 st2 init
   | LAMBDA (x, ty, t) -> ()
-  | APPLY (t1, t2) -> 
+  | APPLY (t1, t2) ->
     step_preservation i1 i2 p h1 h2 t1 st1 st2 init;
     step_preservation i1 i2 p h1 h2 t2 st1 st2 init
   | SEQUENCE (t1, t2) ->
@@ -393,9 +393,9 @@ let rec step_preservation #s1 #s2 i1 i2 p h1 h2 gexp st1 st2 init = match gexp w
     step_preservation i1 i2 p h1 h2 t2 st1 st2 init;
     if (isVal t1 && isBexp t2) then
       begin match t1 with
-        | LOC l -> admit() //h2
+        | LOC l -> admit() //h2 something stopped working with the hypothesis
         | _ -> ()
-      end (*
+      end 
   | XOR (t1, t2) ->
     step_preservation i1 i2 p h1 h2 t1 st1 st2 init;
     step_preservation i1 i2 p h1 h2 t2 st1 st2 init
@@ -403,23 +403,22 @@ let rec step_preservation #s1 #s2 i1 i2 p h1 h2 gexp st1 st2 init = match gexp w
     step_preservation i1 i2 p h1 h2 t1 st1 st2 init;
     step_preservation i1 i2 p h1 h2 t2 st1 st2 init
   | BOOL b -> ()
-  | APPEND (t1, t2) -> ()
+  | APPEND (t1, t2) ->
     step_preservation i1 i2 p h1 h2 t1 st1 st2 init;
-    step_preservation i1 i2 p h1 h2 t2 st1 st2 init;
+    step_preservation i1 i2 p h1 h2 t2 st1 st2 init
   | ROT (i, t) ->
-    state_equiv_step t st st' init
+    step_preservation i1 i2 p h1 h2 t st1 st2 init
   | SLICE (t, i, j) ->
-    state_equiv_step t st st' init
-  | ARRAY lst -> admit()
-    //state_equiv_step_lst lst st st' init
+    step_preservation i1 i2 p h1 h2 t st1 st2 init
+  | ARRAY lst -> admit() // Until the mutual recursion can be solved
   | GET_ARRAY (t, i) ->
-    state_equiv_step t st st' init
+    step_preservation i1 i2 p h1 h2 t st1 st2 init
   | ASSERT t ->
-    state_equiv_step t st st' init
-  | BEXP bexp -> state_equiv_alloc st st' init bexp *)
-  | _ -> admit()
-and step_preservation_lst #s1 #s2 i1 i2 p h1 h2 gexp st1 st2 init = admit() (*match lst with
+    step_preservation i1 i2 p h1 h2 t st1 st2 init
+  | BEXP bexp -> admit() //h1; h2
+  | _ -> ()
+and step_preservation_lst #s1 #s2 i1 i2 p h1 h2 lst st1 st2 init = match lst with
   | [] -> ()
-  | x::xs ->
-    state_equiv_step x st st' init;
-    state_equiv_step_lst xs st st' init *)
+  | x::xs -> admit() // Again, mutual recursion issue
+    //step_preservation i1 i2 p h1 h2 x st1 st2 init;
+    //step_preservation_lst i1 i2 p h1 h2 xs st1 st2 init

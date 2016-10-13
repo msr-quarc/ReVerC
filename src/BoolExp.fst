@@ -401,7 +401,7 @@ let rec factorAs_correct exp targ st = match exp with
     factorAs_correct y targ st
 
 (* Needed to relate two types of membership *)
-val occursInBexp_not_var : i:int -> exp:BoolExp ->
+val occursInBexp_not_var : i:int -> exp:boolExp ->
   Lemma (requires (not (occursInBexp i exp)))
         (ensures  (not (Set.mem i (vars exp))))
 let rec occursInBexp_not_var i exp = match exp with
@@ -418,7 +418,7 @@ let rec factorAs_vars exp targ = match exp with
   | BVar x -> ()
   | BNot x -> factorAs_vars x targ
   | BAnd (x, y) -> ()
-  | BXor (x, y) -> admit();
+  | BXor (x, y) ->
     factorAs_vars x targ;
     factorAs_vars y targ;
     if not (occursInBexp targ y) then (
@@ -811,12 +811,11 @@ let compile_bexp_zero_oop ah exp st =
   let (ah', targ) = popMin ah in
     pop_proper_subset ah;
     compile_bexp_zero ah' targ exp st
-  
+ 
 (* English-language preconditions: everything on the heap is in the 0 state, and
    the heap, expression, and target bit are all mutually disjoint -- that is,
    nothing on the heap is mentioned in either the target bit or the expression,
    and the target bit is not in the expression *)
-
 val compile_bexp_correct : ah:ancHeap -> targ:int -> exp:boolExp -> st:state ->
   Lemma (requires (zeroHeap st ah /\ disjoint (elts ah) (vars exp) /\
                    not (Set.mem targ (elts ah)) /\
@@ -935,14 +934,14 @@ and compileBexp_wf_oop ah exp = match exp with
       pop_proper_subset ah;
       compileBexp_wf ah' targ exp
 
-val compile_anc : ah:ancHeap -> targ:int -> exp:boolExp ->
+val compile_anc : ah:ancHeap -> targ:int -> x:boolExp ->
   Lemma (requires True)
-        (ensures (subset (mems (third (compileBexp ah targ exp))) (elts ah)))
-  (decreases %[exp;0])
-val compile_anc_oop : ah:ancHeap -> exp:boolExp ->
+        (ensures (subset (mems (third (compileBexp ah targ x))) (elts ah)))
+  (decreases %[x;0])
+val compile_anc_oop : ah:ancHeap -> x:boolExp ->
   Lemma (requires True)
-        (ensures (subset (mems (third (compileBexp_oop ah exp))) (elts ah)))
-  (decreases %[exp;1])
+        (ensures (subset (mems (third (compileBexp_oop ah x))) (elts ah)))
+  (decreases %[x;1])
 let rec compile_anc ah targ exp = match exp with
   | BFalse -> ()
   | BVar v -> ()
@@ -953,14 +952,14 @@ let rec compile_anc ah targ exp = match exp with
       compile_anc ah targ x;
       compile_decreases_heap ah targ x;
       compile_anc ah' targ y;
-      FStar.ListProperties.append_mem_forall xanc yanc
+      mems_append xanc yanc
   | BAnd (x, y) ->
     let (ah', xres, xanc, xgate) = compileBexp_oop ah x in
     let (ah'', yres, yanc, ygate) = compileBexp_oop ah' y in
       compile_anc_oop ah x;
       compile_decreases_heap_oop ah x;
       compile_anc_oop ah' y;
-      FStar.ListProperties.append_mem_forall xanc yanc
+      mems_append xanc yanc
 and compile_anc_oop ah exp = match exp with
   | BVar v -> ()
   | _ ->
@@ -1000,7 +999,6 @@ and compile_ctrls_oop ah x = match x with
 (* Compiling with cleanup produces same result as the regular compile and
    a zero heap. *)
 
-
 type clean_heap_cond (ah:ancHeap) (targ:int) (exp:boolExp) (st:state) =
   zeroHeap (compileBexpCleanEvalSt ah targ exp st)
            (first (compileBexpClean ah targ exp))
@@ -1035,6 +1033,7 @@ let compile_with_cleanup ah targ exp st =
       compile_ctrls ah targ exp;
       uncompute_mixed_inverse circ res st;
       compile_anc ah targ exp;
+      mems_iff_mem anc;
       zeroHeap_insert_list st'' ah' anc
   in
   let corr_cond =
@@ -1042,6 +1041,7 @@ let compile_with_cleanup ah targ exp st =
     eval_mod st' (FStar.List.Tot.rev cleanup)
   in
     ()
+  
 
 val compile_with_cleanup_oop : ah:ancHeap -> exp:boolExp -> st:state ->
   Lemma (requires (zeroHeap st ah /\ disjoint (elts ah) (vars exp)))

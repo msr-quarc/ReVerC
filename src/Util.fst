@@ -109,3 +109,18 @@ let rec symins #a l y = match l with
 let listSymdiff #a x y = FStar.List.Tot.fold_left symins [] x
 
 let listDiff #a x y = FStar.List.Tot.filter (fun x -> not (FStar.List.Tot.mem x y)) x
+
+(** Verification utilities *)
+val mems_iff_mem : #a:eqtype -> l:list a ->
+  Lemma (requires True)
+        (ensures (forall i. Set.mem i (mems l) <==> FStar.List.Tot.mem i l))
+let rec mems_iff_mem #a l = match l with
+  | [] -> ()
+  | x::xs -> mems_iff_mem xs
+
+val mems_append : #a:eqtype -> l1:list a -> l2:list a ->
+  Lemma (requires True)
+        (ensures (Set.equal (mems (l1@l2)) (union (mems l1) (mems l2))))
+let rec mems_append #a l1 l2 = match l1 with
+  | [] -> ()
+  | x::xs -> mems_append xs l2

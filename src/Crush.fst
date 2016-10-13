@@ -17,7 +17,7 @@ val bexpAssign : bExpState -> int -> boolExp -> Tot bExpState
 val bexpEval   : bExpState -> state -> int -> Tot bool
 
 let bexpInit = (0, constMap BFalse)
-let bexpAlloc (top, st) = (top, (top + 1, st))
+let bexpAlloc (top, st) = (top, (top + 1, update st top BFalse))
 let bexpAssign (top, st) l bexp = (top, update st l (substBexp bexp st))
 let bexpEval (top, st) ivals i = evalBexp (lookup st i) ivals
 
@@ -38,10 +38,10 @@ let simps bexp = simplify (toXDNF bexp)
 val allocN : list gExpr * bExpState -> i:int ->
   Tot (list gExpr * bExpState) (decreases i)
 let rec allocN (locs, (top, st)) i =
-  if i <= 0 then (List.rev locs, (top, st))
+  if i <= 0 then (FStar.List.Tot.rev locs, (top, st))
   else allocN (((LOC top)::locs), (top+1, update st top (BVar top))) (i-1)
 
-val allocTy : GType -> bExpState -> Tot (result (gExpr * bExpState))
+val allocTy : gType -> bExpState -> Tot (result (gExpr * bExpState))
 let allocTy ty (top, st) = match ty with
   | GBool -> Val (LOC top, (top + 1, update st top (BVar top)))
   | GArray n ->
@@ -57,23 +57,23 @@ let rec lookupLst lst st = match lst with
 open AncillaHeap
 open Circuit
 
-val foldPebble : (AncHeap * list int * list int * list gate) ->
-  boolExp -> Tot (AncHeap * list int * list int * list gate)
+val foldPebble : (ancHeap * list int * list int * list gate) ->
+  boolExp -> Tot (ancHeap * list int * list int * list gate)
 let foldPebble (ah, outs, anc, circ) bexp =
   let (ah', res, anc', circ') = compileBexpPebbled_oop ah (simps bexp) in
     (ah', res::outs, anc'@anc, circ@circ')
 
-val foldClean : (AncHeap * list int * list int * list gate) ->
-  boolExp -> Tot (AncHeap * list int * list int * list gate)
+val foldClean : (ancHeap * list int * list int * list gate) ->
+  boolExp -> Tot (ancHeap * list int * list int * list gate)
 let foldClean (ah, outs, anc, circ) bexp =
   let (ah', res, anc', circ') = compileBexpClean_oop ah (simps bexp) in
     (ah', res::outs, anc'@anc, circ@circ')
 
-val foldBennett : (AncHeap * list int * list int * list gate * list gate) ->
-  boolExp -> Tot (AncHeap * list int * list int * list gate * list gate)
+val foldBennett : (ancHeap * list int * list int * list gate * list gate) ->
+  boolExp -> Tot (ancHeap * list int * list int * list gate * list gate)
 let foldBennett (ah, outs, anc, circ, ucirc) bexp =
   let (ah', res, anc', circ') = compileBexp_oop ah (simps bexp) in
-    (ah', res::outs, anc'@anc, circ@circ', (List.rev (uncompute circ' res))@ucirc)
+    (ah', res::outs, anc'@anc, circ@circ', (FStar.List.Tot.rev (uncompute circ' res))@ucirc)
 
 (* Compilation wrapper. The main point of interest is its action when the
    program is a function. In that case it allocates some new free variables
@@ -104,24 +104,24 @@ let rec compile (gexp, st) strategy =
 	let yd = andDepth y in
 	  if xd < yd then 1 else if xd = yd then 0 else -1
       in
-      let blst = List.sortWithT cmp (lookupLst lst st) in
-      let max = listMax (List.mapT varMax blst) in
+      let blst = FStar.List.Tot.sortWith cmp (lookupLst lst st) in
+      let max = listMax (FStar.List.Tot.map varMax blst) in
       let (ah, outs, anc, circ) = match strategy with
         | Pebbled ->
           let (ah, outs, anc, circ) =
-            List.fold_leftT foldPebble (above (max+1), [], [], []) blst
+            FStar.List.Tot.fold_left foldPebble (above (max+1), [], [], []) blst
           in
-            (ah, List.rev outs, List.rev anc, circ)
+            (ah, FStar.List.Tot.rev outs, FStar.List.Tot.rev anc, circ)
         | Boundaries ->
           let (ah, outs, anc, circ) =
-            List.fold_leftT foldClean (above (max+1), [], [], []) blst
+            FStar.List.Tot.fold_left foldClean (above (max+1), [], [], []) blst
           in
-            (ah, List.rev outs, List.rev anc, circ)
+            (ah, FStar.List.Tot.rev outs, FStar.List.Tot.rev anc, circ)
         | Bennett ->
           let (ah, outs, anc, circ, ucirc) =
-            List.fold_leftT foldBennett (above (max+1), [], [], [], []) blst
+            FStar.List.Tot.fold_left foldBennett (above (max+1), [], [], [], []) blst
           in
-            (ah, List.rev outs, List.rev anc, circ@ucirc)
+            (ah, FStar.List.Tot.rev outs, FStar.List.Tot.rev anc, circ@ucirc)
       in
         Val (outs, circ)
   else match (step (gexp, st) bexpInterp) with
@@ -162,74 +162,3 @@ val state_equiv_assign : st:boolState -> st':bExpState -> init:state -> l:int ->
   Lemma (requires (state_equiv st st' init))
         (ensures  (state_equiv (boolAssign st l bexp) (bexpAssign st' l bexp) init))
 let state_equiv_assign st st' init l bexp = eval_bexp_swap st st' bexp init
-
-val state_equiv_step : gexp:gExpr -> st:boolState -> st':bExpState -> init:state ->
-  Lemma (requires (state_equiv st st' init))
-        (ensures
-          (is_Err (step (gexp, st) boolInterp) /\ is_Err (step (gexp, st') bexpInterp)) \/
-          (is_Val (step (gexp, st) boolInterp) /\ is_Val (step (gexp, st') bexpInterp) /\
-          (fst (getVal (step (gexp, st) boolInterp)) =
-           fst (getVal (step (gexp, st') bexpInterp)) /\
-          state_equiv (snd (getVal (step (gexp, st) boolInterp)))
-                      (snd (getVal (step (gexp, st') bexpInterp)))
-                      init)))
-  (decreases %[gexp;1])
-val state_equiv_step_lst : lst:list gExpr -> st:boolState -> st':bExpState -> init:state ->
-  Lemma (requires (state_equiv st st' init))
-        (ensures
-          (is_Err (step_lst (lst, st) boolInterp) /\ is_Err (step_lst (lst, st') bexpInterp)) \/
-          (is_Val (step_lst (lst, st) boolInterp) /\ is_Val (step_lst (lst, st') bexpInterp) /\
-          (fst (getVal (step_lst (lst, st) boolInterp)) =
-           fst (getVal (step_lst (lst, st') bexpInterp)) /\
-          state_equiv (snd (getVal (step_lst (lst, st) boolInterp)))
-                      (snd (getVal (step_lst (lst, st') bexpInterp)))
-                      init)))
-  (decreases %[lst;0])
-let rec state_equiv_step gexp st st' init = match gexp with
-  | LET (x, t1, t2) ->
-    state_equiv_step t1 st st' init
-  | LAMBDA (x, ty, t) -> ()
-  | APPLY (t1, t2) ->
-    state_equiv_step t1 st st' init;
-    state_equiv_step t2 st st' init
-  | SEQUENCE (t1, t2) ->
-    state_equiv_step t1 st st' init
-  | ASSIGN (t1, t2) ->
-    state_equiv_step t1 st st' init;
-    state_equiv_step t2 st st' init;
-    if (isVal t1 && isBexp t2) then
-      begin match t1 with
-        | LOC l -> state_equiv_assign st st' init l (get_bexp t2)
-        | _ -> ()
-      end
-  | XOR (t1, t2) ->
-    state_equiv_step t1 st st' init;
-    state_equiv_step t2 st st' init
-  | AND (t1, t2) ->
-    state_equiv_step t1 st st' init;
-    state_equiv_step t2 st st' init
-  | BOOL b -> ()
-  | APPEND (t1, t2) ->
-    state_equiv_step t1 st st' init;
-    state_equiv_step t2 st st' init
-  | ROT (i, t) ->
-    state_equiv_step t st st' init
-  | SLICE (t, i, j) ->
-    state_equiv_step t st st' init
-  | ARRAY lst ->
-    state_equiv_step_lst lst st st' init
-  | GET_ARRAY (t, i) ->
-    state_equiv_step t st st' init
-  | ASSERT t ->
-    state_equiv_step t st st' init
-  | BEXP bexp ->
-    let (l, st0) = boolAlloc st in
-    let (l', st'0) = bexpAlloc st' in
-    state_equiv_alloc st st' init;
-    state_equiv_assign st0 st'0 init l bexp
-  | _ -> ()
-and state_equiv_step_lst lst st st' init = match lst with
-  | [] -> ()
-  | x::xs ->
-    state_equiv_step x st st' init;
-    state_equiv_step_lst xs st st' init
