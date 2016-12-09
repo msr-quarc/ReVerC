@@ -4,7 +4,7 @@ module BoolExp
 open FStar.Set
 open SetExtra
 open Total
-open Util
+open Utils
 open AncillaHeap
 open Circuit
 
@@ -418,7 +418,7 @@ let rec factorAs_vars exp targ = match exp with
   | BVar x -> ()
   | BNot x -> factorAs_vars x targ
   | BAnd (x, y) -> ()
-  | BXor (x, y) -> admit();
+  | BXor (x, y) ->
     factorAs_vars x targ;
     factorAs_vars y targ;
     if not (occursInBexp targ y) then (

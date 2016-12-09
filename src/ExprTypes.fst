@@ -3,7 +3,7 @@ module ExprTypes
 
 open FStar.Set
 open SetExtra
-open Util
+open Utils
 open BoolExp
 
 (* Abstract syntax of Revs, along with utilities. Eventually a

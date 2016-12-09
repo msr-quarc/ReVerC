@@ -3,7 +3,7 @@ module Interpreter
 
 open FStar.Set
 open SetExtra
-open Util
+open Utils
 open BoolExp
 open ExprTypes
 open Total

@@ -1,7 +1,7 @@
 (** Program transformation/compiler based on minimal ESOP forms *)
 module Crush
 
-open Util
+open Utils
 open Total
 open BoolExp
 open ExprTypes

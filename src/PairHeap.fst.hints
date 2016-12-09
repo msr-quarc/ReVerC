@@ -1,5 +1,5 @@
 [
-  "'É‰biÇ~iÏín>Ä€\u0000˜",
+  "À[9pŠ…ç¶nÊ)ùÂÐ¤µ",
   [
     [
       "PairHeap.heap",
@@ -14,17 +14,18 @@
       0
     ],
     [
-      "PairHeap.Heap._0",
+      "PairHeap.__proj__Heap__item___0",
       1,
       2,
       1,
       [
         "@query", "disc_equation_PairHeap.Heap",
         "projection_inverse_BoxBool_proj_0",
-        "refinement_interpretation_Tm_refine_b89b2faaa8fcc599ecf3e4bae172b053"
+        "refinement_interpretation_Tm_refine_76ec80e8b73563934306d6077b24ea27"
       ],
       0
     ],
+    [ "PairHeap.is_Empty", 1, 2, 1, [ "@query" ], 0 ],
     [
       "PairHeap.elts",
       1,
@@ -47,11 +48,12 @@
       2,
       1,
       [
-        "@query", "disc_equation_PairHeap.Empty",
-        "disc_equation_PairHeap.Heap", "equation_PairHeap.intHeap",
+        "@query", "bool_inversion", "disc_equation_PairHeap.Heap",
+        "equation_PairHeap.intHeap", "equation_PairHeap.is_Empty",
         "fuel_guarded_inversion_PairHeap.heap",
-        "projection_inverse_BoxBool_proj_0",
-        "refinement_interpretation_Tm_refine_5826a78e963f69e69da71b98f37fa30f"
+        "function_token_typing_Prims.int",
+        "refinement_interpretation_Tm_refine_5826a78e963f69e69da71b98f37fa30f",
+        "typing_PairHeap.is_Empty"
       ],
       0
     ],
@@ -78,7 +80,6 @@
       [ "@query", "assumption_Prims.HasEq_int" ],
       0
     ],
-    [ "PairHeap.insert", 1, 2, 1, [ "@query" ], 0 ],
     [
       "PairHeap.mergePairs",
       1,
@@ -91,8 +92,8 @@
         "function_token_typing_PairHeap.intHeap",
         "proj_equation_Prims.Cons_tl", "projection_inverse_BoxBool_proj_0",
         "projection_inverse_Prims.Cons_tl",
-        "refinement_interpretation_Tm_refine_5f5fd1baf8ea34bf72e4012bafe805ec",
-        "subterm_ordering_Prims.Cons", "typing_Prims.Cons.tl"
+        "refinement_interpretation_Tm_refine_7aac12c24449a22c34d98a0ea8ed4a32",
+        "subterm_ordering_Prims.Cons", "typing_Prims.__proj__Cons__item__tl"
       ],
       0
     ],
@@ -102,11 +103,12 @@
       2,
       1,
       [
-        "@query", "disc_equation_PairHeap.Empty",
-        "disc_equation_PairHeap.Heap", "equation_PairHeap.intHeap",
+        "@query", "bool_inversion", "disc_equation_PairHeap.Heap",
+        "equation_PairHeap.intHeap", "equation_PairHeap.is_Empty",
         "fuel_guarded_inversion_PairHeap.heap",
-        "projection_inverse_BoxBool_proj_0",
-        "refinement_interpretation_Tm_refine_5826a78e963f69e69da71b98f37fa30f"
+        "function_token_typing_Prims.int",
+        "refinement_interpretation_Tm_refine_5826a78e963f69e69da71b98f37fa30f",
+        "typing_PairHeap.is_Empty"
       ],
       0
     ],
@@ -116,11 +118,12 @@
       2,
       1,
       [
-        "@query", "disc_equation_PairHeap.Empty",
-        "disc_equation_PairHeap.Heap", "equation_PairHeap.intHeap",
+        "@query", "bool_inversion", "disc_equation_PairHeap.Heap",
+        "equation_PairHeap.intHeap", "equation_PairHeap.is_Empty",
         "fuel_guarded_inversion_PairHeap.heap",
-        "projection_inverse_BoxBool_proj_0",
-        "refinement_interpretation_Tm_refine_5826a78e963f69e69da71b98f37fa30f"
+        "function_token_typing_Prims.int",
+        "refinement_interpretation_Tm_refine_5826a78e963f69e69da71b98f37fa30f",
+        "typing_PairHeap.is_Empty"
       ],
       0
     ],
@@ -186,10 +189,9 @@
       [ "@query", "assumption_Prims.HasEq_int" ],
       0
     ],
-    [ "PairHeap.lt_heap", 1, 2, 1, [ "@query" ], 0 ],
     [
       "PairHeap.lt_heap",
-      2,
+      1,
       2,
       1,
       [
@@ -203,35 +205,33 @@
       ],
       0
     ],
-    [ "PairHeap.Leq_Empty.i", 1, 2, 1, [ "@query" ], 0 ],
     [
-      "PairHeap.Leq_Empty.i",
-      2,
+      "PairHeap.__proj__Leq_Empty__item__i",
+      1,
       2,
       1,
       [
         "@query", "disc_equation_PairHeap.Leq_Empty", "int_inversion",
         "projection_inverse_BoxBool_proj_0",
-        "refinement_interpretation_Tm_refine_1e3ae03dea0f48adf160aa959b3f8c64"
+        "refinement_interpretation_Tm_refine_9bb43db04bbb2aa6abefbce1e39a20b8"
       ],
       0
     ],
-    [ "PairHeap.Leq_Heap.i", 1, 2, 1, [ "@query" ], 0 ],
     [
-      "PairHeap.Leq_Heap.i",
-      2,
+      "PairHeap.__proj__Leq_Heap__item__i",
+      1,
       2,
       1,
       [
         "@query", "disc_equation_PairHeap.Leq_Heap", "int_inversion",
         "projection_inverse_BoxBool_proj_0",
-        "refinement_interpretation_Tm_refine_f716dcafb05bfa8f5403ae70ff04885d"
+        "refinement_interpretation_Tm_refine_9b2a191866c530935c65b8d194b8cbad"
       ],
       0
     ],
-    [ "PairHeap.Leq_Heap.r", 1, 2, 1, [ "@query" ], 0 ],
+    [ "PairHeap.__proj__Leq_Heap__item__r", 1, 2, 1, [ "@query" ], 0 ],
     [
-      "PairHeap.Leq_Heap.r",
+      "PairHeap.__proj__Leq_Heap__item__r",
       2,
       2,
       1,
@@ -243,20 +243,19 @@
         "projection_inverse_BoxBool_proj_0",
         "projection_inverse_PairHeap.Leq_Heap_i",
         "refinement_interpretation_Tm_refine_99d212c0335bce88ec32beb431e6360c",
-        "refinement_interpretation_Tm_refine_f716dcafb05bfa8f5403ae70ff04885d"
+        "refinement_interpretation_Tm_refine_9b2a191866c530935c65b8d194b8cbad"
       ],
       0
     ],
-    [ "PairHeap.Leq_Heap.lst", 1, 2, 1, [ "@query" ], 0 ],
     [
-      "PairHeap.Leq_Heap.lst",
-      2,
+      "PairHeap.__proj__Leq_Heap__item__lst",
+      1,
       2,
       1,
       [
         "@query", "disc_equation_PairHeap.Leq_Heap", "int_inversion",
         "projection_inverse_BoxBool_proj_0",
-        "refinement_interpretation_Tm_refine_f716dcafb05bfa8f5403ae70ff04885d"
+        "refinement_interpretation_Tm_refine_9b2a191866c530935c65b8d194b8cbad"
       ],
       0
     ],
@@ -272,11 +271,9 @@
       ],
       0
     ],
-    [ "PairHeap.minheap", 2, 2, 1, [ "@query" ], 0 ],
-    [ "PairHeap.minheap", 3, 2, 1, [ "@query" ], 0 ],
     [
       "PairHeap.minheap",
-      4,
+      2,
       2,
       1,
       [
@@ -288,7 +285,7 @@
     ],
     [
       "PairHeap.minheap",
-      5,
+      3,
       2,
       1,
       [
@@ -301,7 +298,7 @@
     ],
     [
       "PairHeap.minheap",
-      6,
+      4,
       2,
       1,
       [
@@ -317,34 +314,32 @@
       ],
       0
     ],
-    [ "PairHeap.H_Heap.r", 1, 2, 1, [ "@query" ], 0 ],
     [
-      "PairHeap.H_Heap.r",
-      2,
+      "PairHeap.__proj__H_Heap__item__r",
+      1,
       2,
       1,
       [
         "@query", "disc_equation_PairHeap.H_Heap",
         "projection_inverse_BoxBool_proj_0",
-        "refinement_interpretation_Tm_refine_a513a6a0c65fd1d0b076a8102bcdaf7e"
+        "refinement_interpretation_Tm_refine_6a73f44452f61db8d5ff9c308692fb4a"
       ],
       0
     ],
-    [ "PairHeap.H_Heap.lst", 1, 2, 1, [ "@query" ], 0 ],
     [
-      "PairHeap.H_Heap.lst",
-      2,
+      "PairHeap.__proj__H_Heap__item__lst",
+      1,
       2,
       1,
       [
         "@query", "disc_equation_PairHeap.H_Heap",
         "projection_inverse_BoxBool_proj_0",
-        "refinement_interpretation_Tm_refine_a513a6a0c65fd1d0b076a8102bcdaf7e"
+        "refinement_interpretation_Tm_refine_6a73f44452f61db8d5ff9c308692fb4a"
       ],
       0
     ],
     [
-      "PairHeap.H_Heap.ht",
+      "PairHeap.__proj__H_Heap__item__ht",
       1,
       2,
       1,
@@ -355,9 +350,9 @@
       ],
       0
     ],
-    [ "PairHeap.H_Heap.ht", 2, 2, 1, [ "@query" ], 0 ],
+    [ "PairHeap.__proj__H_Heap__item__ht", 2, 2, 1, [ "@query" ], 0 ],
     [
-      "PairHeap.H_Heap.ht",
+      "PairHeap.__proj__H_Heap__item__ht",
       3,
       2,
       1,
@@ -371,8 +366,8 @@
         "projection_inverse_BoxBool_proj_0",
         "projection_inverse_PairHeap.H_Heap_lst",
         "projection_inverse_PairHeap.H_Heap_r",
+        "refinement_interpretation_Tm_refine_6a73f44452f61db8d5ff9c308692fb4a",
         "refinement_interpretation_Tm_refine_9464479a8dbea99c4e6879c5c69f2f30",
-        "refinement_interpretation_Tm_refine_a513a6a0c65fd1d0b076a8102bcdaf7e",
         "unit_inversion", "unit_typing"
       ],
       0
@@ -390,11 +385,9 @@
       ],
       0
     ],
-    [ "PairHeap.is_heap", 1, 2, 1, [ "@query" ], 0 ],
-    [ "PairHeap.is_heap_list", 1, 2, 1, [ "@query" ], 0 ],
     [
       "PairHeap.is_heap",
-      2,
+      1,
       2,
       2,
       [
@@ -403,13 +396,14 @@
         "disc_equation_PairHeap.Heap", "equality_tok_Prims.LexTop@tok",
         "equation_PairHeap.intHeap", "fuel_guarded_inversion_PairHeap.heap",
         "pretyping_3862c4e8ff39bfc3871b6a47e7ff5b2e",
+        "projection_inverse_PairHeap.Heap__0",
         "subterm_ordering_PairHeap.Heap", "subterm_ordering_Prims.Mktuple2"
       ],
       0
     ],
     [
       "PairHeap.is_heap",
-      3,
+      2,
       2,
       1,
       [
@@ -452,67 +446,62 @@
       ],
       0
     ],
-    [ "PairHeap.leq_heap_trans", 1, 2, 1, [ "@query" ], 0 ],
     [
       "PairHeap.leq_heap_trans",
-      2,
+      1,
       2,
       1,
       [
         "@query", "binder_x_69f521f3bc9bd6b128c4ab18cc2e3f34_2",
         "binder_x_6d0180d4fcd10237cf0d87dd345d77cc_0",
         "binder_x_6d0180d4fcd10237cf0d87dd345d77cc_1", "bool_inversion",
-        "bool_typing", "constructor_distinct_Prims.Cons",
-        "constructor_distinct_Prims.Nil", "constructor_distinct_Tm_unit",
-        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
-        "equality_tok_Prims.LexTop@tok", "equation_FStar.List.Tot.test_sort",
-        "equation_PairHeap.intHeap", "equation_PairHeap.leq_heap",
-        "equation_Prims._assert",
+        "constructor_distinct_Prims.Nil", "disc_equation_Prims.Cons",
+        "disc_equation_Prims.Nil", "equality_tok_Prims.LexTop@tok",
+        "equation_FStar.List.Tot.test_sort", "equation_PairHeap.intHeap",
+        "equation_PairHeap.leq_heap", "equation_Prims._assert",
         "equation_with_fuel_FStar.List.Tot.for_all.fuel_instrumented",
         "fuel_correspondence_FStar.List.Tot.for_all.fuel_instrumented",
+        "fuel_guarded_inversion_Prims.list",
         "fuel_irrelevance_FStar.List.Tot.for_all.fuel_instrumented",
         "function_token_typing_FStar.List.Tot.test_sort",
         "function_token_typing_PairHeap.intHeap", "int_inversion",
         "partial_app_typing_cc43976330ed80b3a9155755b16f7274",
-        "pretyping_f537159ed795b314b4e58c260361ae86",
+        "partial_app_typing_e259c73452573836bf1b69188034ec50",
         "primitive_Prims.op_LessThan", "projection_inverse_BoxBool_proj_0",
         "projection_inverse_Prims.Cons_tl", "projection_inverse_Prims.Nil_a",
         "subterm_ordering_Prims.Cons",
         "token_correspondence_PairHeap.leq_heap",
-        "typing_FStar.List.Tot.for_all"
+        "typing_FStar.List.Tot.for_all", "unit_inversion"
       ],
       0
     ],
-    [ "PairHeap.leq_heap_app", 1, 2, 1, [ "@query" ], 0 ],
     [
       "PairHeap.leq_heap_app",
-      2,
+      1,
       2,
       1,
       [
         "@query", "binder_x_69f521f3bc9bd6b128c4ab18cc2e3f34_1",
         "binder_x_69f521f3bc9bd6b128c4ab18cc2e3f34_2",
         "binder_x_6d0180d4fcd10237cf0d87dd345d77cc_0", "bool_inversion",
-        "bool_typing", "constructor_distinct_Prims.Cons",
-        "constructor_distinct_Prims.Nil", "disc_equation_Prims.Cons",
+        "constructor_distinct_Prims.Cons", "constructor_distinct_Prims.Nil",
+        "constructor_distinct_Tm_unit", "disc_equation_Prims.Cons",
         "disc_equation_Prims.Nil", "equation_FStar.List.Tot.test_sort",
         "equation_PairHeap.intHeap", "equation_Prims._assert",
         "equation_with_fuel_FStar.List.Tot.append.fuel_instrumented",
         "equation_with_fuel_FStar.List.Tot.for_all.fuel_instrumented",
         "fuel_correspondence_FStar.List.Tot.append.fuel_instrumented",
         "fuel_correspondence_FStar.List.Tot.for_all.fuel_instrumented",
-        "fuel_guarded_inversion_Prims.list",
         "fuel_irrelevance_FStar.List.Tot.append.fuel_instrumented",
         "fuel_irrelevance_FStar.List.Tot.for_all.fuel_instrumented",
         "function_token_typing_FStar.List.Tot.test_sort",
         "function_token_typing_PairHeap.intHeap", "int_inversion",
         "partial_app_typing_e259c73452573836bf1b69188034ec50",
-        "pretyping_f537159ed795b314b4e58c260361ae86",
         "projection_inverse_Prims.Cons_a",
         "projection_inverse_Prims.Cons_hd",
         "projection_inverse_Prims.Cons_tl", "projection_inverse_Prims.Nil_a",
         "subterm_ordering_Prims.Cons", "typing_FStar.List.Tot.append",
-        "typing_FStar.List.Tot.for_all"
+        "typing_FStar.List.Tot.for_all", "unit_inversion"
       ],
       0
     ],
@@ -522,12 +511,14 @@
       2,
       1,
       [
-        "@query", "disc_equation_PairHeap.Empty",
-        "disc_equation_PairHeap.Heap", "equation_PairHeap.intHeap",
+        "@query", "bool_inversion", "disc_equation_PairHeap.Heap",
+        "equation_PairHeap.intHeap", "equation_PairHeap.is_Empty",
         "fuel_guarded_inversion_PairHeap.heap",
+        "function_token_typing_Prims.int",
         "pretyping_ae567c2fb75be05905677af440075565",
         "projection_inverse_BoxBool_proj_0",
-        "refinement_interpretation_Tm_refine_5826a78e963f69e69da71b98f37fa30f"
+        "refinement_interpretation_Tm_refine_5826a78e963f69e69da71b98f37fa30f",
+        "typing_PairHeap.is_Empty"
       ],
       0
     ],
@@ -654,11 +645,11 @@
       [
         "@query", "binder_x_69f521f3bc9bd6b128c4ab18cc2e3f34_0",
         "bool_inversion", "constructor_distinct_PairHeap.Empty",
-        "constructor_distinct_PairHeap.heap",
         "constructor_distinct_Prims.Cons", "constructor_distinct_Prims.Nil",
-        "constructor_distinct_Prims.unit", "disc_equation_Prims.Cons",
-        "disc_equation_Prims.Nil", "equation_FStar.List.Tot.test_sort",
-        "equation_PairHeap.intHeap", "equation_Prims._assert",
+        "constructor_distinct_Tm_unit", "data_elim_Prims.Cons",
+        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "equation_FStar.List.Tot.test_sort", "equation_PairHeap.intHeap",
+        "equation_PairHeap.merge", "equation_Prims._assert",
         "equation_with_fuel_PairHeap.is_heap.fuel_instrumented",
         "equation_with_fuel_PairHeap.is_heap_list.fuel_instrumented",
         "equation_with_fuel_PairHeap.mergePairs.fuel_instrumented",
@@ -670,21 +661,18 @@
         "fuel_irrelevance_PairHeap.is_heap_list.fuel_instrumented",
         "fuel_irrelevance_PairHeap.mergePairs.fuel_instrumented",
         "function_token_typing_FStar.List.Tot.test_sort",
-        "function_token_typing_PairHeap.intHeap",
-        "pretyping_989244af87cf5acb0c2f5d5d5a086201",
-        "pretyping_f8666440faa91836cc5a13998af863fc",
         "primitive_Prims.op_AmpAmp", "proj_equation_Prims.Cons_tl",
         "projection_inverse_BoxBool_proj_0",
         "projection_inverse_PairHeap.Empty__a",
+        "projection_inverse_Prims.Cons_a",
         "projection_inverse_Prims.Cons_hd",
         "projection_inverse_Prims.Cons_tl", "projection_inverse_Prims.Nil_a",
-        "refinement_interpretation_Tm_refine_5f5fd1baf8ea34bf72e4012bafe805ec",
         "subterm_ordering_Prims.Cons",
         "token_correspondence_PairHeap.is_heap.fuel_instrumented",
         "token_correspondence_PairHeap.is_heap_list.fuel_instrumented",
         "typing_PairHeap.is_heap", "typing_PairHeap.is_heap_list",
         "typing_PairHeap.merge", "typing_PairHeap.mergePairs",
-        "typing_Prims.Cons.tl", "unit_typing"
+        "unit_inversion"
       ],
       0
     ],
@@ -695,43 +683,48 @@
       2,
       1,
       [
-        "@query", "bool_inversion", "data_elim_PairHeap.Heap",
-        "disc_equation_PairHeap.Empty", "disc_equation_PairHeap.Heap",
-        "equation_PairHeap.deleteMin", "equation_PairHeap.intHeap",
+        "@query", "bool_inversion", "constructor_distinct_PairHeap.Heap",
+        "constructor_distinct_Prims.Mktuple2", "disc_equation_PairHeap.Heap",
+        "equation_FStar.List.Tot.test_sort", "equation_PairHeap.deleteMin",
+        "equation_PairHeap.intHeap", "equation_PairHeap.is_Empty",
+        "equation_Prims._assert",
         "equation_with_fuel_PairHeap.is_heap.fuel_instrumented",
         "fuel_correspondence_PairHeap.is_heap.fuel_instrumented",
         "fuel_correspondence_PairHeap.is_heap_list.fuel_instrumented",
         "fuel_guarded_inversion_PairHeap.heap",
-        "fuel_guarded_inversion_Prims.tuple2",
         "fuel_irrelevance_PairHeap.is_heap_list.fuel_instrumented",
-        "primitive_Prims.op_AmpAmp", "projection_inverse_BoxBool_proj_0",
+        "function_token_typing_FStar.List.Tot.test_sort",
+        "function_token_typing_Prims.int", "primitive_Prims.op_AmpAmp",
+        "projection_inverse_BoxBool_proj_0",
         "projection_inverse_PairHeap.Heap__0",
+        "projection_inverse_PairHeap.Heap__a",
         "projection_inverse_Prims.Mktuple2__1",
         "projection_inverse_Prims.Mktuple2__2",
+        "projection_inverse_Prims.Mktuple2__a",
+        "projection_inverse_Prims.Mktuple2__b",
         "refinement_interpretation_Tm_refine_5826a78e963f69e69da71b98f37fa30f",
         "token_correspondence_PairHeap.is_heap_list.fuel_instrumented",
-        "typing_PairHeap.is_heap", "typing_PairHeap.mergePairs"
+        "typing_PairHeap.is_Empty", "typing_PairHeap.is_heap",
+        "typing_PairHeap.mergePairs", "unit_inversion"
       ],
       0
     ],
-    [ "PairHeap.leq_tree_trans", 1, 2, 1, [ "@query" ], 0 ],
     [
       "PairHeap.leq_tree_trans",
-      2,
+      1,
       2,
       1,
       [
-        "@query", "constructor_distinct_PairHeap.Heap",
+        "@query", "bool_inversion", "bool_typing",
+        "constructor_distinct_PairHeap.Heap",
         "constructor_distinct_Prims.Cons",
         "constructor_distinct_Prims.Mktuple2",
-        "constructor_distinct_Prims.Nil", "data_elim_PairHeap.Heap",
-        "equation_PairHeap.leq_heap",
+        "constructor_distinct_Prims.Nil", "equation_PairHeap.leq_heap",
         "equation_with_fuel_FStar.List.Tot.for_all.fuel_instrumented",
         "equation_with_fuel_PairHeap.is_heap.fuel_instrumented",
         "fuel_correspondence_FStar.List.Tot.for_all.fuel_instrumented",
         "fuel_correspondence_PairHeap.is_heap.fuel_instrumented",
-        "fuel_guarded_inversion_PairHeap.heap",
-        "fuel_guarded_inversion_Prims.tuple2",
+        "fuel_irrelevance_FStar.List.Tot.for_all.fuel_instrumented",
         "fuel_irrelevance_PairHeap.is_heap_list.fuel_instrumented",
         "int_inversion", "pretyping_ae567c2fb75be05905677af440075565",
         "primitive_Prims.op_AmpAmp", "primitive_Prims.op_LessThan",
@@ -750,10 +743,9 @@
       ],
       0
     ],
-    [ "PairHeap.leq_all", 1, 2, 1, [ "@query" ], 0 ],
     [
       "PairHeap.leq_all",
-      2,
+      1,
       2,
       1,
       [ "@query", "assumption_Prims.HasEq_int" ],
@@ -918,17 +910,15 @@
         "binder_x_69f521f3bc9bd6b128c4ab18cc2e3f34_0", "bool_inversion",
         "constructor_distinct_PairHeap.Empty",
         "constructor_distinct_Prims.Cons", "constructor_distinct_Prims.Nil",
-        "constructor_distinct_Tm_unit", "disc_equation_Prims.Cons",
-        "disc_equation_Prims.Nil", "equation_FStar.List.Tot.test_sort",
-        "equation_PairHeap.intHeap", "equation_Prims._assert",
-        "equation_Prims.eqtype",
+        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "equation_FStar.List.Tot.test_sort", "equation_PairHeap.intHeap",
+        "equation_Prims._assert", "equation_Prims.eqtype",
         "equation_with_fuel_PairHeap.elts.fuel_instrumented",
         "equation_with_fuel_PairHeap.elts_lst.fuel_instrumented",
         "equation_with_fuel_PairHeap.mergePairs.fuel_instrumented",
         "fuel_correspondence_PairHeap.elts.fuel_instrumented",
         "fuel_correspondence_PairHeap.elts_lst.fuel_instrumented",
         "fuel_correspondence_PairHeap.mergePairs.fuel_instrumented",
-        "fuel_guarded_inversion_PairHeap.heap",
         "fuel_guarded_inversion_Prims.list",
         "fuel_irrelevance_PairHeap.elts.fuel_instrumented",
         "fuel_irrelevance_PairHeap.elts_lst.fuel_instrumented",
@@ -946,15 +936,13 @@
         "projection_inverse_Prims.Cons_hd",
         "projection_inverse_Prims.Cons_tl", "projection_inverse_Prims.Nil_a",
         "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f",
-        "refinement_interpretation_Tm_refine_5f5fd1baf8ea34bf72e4012bafe805ec",
+        "refinement_interpretation_Tm_refine_7aac12c24449a22c34d98a0ea8ed4a32",
         "subterm_ordering_Prims.Cons",
-        "token_correspondence_PairHeap.elts.fuel_instrumented",
         "token_correspondence_PairHeap.elts_lst.fuel_instrumented",
-        "token_correspondence_PairHeap.mergePairs.fuel_instrumented",
-        "typing_FStar.Set.empty", "typing_FStar.Set.mem",
-        "typing_FStar.Set.union", "typing_PairHeap.elts",
-        "typing_PairHeap.elts_lst", "typing_PairHeap.merge",
-        "typing_PairHeap.mergePairs", "typing_Prims.Cons.tl"
+        "typing_FStar.Set.mem", "typing_FStar.Set.union",
+        "typing_PairHeap.elts", "typing_PairHeap.elts_lst",
+        "typing_PairHeap.merge", "typing_PairHeap.mergePairs",
+        "typing_Prims.__proj__Cons__item__tl", "unit_inversion"
       ],
       0
     ],
@@ -974,7 +962,58 @@
       [ "@query", "assumption_Prims.HasEq_int" ],
       0
     ],
-    [ "PairHeap.elts_insert", 3, 2, 1, [ "@query" ], 0 ],
+    [
+      "PairHeap.elts_insert",
+      3,
+      4,
+      2,
+      [
+        "@query", "assumption_Prims.HasEq_int", "bool_inversion",
+        "constructor_distinct_PairHeap.Heap",
+        "constructor_distinct_Prims.Cons",
+        "constructor_distinct_Prims.Mktuple2",
+        "constructor_distinct_Prims.Nil", "constructor_distinct_Tm_unit",
+        "data_elim_PairHeap.Heap", "data_elim_Prims.Mktuple2",
+        "equation_FStar.Set.eqtype", "equation_PairHeap.insert",
+        "equation_PairHeap.intHeap", "equation_PairHeap.merge",
+        "equation_Prims.eqtype", "equation_SetExtra.ins",
+        "equation_with_fuel_FStar.List.Tot.append.fuel_instrumented",
+        "equation_with_fuel_PairHeap.elts.fuel_instrumented",
+        "equation_with_fuel_PairHeap.elts_lst.fuel_instrumented",
+        "fuel_correspondence_FStar.List.Tot.append.fuel_instrumented",
+        "fuel_correspondence_PairHeap.elts.fuel_instrumented",
+        "fuel_guarded_inversion_PairHeap.heap",
+        "fuel_guarded_inversion_Prims.tuple2",
+        "fuel_irrelevance_PairHeap.elts.fuel_instrumented",
+        "fuel_irrelevance_PairHeap.elts_lst.fuel_instrumented",
+        "function_token_typing_FStar.Set.union",
+        "function_token_typing_Prims.int", "int_inversion", "int_typing",
+        "interpretation_Tm_arrow_cbd066c44e56919223289c7d2ad57325",
+        "lemma_FStar.Set.mem_empty", "lemma_FStar.Set.mem_singleton",
+        "lemma_FStar.Set.mem_union",
+        "pretyping_ae567c2fb75be05905677af440075565",
+        "primitive_Prims.op_BarBar", "primitive_Prims.op_Equality",
+        "projection_inverse_BoxBool_proj_0",
+        "projection_inverse_PairHeap.Heap__0",
+        "projection_inverse_PairHeap.Heap__a",
+        "projection_inverse_Prims.Cons_a",
+        "projection_inverse_Prims.Cons_hd",
+        "projection_inverse_Prims.Cons_tl",
+        "projection_inverse_Prims.Mktuple2__1",
+        "projection_inverse_Prims.Mktuple2__2",
+        "projection_inverse_Prims.Mktuple2__a",
+        "projection_inverse_Prims.Mktuple2__b",
+        "projection_inverse_Prims.Nil_a",
+        "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f",
+        "token_correspondence_FStar.Set.union",
+        "token_correspondence_PairHeap.elts_lst.fuel_instrumented",
+        "typing_FStar.Set.empty", "typing_FStar.Set.mem",
+        "typing_FStar.Set.singleton", "typing_FStar.Set.union",
+        "typing_PairHeap.elts", "typing_PairHeap.insert",
+        "typing_SetExtra.ins"
+      ],
+      0
+    ],
     [
       "PairHeap.elts_insert",
       4,
@@ -1042,14 +1081,6 @@
       0
     ],
     [
-      "PairHeap.elts_insert",
-      6,
-      2,
-      1,
-      [ "@query", "assumption_Prims.HasEq_int" ],
-      0
-    ],
-    [
       "PairHeap.leq_is_min",
       1,
       2,
@@ -1057,7 +1088,6 @@
       [ "@query", "assumption_Prims.HasEq_int" ],
       0
     ],
-    [ "PairHeap.leq_is_min", 2, 2, 1, [ "@query" ], 0 ],
     [
       "PairHeap.leq_is_min_list",
       1,
@@ -1066,10 +1096,9 @@
       [ "@query", "assumption_Prims.HasEq_int" ],
       0
     ],
-    [ "PairHeap.leq_is_min_list", 2, 2, 1, [ "@query" ], 0 ],
     [
       "PairHeap.leq_is_min",
-      3,
+      2,
       2,
       2,
       [
@@ -1108,24 +1137,25 @@
         "token_correspondence_PairHeap.is_heap_list.fuel_instrumented",
         "typing_FStar.Set.mem", "typing_FStar.Set.singleton",
         "typing_PairHeap.elts", "typing_PairHeap.elts_lst",
-        "typing_PairHeap.is_heap", "typing_PairHeap.leq_heap"
+        "typing_PairHeap.is_heap", "typing_PairHeap.leq_heap",
+        "unit_inversion"
       ],
       0
     ],
     [
       "PairHeap.leq_is_min",
-      4,
+      3,
       2,
       1,
       [
         "@query", "assumption_Prims.HasEq_int",
         "binder_x_6d0180d4fcd10237cf0d87dd345d77cc_0",
         "binder_x_e2d456cb7e8c21477aa802bbfedc9aa8_1", "bool_inversion",
-        "bool_typing", "constructor_distinct_Prims.Nil",
-        "constructor_distinct_Tm_unit", "disc_equation_Prims.Cons",
-        "disc_equation_Prims.Nil", "equality_tok_Prims.LexTop@tok",
-        "equation_FStar.List.Tot.test_sort", "equation_PairHeap.intHeap",
-        "equation_Prims._assert", "equation_Prims.eqtype",
+        "constructor_distinct_Prims.Nil", "constructor_distinct_Tm_unit",
+        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
+        "equality_tok_Prims.LexTop@tok", "equation_FStar.List.Tot.test_sort",
+        "equation_PairHeap.intHeap", "equation_Prims._assert",
+        "equation_Prims.eqtype",
         "equation_with_fuel_FStar.List.Tot.for_all.fuel_instrumented",
         "equation_with_fuel_PairHeap.elts_lst.fuel_instrumented",
         "equation_with_fuel_PairHeap.is_heap.fuel_instrumented",
@@ -1145,7 +1175,6 @@
         "function_token_typing_Prims.int", "int_inversion",
         "lemma_FStar.Set.mem_empty", "lemma_FStar.Set.mem_union",
         "partial_app_typing_e259c73452573836bf1b69188034ec50",
-        "pretyping_f537159ed795b314b4e58c260361ae86",
         "primitive_Prims.op_AmpAmp", "primitive_Prims.op_BarBar",
         "projection_inverse_BoxBool_proj_0",
         "projection_inverse_Prims.Cons_a",
@@ -1159,7 +1188,8 @@
         "token_correspondence_PairHeap.leq_heap",
         "typing_FStar.List.Tot.for_all", "typing_FStar.Set.mem",
         "typing_PairHeap.elts", "typing_PairHeap.elts_lst",
-        "typing_PairHeap.is_heap_list", "typing_Prims.is_Nil"
+        "typing_PairHeap.is_heap_list", "typing_Prims.uu___is_Nil",
+        "unit_inversion"
       ],
       0
     ],
@@ -1179,26 +1209,34 @@
       1,
       [
         "@query", "assumption_Prims.HasEq_int", "bool_inversion",
-        "constructor_distinct_Tm_unit", "data_elim_PairHeap.Heap",
-        "disc_equation_PairHeap.Empty", "disc_equation_PairHeap.Heap",
-        "equation_PairHeap.deleteMin", "equation_PairHeap.getMin",
-        "equation_PairHeap.intHeap", "equation_Prims.eqtype",
+        "constructor_distinct_PairHeap.Heap",
+        "constructor_distinct_Prims.Mktuple2",
+        "constructor_distinct_Tm_unit", "disc_equation_PairHeap.Heap",
+        "equation_FStar.List.Tot.test_sort", "equation_PairHeap.deleteMin",
+        "equation_PairHeap.getMin", "equation_PairHeap.intHeap",
+        "equation_PairHeap.is_Empty", "equation_Prims._assert",
+        "equation_Prims.eqtype",
         "equation_with_fuel_PairHeap.is_heap.fuel_instrumented",
         "fuel_correspondence_PairHeap.is_heap.fuel_instrumented",
         "fuel_correspondence_PairHeap.is_heap_list.fuel_instrumented",
-        "fuel_guarded_inversion_Prims.tuple2",
         "fuel_irrelevance_PairHeap.is_heap_list.fuel_instrumented",
+        "function_token_typing_FStar.List.Tot.test_sort",
         "function_token_typing_Prims.int",
         "lemma_FStar.Set.lemma_equal_elim", "primitive_Prims.op_AmpAmp",
         "projection_inverse_BoxBool_proj_0",
         "projection_inverse_PairHeap.Heap__0",
+        "projection_inverse_PairHeap.Heap__a",
         "projection_inverse_Prims.Mktuple2__1",
         "projection_inverse_Prims.Mktuple2__2",
+        "projection_inverse_Prims.Mktuple2__a",
+        "projection_inverse_Prims.Mktuple2__b",
         "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f",
         "refinement_interpretation_Tm_refine_5c91249a438753a60b4f192e45031a2d",
         "token_correspondence_PairHeap.is_heap_list.fuel_instrumented",
         "typing_PairHeap.elts", "typing_PairHeap.elts_lst",
-        "typing_PairHeap.is_heap", "typing_PairHeap.mergePairs"
+        "typing_PairHeap.is_Empty", "typing_PairHeap.is_heap",
+        "typing_PairHeap.mergePairs", "typing_PairHeap.uu___is_Heap",
+        "unit_inversion"
       ],
       0
     ]

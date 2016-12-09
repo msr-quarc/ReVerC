@@ -15,6 +15,10 @@ type heap 'a =
   | Heap of 'a * list (heap 'a)
 type intHeap = heap int
 
+let is_Empty hp = match hp with
+  | Empty -> true
+  | _     -> false
+
 val subheaps : hp:intHeap{~(is_Empty hp)} -> Tot (list intHeap)
 val merge : intHeap -> intHeap -> Tot intHeap
 val insert : intHeap -> int -> Tot intHeap

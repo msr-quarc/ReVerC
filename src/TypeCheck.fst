@@ -2,7 +2,7 @@
 module TypeCheck
 
 open Partial
-open Util
+open Utils
 open BoolExp
 open ExprTypes
 

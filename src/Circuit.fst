@@ -1,6 +1,7 @@
 ﻿(** Reversible circuit data type & utilities *)
 module Circuit
 
+open Utils
 open FStar.Set
 open SetExtra
 open Total

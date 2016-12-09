@@ -1,23 +1,19 @@
 [
   "÷„®ØŠ„¿V@Ÿ’ð³÷R7",
   [
-    [ "Total.t", 1, 2, 1, [ "@query" ], 0 ],
-    [ "Total.t", 2, 2, 1, [ "@query" ], 0 ],
     [
       "Total.t",
-      3,
+      1,
       2,
       1,
       [
         "@query", "assumption_Prims.list_haseq",
-        "assumption_Prims.tuple2_haseq", "equation_Prims.eqtype",
+        "assumption_Prims.tuple2_haseq", "equation_FStar.Set.eqtype",
         "kinding_Prims.tuple2@tok",
         "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
       ],
       0
     ],
-    [ "Total.Mkt.elts", 1, 2, 1, [ "@query" ], 0 ],
-    [ "Total.Mkt.dval", 1, 2, 1, [ "@query" ], 0 ],
     [
       "Total.state",
       1,
@@ -30,21 +26,25 @@
     ],
     [ "Total.keys", 1, 2, 1, [ "@query" ], 0 ],
     [ "Total.vals", 1, 2, 1, [ "@query" ], 0 ],
+    [ "Total.keys", 2, 2, 1, [ "@query" ], 0 ],
+    [ "Total.keys", 3, 2, 1, [ "@query" ], 0 ],
+    [ "Total.vals", 2, 2, 1, [ "@query" ], 0 ],
+    [ "Total.vals", 3, 2, 1, [ "@query" ], 0 ],
     [
       "Total.lookup",
       1,
       2,
       1,
       [
-        "@query", "bool_inversion", "disc_equation_Prims.None",
-        "equation_Prims.eqtype", "lemma_Prims.invertOption",
+        "@query", "bool_inversion", "disc_equation_Prims.Some",
+        "equation_FStar.Set.eqtype", "lemma_Prims.invertOption",
         "projection_inverse_BoxBool_proj_0",
         "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f",
-        "typing_Prims.is_Some"
+        "typing_Prims.uu___is_None"
       ],
       0
     ],
-    [ "Total.update", 1, 2, 1, [ "@query" ], 0 ],
+    [ "Total.lookup", 2, 2, 1, [ "@query" ], 0 ],
     [ "Total.delete", 1, 2, 1, [ "@query" ], 0 ],
     [
       "Total.delete",
@@ -52,7 +52,8 @@
       2,
       1,
       [
-        "@query", "assumption_Prims.tuple2_haseq", "equation_Prims.eqtype",
+        "@query", "assumption_Prims.tuple2_haseq",
+        "equation_FStar.Set.eqtype",
         "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
       ],
       0
@@ -63,12 +64,11 @@
       2,
       1,
       [
-        "@query", "equation_Prims.eqtype",
+        "@query", "equation_FStar.Set.eqtype",
         "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
       ],
       0
     ],
-    [ "Total.constMap", 1, 2, 1, [ "@query" ], 0 ],
     [ "Total.compose", 1, 2, 1, [ "@query" ], 0 ],
     [ "Total.mapVals", 1, 2, 1, [ "@query" ], 0 ],
     [
@@ -77,68 +77,65 @@
       2,
       1,
       [
-        "@query", "equation_Prims.eqtype",
+        "@query", "equation_FStar.Set.eqtype",
         "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
       ],
       0
     ],
-    [ "Total.lookup_const", 2, 2, 1, [ "@query" ], 0 ],
     [
       "Total.lookup_update1",
       1,
       2,
       1,
       [
-        "@query", "equation_Prims.eqtype",
-        "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
-      ],
-      0
-    ],
-    [ "Total.lookup_update1", 2, 2, 1, [ "@query" ], 0 ],
-    [
-      "Total.lookup_update2",
-      1,
-      2,
-      1,
-      [
-        "@query", "equation_Prims.eqtype",
+        "@query", "equation_FStar.Set.eqtype",
         "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
       ],
       0
     ],
     [
       "Total.lookup_update2",
-      2,
+      1,
       2,
       1,
       [
-        "@query", "equation_Prims.eqtype",
+        "@query", "equation_FStar.Set.eqtype",
         "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
       ],
       0
     ],
-    [ "Total.lookup_update2", 3, 2, 1, [ "@query" ], 0 ],
+    [
+      "Total.lookup_update2",
+      2,
+      2,
+      1,
+      [
+        "@query", "equation_FStar.Set.eqtype",
+        "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
+      ],
+      0
+    ],
     [
       "Total.lookup_map",
       1,
       2,
       1,
       [
-        "@query", "equation_Prims.eqtype",
+        "@query", "equation_FStar.Set.eqtype",
         "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
       ],
       0
     ],
-    [ "Total.lookup_map", 2, 2, 1, [ "@query" ], 0 ],
     [
       "Total.lookup_const",
-      3,
+      2,
       2,
       1,
       [
         "@query", "constructor_distinct_Prims.Nil",
-        "constructor_distinct_Prims.None", "equation_Prims.eqtype",
-        "equation_Total.constMap", "equation_Total.lookup",
+        "constructor_distinct_Prims.None", "equation_FStar.Set.eqtype",
+        "equation_Prims.eqtype", "equation_Total.constMap",
+        "equation_Total.lookup",
         "equation_with_fuel_FStar.List.Tot.assoc.fuel_instrumented",
         "fuel_correspondence_FStar.List.Tot.assoc.fuel_instrumented",
         "fuel_guarded_inversion_Prims.option",
@@ -147,21 +144,23 @@
         "projection_inverse_Total.Mkt_dval",
         "projection_inverse_Total.Mkt_elts",
         "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f",
-        "typing_FStar.List.Tot.assoc", "typing_Total.Mkt.elts",
-        "typing_Total.constMap", "unit_typing"
+        "typing_FStar.List.Tot.assoc",
+        "typing_Total.__proj__Mkt__item__elts", "typing_Total.constMap",
+        "unit_typing"
       ],
       0
     ],
     [
       "Total.lookup_update1",
-      3,
+      2,
       2,
       1,
       [
         "@query", "constructor_distinct_Prims.Cons",
         "constructor_distinct_Prims.Mktuple2",
-        "constructor_distinct_Prims.Some", "equation_Prims.eqtype",
-        "equation_Total.lookup", "equation_Total.update",
+        "constructor_distinct_Prims.Some", "equation_FStar.Set.eqtype",
+        "equation_Prims.eqtype", "equation_Total.lookup",
+        "equation_Total.update",
         "equation_with_fuel_FStar.List.Tot.assoc.fuel_instrumented",
         "fuel_correspondence_FStar.List.Tot.assoc.fuel_instrumented",
         "fuel_guarded_inversion_Prims.option",
@@ -176,20 +175,22 @@
         "projection_inverse_Prims.Some_v",
         "projection_inverse_Total.Mkt_elts",
         "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f",
-        "typing_FStar.List.Tot.assoc", "typing_Total.Mkt.elts",
-        "typing_Total.update", "unit_typing"
+        "typing_FStar.List.Tot.assoc",
+        "typing_Total.__proj__Mkt__item__elts", "typing_Total.update",
+        "unit_typing"
       ],
       0
     ],
     [
       "Total.lookup_update2",
-      4,
+      3,
       2,
       1,
       [
         "@query", "constructor_distinct_Prims.Cons",
-        "constructor_distinct_Prims.Mktuple2", "equation_Prims.eqtype",
-        "equation_Total.lookup", "equation_Total.update",
+        "constructor_distinct_Prims.Mktuple2", "equation_FStar.Set.eqtype",
+        "equation_Prims.eqtype", "equation_Total.lookup",
+        "equation_Total.update",
         "equation_with_fuel_FStar.List.Tot.assoc.fuel_instrumented",
         "fuel_correspondence_FStar.List.Tot.assoc.fuel_instrumented",
         "fuel_guarded_inversion_Prims.option",
@@ -207,30 +208,31 @@
         "projection_inverse_Total.Mkt_dval",
         "projection_inverse_Total.Mkt_elts",
         "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f",
-        "typing_FStar.List.Tot.assoc", "typing_Total.Mkt.elts",
-        "typing_Total.update", "unit_typing"
+        "typing_FStar.List.Tot.assoc",
+        "typing_Total.__proj__Mkt__item__elts", "typing_Total.update",
+        "unit_typing"
       ],
       0
     ],
     [
       "Total.lookup_map",
-      3,
+      2,
       2,
       1,
       [
-        "@query", "binder_x_10d93326f25c8f54fccbdb6da4eeb393_8",
-        "binder_x_273c0cb114efbc10b99731f088b17ae0_3",
-        "binder_x_273c0cb114efbc10b99731f088b17ae0_4",
-        "binder_x_273c0cb114efbc10b99731f088b17ae0_5",
-        "binder_x_8fa4f2fb3836b6eb167572014dfb24ca_7",
-        "binder_x_d4b2ba31ec23b557eba294df6d74333e_6",
+        "@query", "binder_x_1f38d12341990c1c3b1d894c8a560633_3",
+        "binder_x_a2802af386a17e463fd7c071943a33cc_0",
+        "binder_x_a2802af386a17e463fd7c071943a33cc_1",
+        "binder_x_a2802af386a17e463fd7c071943a33cc_2",
+        "binder_x_ceda2e3cf203014e9561a218c5243564_5",
+        "binder_x_eadf10ab594ea7648ce0959917ee3d1e_4",
         "constructor_distinct_Prims.Cons",
         "constructor_distinct_Prims.Mktuple2",
         "constructor_distinct_Prims.Nil", "constructor_distinct_Prims.None",
         "constructor_distinct_Prims.Some", "data_elim_Prims.None",
-        "data_typing_intro_Prims.Nil@tok", "data_typing_intro_Total.Mkt@tok",
-        "disc_equation_Prims.Cons", "disc_equation_Prims.Nil",
-        "equality_tok_Prims.LexTop@tok", "equation_FStar.List.Tot.test_sort",
+        "data_typing_intro_Total.Mkt@tok", "disc_equation_Prims.Cons",
+        "disc_equation_Prims.Nil", "equality_tok_Prims.LexTop@tok",
+        "equation_FStar.List.Tot.test_sort", "equation_FStar.Set.eqtype",
         "equation_Prims._assert", "equation_Prims.eqtype",
         "equation_Total.lookup", "equation_Total.mapVals",
         "equation_with_fuel_FStar.List.Tot.assoc.fuel_instrumented",
@@ -246,11 +248,11 @@
         "function_token_typing_FStar.List.Tot.test_sort",
         "interpretation_Tm_abs_e560b4f05550ad15120cf08a9b3cead3",
         "interpretation_Tm_arrow_1a9c411120cce9a2cbbd36e98bb4c08c",
+        "interpretation_Tm_arrow_56760c7b6dd25c9fa6ba30614fb0a58c",
         "interpretation_Tm_arrow_9cb3c953faf527c316d427b2ce8bd81b",
-        "interpretation_Tm_arrow_ab775850d896c410c164215da7001bda",
         "kinding_Prims.tuple2@tok", "primitive_Prims.op_Equality",
         "proj_equation_Total.Mkt_dval", "proj_equation_Total.Mkt_elts",
-        "projection_inverse_Prims.Cons_a",
+        "projection_inverse_BoxBool_proj_0",
         "projection_inverse_Prims.Cons_hd",
         "projection_inverse_Prims.Cons_tl",
         "projection_inverse_Prims.Mktuple2__1",
@@ -264,14 +266,14 @@
         "subterm_ordering_Prims.Cons", "typing_FStar.List.Tot.assoc",
         "typing_FStar.List.Tot.map",
         "typing_Tm_abs_e560b4f05550ad15120cf08a9b3cead3",
-        "typing_Total.Mkt.dval", "typing_Total.Mkt.elts"
+        "typing_Total.__proj__Mkt__item__dval",
+        "typing_Total.__proj__Mkt__item__elts", "typing_Total.mapVals",
+        "unit_inversion"
       ],
       0
     ],
     [ "Total.lookup_is_val", 1, 2, 1, [ "@query" ], 0 ],
-    [ "Total.lookup_is_val", 2, 2, 1, [ "@query" ], 0 ],
     [ "Total.lookup_is_valF", 1, 2, 1, [ "@query" ], 0 ],
-    [ "Total.lookup_is_valF", 2, 2, 1, [ "@query" ], 0 ],
     [
       "Total.lookup_converse",
       1,
@@ -283,7 +285,17 @@
       ],
       0
     ],
-    [ "Total.lookup_converse", 2, 2, 1, [ "@query" ], 0 ],
+    [
+      "Total.lookup_converse",
+      2,
+      2,
+      1,
+      [
+        "@query", "equation_FStar.Set.eqtype",
+        "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
+      ],
+      0
+    ],
     [
       "Total.lookup_converse",
       3,
@@ -301,15 +313,13 @@
       2,
       1,
       [
-        "@query", "equation_Prims.eqtype",
+        "@query", "equation_FStar.Set.eqtype",
         "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
       ],
       0
     ],
     [ "Total.lookup_converse2", 2, 2, 1, [ "@query" ], 0 ],
-    [ "Total.lookup_converse2", 3, 2, 1, [ "@query" ], 0 ],
     [ "Total.lookup_subset", 1, 2, 1, [ "@query" ], 0 ],
-    [ "Total.lookup_subset", 2, 2, 1, [ "@query" ], 0 ],
     [ "Total.agree_on", 1, 2, 1, [ "@query" ], 0 ],
     [
       "Total.agree_on",
@@ -323,8 +333,31 @@
       0
     ],
     [
+      "Total.agree_on",
+      3,
+      2,
+      1,
+      [
+        "@query", "equation_FStar.Set.eqtype",
+        "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
+      ],
+      0
+    ],
+    [ "Total.agree_on", 4, 2, 1, [ "@query" ], 0 ],
+    [
       "Total.agree_on_trans",
       1,
+      2,
+      1,
+      [
+        "@query", "equation_Total.agree_on",
+        "fuel_guarded_inversion_Total.t", "unit_typing"
+      ],
+      0
+    ],
+    [
+      "Total.agree_on_trans",
+      2,
       2,
       1,
       [
@@ -344,14 +377,25 @@
       ],
       0
     ],
-    [ "Total.equal", 1, 2, 1, [ "@query" ], 0 ],
+    [ "Total.agree_on_subset", 2, 2, 1, [ "@query" ], 0 ],
     [
-      "Total.equal",
-      2,
+      "Total.agree_on_subset",
+      3,
       2,
       1,
       [
-        "@query", "equation_Prims.eqtype",
+        "@query", "equation_FStar.Set.subset", "equation_Total.agree_on",
+        "fuel_guarded_inversion_Total.t", "unit_typing"
+      ],
+      0
+    ],
+    [
+      "Total.equal",
+      1,
+      2,
+      1,
+      [
+        "@query", "equation_FStar.Set.eqtype",
         "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
       ],
       0
@@ -362,51 +406,47 @@
       2,
       1,
       [
-        "@query", "assumption_Total.t_haseq", "equation_Prims.eqtype",
+        "@query", "assumption_Total.t_haseq", "equation_FStar.Set.eqtype",
         "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
       ],
       0
     ],
-    [ "Total.TotalExtensionality", 2, 2, 1, [ "@query" ], 0 ],
     [
       "Total.lemma_map_equal_intro",
       1,
       2,
       1,
       [
-        "@query", "equation_Prims.eqtype",
+        "@query", "equation_FStar.Set.eqtype",
         "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
       ],
       0
     ],
-    [ "Total.lemma_map_equal_intro", 2, 2, 1, [ "@query" ], 0 ],
     [
       "Total.lemma_map_equal_elim",
       1,
       2,
       1,
       [
-        "@query", "assumption_Total.t_haseq", "equation_Prims.eqtype",
+        "@query", "assumption_Total.t_haseq", "equation_FStar.Set.eqtype",
         "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
       ],
       0
     ],
-    [ "Total.lemma_map_equal_elim", 2, 2, 1, [ "@query" ], 0 ],
     [
       "Total.lemma_map_equal_refl",
       1,
       2,
       1,
       [
-        "@query", "assumption_Total.t_haseq", "equation_Prims.eqtype",
+        "@query", "assumption_Total.t_haseq", "equation_FStar.Set.eqtype",
         "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
       ],
       0
     ],
-    [ "Total.lemma_map_equal_refl", 2, 2, 1, [ "@query" ], 0 ],
     [
       "Total.lemma_map_equal_intro",
-      3,
+      2,
       2,
       1,
       [
@@ -415,10 +455,9 @@
       ],
       0
     ],
-    [ "Total.lemma_map_equal_elim", 3, 2, 1, [ "@query" ], 0 ],
     [
       "Total.lemma_map_equal_refl",
-      3,
+      2,
       2,
       1,
       [ "@query", "equation_Total.equal", "unit_typing" ],

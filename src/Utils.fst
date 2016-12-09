@@ -1,5 +1,5 @@
 (** General utilities *)
-module Util
+module Utils
 open FStar.Set
 open SetExtra
 
@@ -9,6 +9,13 @@ type fin (n:nat) = m:nat{m <= n}
 type result 'a =
   | Val : 'a -> result 'a
   | Err : string -> result 'a
+
+let is_Val r = match r with
+  | Val _ -> true
+  | _     -> false
+let is_Err r = match r with
+  | Err _ -> true
+  | _     -> false
 
 val getVal : r:(result 'a){is_Val r} -> Tot 'a
 val bind   : result 'a -> ('a -> result 'b) -> result 'b

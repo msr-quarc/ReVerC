@@ -1,7 +1,7 @@
 (** Main compiler transformation *)
 module Compiler
 
-open Util
+open Utils
 open FStar.Set
 open SetExtra
 open Total
@@ -18,31 +18,53 @@ type circState =
   { top : int;
     ah : ancHeap;
     gates : list gate;
-    subs : Total.t int int }
+    subs : Total.t int int;
+    zero : Total.t int bool }
 
 val circInit   : circState
 val circAlloc  : circState -> Tot (int * circState)
 val circAssign : circState -> int -> boolExp -> Tot circState
 val circEval   : circState -> state -> int -> Tot bool
 
-let circInit = {top = 0; ah = emptyHeap; gates = []; subs = constMap 0}
+let circInit = {top = 0; ah = emptyHeap; gates = []; subs = constMap 0; zero = constMap false}
 let circAlloc cs =
   let (ah', bit) = popMin cs.ah in
   let cs' = 
     { top = cs.top + 1; 
       ah = ah'; 
       gates = cs.gates; 
-      subs = update cs.subs cs.top bit }
+      subs = update cs.subs cs.top bit;
+      zero = update cs.zero bit true }
   in
     (cs.top, cs')
 let circAssign cs l bexp =
-  let l' = lookup cs.subs l in
+  let bit = lookup cs.subs l in
   let bexp' = substVar bexp cs.subs in
-  let (ah', res, ancs, circ') = match factorAs bexp' l' with
-    | None -> compileBexp_oop cs.ah bexp'
-    | Some bexp'' -> compileBexp cs.ah l' bexp''
-  in
-  {top = cs.top; ah = ah'; gates = cs.gates @ circ'; subs = update cs.subs l res}
+  match (lookup cs.zero bit, factorAs bexp' bit) with
+    | (true, _) -> // substitute bit with BFalse, compile in place
+      let bexp'' = substOneVar bexp' bit BFalse in
+      let (ah', _, _, circ) = compileBexp cs.ah bit bexp'' in
+      { top   = cs.top;
+        ah    = ah';
+	gates = cs.gates @ circ;
+	subs  = cs.subs;
+	zero  = update cs.zero bit false }
+    | (false, Some bexp'') -> // compile in place
+      let (ah', _, _, circ) = compileBexp cs.ah bit bexp'' in
+      { top   = cs.top;
+        ah    = ah';
+	gates = cs.gates @ circ;
+	subs  = cs.subs;
+	zero  = update cs.zero bit false }
+    | (false, None) -> // compile out of place
+      let (ah', bit') = popMin cs.ah in
+      let (ah'', _, _, circ) = compileBexp ah' bit' bexp' in
+      { top   = cs.top; 
+        ah    = ah''; 
+        gates = cs.gates @ circ; 
+        subs  = update cs.subs l bit';
+        zero  = update cs.zero bit' false }
+
 let circEval cs ivals i = lookup (evalCirc cs.gates ivals) (lookup cs.subs i)
 
 let circInterp = {
@@ -60,7 +82,8 @@ let rec allocNcirc (locs, cs) i =
     let cs' = { top = cs.top + 1;
                 ah = ah';
                 gates = cs.gates;
-                subs = update cs.subs cs.top res }
+                subs = update cs.subs cs.top res;
+		zero = update cs.zero cs.top false }
     in
       allocNcirc (((LOC cs.top)::locs), cs') (i-1)
 
@@ -71,7 +94,8 @@ let allocTycirc ty cs = match ty with
     let cs' = { top = cs.top + 1;
                 ah = ah';
                 gates = cs.gates;
-                subs = update cs.subs cs.top res }
+                subs = update cs.subs cs.top res;
+		zero = update cs.zero cs.top false }
     in
       Val (LOC cs.top, cs')
   | GArray n ->
@@ -104,134 +128,242 @@ let rec compileCirc (gexp, cs) =
     | Val c' -> compileCirc c'
 
 (** Verification utilities *)
-(* Correctness of circuit compilation *)
-type circ_equiv (st:boolState) (cs:circState) (init:state) =
-  fst st = cs.top /\
-  zeroHeap (evalCirc cs.gates init) cs.ah /\
-  disjoint (vals cs.subs) (elts cs.ah) /\
-  (forall i. boolEval st init i = circEval cs init i)
+(* New version follows the more well designed proof of garbage collected compilation *)
 
-(* Needed for disjointness after applying substitution *)
-val substVar_disjoint : bexp:boolExp -> subs:Total.t int int -> s:set int ->
-  Lemma (requires (disjoint s (vals subs)))
-        (ensures  (disjoint s (vars (substVar bexp subs))))
-let substVar_disjoint bexp subs s =
-  substVar_elems bexp subs
-
-val eval_bexp_swap2 : st:boolState -> cs:circState -> bexp:boolExp -> bexp':boolExp -> init:state ->
-  Lemma (requires (circ_equiv st cs init /\
-                   bexp' = substVar bexp cs.subs /\
-                   disjoint (elts cs.ah) (vars bexp')))
-        (ensures  (evalBexp bexp (snd st) = evalBexp bexp' (evalCirc cs.gates init)))
-let rec eval_bexp_swap2 st cs bexp bexp' init = match (bexp, bexp') with
-  | (BFalse, _) -> ()
-  | (BVar i, _) -> ()
-  | (BNot x, BNot x') -> eval_bexp_swap2 st cs x x' init
-  | (BAnd (x, y), BAnd (x', y')) | (BXor (x, y), (BXor (x', y'))) ->
-    eval_bexp_swap2 st cs x x' init;
-    eval_bexp_swap2 st cs y y' init
-
-val eval_commutes_subst_circ : st:boolState -> cs:circState -> bexp:boolExp ->
-  bexp':boolExp -> init:state -> targ:int -> targ':int ->
-  Lemma (requires (circ_equiv st cs init /\
-                   bexp' = substVar bexp cs.subs /\
-                   targ' = lookup cs.subs targ /\
-                   not (Set.mem targ' (vars bexp')) /\
-                   not (Set.mem targ' (elts cs.ah)) /\
-                   disjoint (elts cs.ah) (vars bexp')))
-        (ensures  (lookup (evalCirc (last (compileBexp cs.ah targ' bexp'))
-                                    (evalCirc cs.gates init)) targ' 
-                   =
-                   lookup (snd st) targ <> evalBexp bexp (snd st)))
-let eval_commutes_subst_circ st cs bexp bexp' init targ targ' =
-  let init' = evalCirc cs.gates init in
-    compile_bexp_correct cs.ah targ' bexp' init';
-    eval_bexp_swap2 st cs bexp bexp' init
-
-val eval_commutes_subst_circ_oop : st:boolState -> cs:circState ->
-  bexp:boolExp -> bexp':boolExp -> init:state ->
-  Lemma (requires (circ_equiv st cs init /\
-                   bexp' = substVar bexp cs.subs /\
-                   disjoint (elts cs.ah) (vars bexp')))
-        (ensures  (lookup (evalCirc (last (compileBexp_oop cs.ah bexp'))
-                                    (evalCirc cs.gates init))
-                          (second (compileBexp_oop cs.ah bexp')) 
-                   = evalBexp bexp (snd st)))
-let eval_commutes_subst_circ_oop st cs bexp bexp' init =
-  let init' = evalCirc cs.gates init in
-    compile_bexp_correct_oop cs.ah bexp' init';
-    eval_bexp_swap2 st cs bexp bexp' init
-
-val circ_equiv_alloc : st:boolState -> cs:circState -> init:state ->
-  Lemma (requires (circ_equiv st cs init))
-        (ensures  (circ_equiv (snd (boolAlloc st)) (snd (circAlloc cs)) init))
-let circ_equiv_alloc st cs init =
-  let (ah', bit) = popMin cs.ah in
-  let cs' = snd (circAlloc cs) in
-  let st' = snd (boolAlloc st) in
-    pop_proper_subset cs.ah;
-    zeroHeap_subset (evalCirc cs.gates init) cs.ah cs'.ah;
-    lookup_is_val cs'.subs cs.top;
-    lookup_subset cs.subs cs.top bit
-
-val circ_equiv_assign : st:boolState -> cs:circState -> init:state -> l:int -> bexp:boolExp ->
-  Lemma (requires (circ_equiv st cs init))
-        (ensures  (circ_equiv (boolAssign st l bexp) (circAssign cs l bexp) init))
-let circ_equiv_assign st cs init l bexp =
-  let l' = lookup cs.subs l in
+val assign_partition_lemma : cs:circState -> l:int -> bexp:boolExp -> cs':circState ->
+  Lemma (requires ((cs' = circAssign cs l bexp) /\ 
+		   (disjoint (vals cs.subs) (elts cs.ah))))
+	(ensures  (disjoint (vals cs'.subs) (elts cs'.ah)))
+let assign_partition_lemma cs l bexp cs' =
+  let bit = lookup cs.subs l in
   let bexp' = substVar bexp cs.subs in
-  let init' = evalCirc cs.gates init in
-  let st' = boolAssign st l bexp in
-  let cs' = circAssign cs l bexp in
-  match factorAs bexp' l' with
-    | None ->
-      let (ah', res, ancs, circ') = compileBexp_oop cs.ah bexp' in
-      let zeroHeap_lem = 
-	substVar_disjoint bexp cs.subs (elts cs.ah);
-	compile_decreases_heap_oop cs.ah bexp';
-	compile_partition_oop cs.ah bexp';
-	zeroHeap_subset init' cs.ah cs'.ah;
-	zeroHeap_st_impl init' cs'.ah circ';
-	//assert(zeroHeap (evalCirc cs'.gates init) cs'.ah);
+  substVar_elems bexp cs.subs;
+  match (lookup cs.zero bit, factorAs bexp' bit) with
+    | (true, _)            ->
+      let bexp'' = substOneVar bexp' bit BFalse in
+      let (ah', _, _, circ) = compileBexp cs.ah bit bexp'' in
+	compile_decreases_heap cs.ah bit bexp'';
+	disjoint_subset (elts ah') (elts cs.ah) (vals cs.subs);
+	substOneVar_elems bexp' bit BFalse
+    | (false, Some bexp'') ->
+      let (ah', _, _, circ') = compileBexp cs.ah bit bexp'' in
+	compile_decreases_heap cs.ah bit bexp'';
+	disjoint_subset (elts ah') (elts cs.ah) (vals cs.subs);
+	factorAs_vars bexp' bit
+    | (false, None)        ->
+      let (ah', bit') = popMin cs.ah in
+      let (ah'', _, _, circ) = compileBexp ah' bit' bexp' in
+        pop_proper_subset cs.ah;
+	compile_decreases_heap ah' bit' bexp';
+        lookup_subset cs.subs cs.top bit';
+	disjoint_subset (vals cs'.subs) (ins bit' (vals cs.subs)) (elts cs'.ah)
+
+val assign_zeroHeap_lemma : cs:circState -> l:int -> bexp:boolExp -> init:state -> cs':circState ->
+  Lemma (requires (cs' = circAssign cs l bexp /\ 
+		   zeroHeap init cs.ah /\
+		   zeroHeap (evalCirc cs.gates init) cs.ah /\
+		   disjoint (vals cs.subs) (elts cs.ah)))
+	(ensures  (zeroHeap init cs'.ah /\
+	           zeroHeap (evalCirc cs'.gates init) cs'.ah))
+let assign_zeroHeap_lemma cs l bexp init cs' =
+  let bit = lookup cs.subs l in
+  let bexp' = substVar bexp cs.subs in
+  let st  = evalCirc cs.gates init in
+  lookup_is_val cs.subs l;
+  substVar_elems bexp cs.subs;
+  match (lookup cs.zero bit, factorAs bexp' bit) with
+    | (true, _)            ->
+      let bexp'' = substOneVar bexp' bit BFalse in
+      let (ah', _, _, circ) = compileBexp cs.ah bit bexp'' in
+	compile_decreases_heap cs.ah bit bexp'';
+	zeroHeap_subset init cs.ah ah';
+	substOneVar_elems bexp' bit BFalse;
+	compile_bexp_zero cs.ah bit bexp'' st
+    | (false, Some bexp'') ->
+      let (ah', _, _, circ') = compileBexp cs.ah bit bexp'' in
+	compile_decreases_heap cs.ah bit bexp'';
+	zeroHeap_subset init cs.ah ah';
+	factorAs_vars bexp' bit;
+	compile_bexp_zero cs.ah bit bexp'' st
+    | (false, None)        ->
+      let (ah', bit') = popMin cs.ah in
+      let (ah'', _, _, circ') = compileBexp ah' bit' bexp' in
+	pop_proper_subset cs.ah;
+	compile_decreases_heap ah' bit' bexp';
+	compile_bexp_zero ah' bit' bexp' st
+
+val assign_value_lemma : cs:circState -> l:int -> bexp:boolExp -> init:state -> cs':circState ->
+  Lemma (requires (cs' = circAssign cs l bexp /\
+                   (forall l'. not (l' = l) ==> not (lookup cs.subs l = lookup cs.subs l')) /\
+                   (disjoint (vals cs.subs) (elts cs.ah)) /\
+                   (zeroHeap (evalCirc cs.gates init) cs.ah) /\
+                   (forall bit. Set.mem bit (vals cs.subs) ==>
+                      (lookup cs.zero bit = true ==> lookup (evalCirc cs.gates init) bit = false))))
+	(ensures  ((lookup (evalCirc cs'.gates init) (lookup cs'.subs l) = 
+		    evalBexp (substVar bexp cs.subs) (evalCirc cs.gates init)) /\
+		   (forall bit. (not (bit = lookup cs.subs l) /\ Set.mem bit (vals cs.subs)) ==>
+	              lookup (evalCirc cs'.gates init) bit = lookup (evalCirc cs.gates init) bit) /\
+                   (forall bit. Set.mem bit (vals cs'.subs) ==>
+                      (lookup cs'.zero bit = true ==> lookup (evalCirc cs'.gates init) bit = false))))
+let assign_value_lemma cs l bexp init cs' =
+  let bit = lookup cs.subs l in
+  let bexp' = substVar bexp cs.subs in
+  match (lookup cs.zero bit, factorAs bexp' bit) with
+    | (true, _)            ->
+      let bexp'' = substOneVar bexp' bit BFalse in
+      let (ah', _, _, circ') = compileBexp cs.ah bit bexp'' in
+        // Correctness of output
+	lookup_is_val cs.subs l;
+	substVar_elems bexp cs.subs;
+	substOneVar_elems bexp' bit BFalse;
+	disjoint_subset (vars bexp'') (rem bit (vals cs.subs)) (ins bit (elts cs.ah));
+	compile_bexp_correct cs.ah bit bexp'' (evalCirc cs.gates init);
+	subst_value_pres bexp' bit BFalse (evalCirc cs.gates init) (evalCirc cs.gates init);
+	assert(b2t(lookup (evalCirc cs'.gates init) bit = 
+		 evalBexp (substVar bexp cs.subs) (evalCirc cs.gates init)));
+        // Preservation of other values
+	compile_mods cs.ah bit bexp'';
+        disjoint_subset (mods circ') (ins bit (elts cs.ah)) (rem bit (vals cs.subs));
+        disjoint_is_subset_compl (rem bit (vals cs.subs)) (mods circ');
+	eval_mod (evalCirc cs.gates init) circ';
+        agree_on_subset (evalCirc cs.gates init) 
+	                (evalCirc cs'.gates init) 
+	                (complement (mods circ')) 
+	                (rem bit (vals cs.subs));
+	assert(forall bit. (not (bit = lookup cs.subs l) /\ Set.mem bit (vals cs.subs)) ==>
+	         lookup (evalCirc cs'.gates init) bit = lookup (evalCirc cs.gates init) bit);
+	// Correctness of zero
+	assert(forall bit. Set.mem bit (vals cs'.subs) ==>
+                 lookup cs'.zero bit = true ==> lookup (evalCirc cs'.gates init) bit = false);
+        ()
+    | (false, Some bexp'') ->
+      let (ah', _, _, circ') = compileBexp cs.ah bit bexp'' in
+        // Correctness of output
+	lookup_is_val cs.subs l;
+	substVar_elems bexp cs.subs;
+	factorAs_vars bexp' bit;
+	disjoint_subset (vars bexp'') (rem bit (vals cs.subs)) (ins bit (elts cs.ah));
+	compile_bexp_correct cs.ah bit bexp'' (evalCirc cs.gates init);
+	factorAs_correct bexp' bit (evalCirc cs.gates init);
+	assert(b2t(lookup (evalCirc cs'.gates init) bit = 
+		 evalBexp (substVar bexp cs.subs) (evalCirc cs.gates init)));
+        // Preservation of other values
+	compile_mods cs.ah bit bexp'';
+        disjoint_subset (mods circ') (ins bit (elts cs.ah)) (rem bit (vals cs.subs));
+        disjoint_is_subset_compl (rem bit (vals cs.subs)) (mods circ');
+	eval_mod (evalCirc cs.gates init) circ';
+        agree_on_subset (evalCirc cs.gates init) 
+	                (evalCirc cs'.gates init) 
+	                (complement (mods circ')) 
+	                (rem bit (vals cs.subs));
+	assert(forall bit. (not (bit = lookup cs.subs l) /\ Set.mem bit (vals cs.subs)) ==>
+	         lookup (evalCirc cs'.gates init) bit = lookup (evalCirc cs.gates init) bit);
+	// Correctness of zero
+	assert(forall bit. Set.mem bit (vals cs'.subs) ==>
+                 lookup cs'.zero bit = true ==> lookup (evalCirc cs'.gates init) bit = false);
 	()
-      in
-      let disjoint_vals_lem =
-	lookup_subset cs.subs l res;
-	//assert(disjoint (vals cs'.subs) (elts cs'.ah));
-	()
-      in
-      let preservation_lem =
-	compile_mods_oop cs.ah bexp';
-	eval_mod init' circ';
-	admitP(forall i. not (i = l) ==> boolEval st' init i = circEval cs' init i);
-	()
-      in
-      let correctness_lem =
-	eval_commutes_subst_circ_oop st cs bexp bexp' init;
-	//assert(boolEval st' init l = circEval cs' init l);
-	()
-      in
+    | (false, None)        ->
+      let (ah', bit') = popMin cs.ah in
+      let (ah'', _, _, circ') = compileBexp ah' bit' bexp' in
+      lookup_is_val cs.subs l;
+      substVar_elems bexp cs.subs;
+      pop_proper_subset cs.ah;
+      pop_elt cs.ah;
+      compile_bexp_correct ah' bit' bexp' (evalCirc cs.gates init);
+      lookup_converse2 cs'.subs bit;
+      // Correctness of output
+      assert(b2t(lookup (evalCirc cs'.gates init) bit' = 
+	evalBexp (substVar bexp cs.subs) (evalCirc cs.gates init)));
+      // Preservation of other values
+      compile_mods ah' bit' bexp';
+      disjoint_subset (mods circ') (elts cs.ah) (vals cs.subs);
+      disjoint_is_subset_compl (vals cs.subs) (mods circ');
+      eval_mod (evalCirc cs.gates init) circ';
+      agree_on_subset (evalCirc cs.gates init) 
+                      (evalCirc cs'.gates init) 
+	              (complement (mods circ')) 
+	              (vals cs.subs);
+      assert(forall bit. Set.mem bit (vals cs.subs) ==>
+        lookup (evalCirc cs'.gates init) bit = lookup (evalCirc cs.gates init) bit);
+      // Correctness of zero
+      lookup_subset cs.subs l bit';
+      assert(forall bit. Set.mem bit (vals cs'.subs) ==>
+        lookup cs'.zero bit = true ==> lookup (evalCirc cs'.gates init) bit = false);
       ()
-    | Some bexp'' -> admit() (* TODO: Fix this, doesn't pass anymore
-      let (ah', res, ancs, circ') = compileBexp cs.ah l' bexp'' in
-      let zeroHeap_lem =
-        factorAs_correct bexp' l' init';
-        factorAs_vars bexp' l';
-        substVar_disjoint bexp cs.subs (elts cs.ah);
-        disjoint_subset (vars bexp'') (vars bexp') (elts cs.ah);
-        compile_decreases_heap cs.ah l' bexp'';
-        compile_partition cs.ah l' bexp'';
-        zeroHeap_subset init' cs.ah cs'.ah;
-        zeroHeap_st_impl init' cs'.ah circ'
-      in
-      let preservation = //(forall i. not (i = l) ==> boolEval st' init i = circEval cs' init i);
-        compile_mods cs.ah l' bexp'';
-        eval_mod init' circ'
-      in
-      let correctness = //(b2t(lookup (snd st') l = lookup (evalCirc circ' init') (lookup cs'.subs l)))
-        admitP(b2t(boolEval st' init l = circEval cs' init l));
-        eval_commutes_subst_circ st cs bexp bexp'' init l l'
-      in
-        //(forall i. boolEval st' init i = circEval cs' init i);
-      () *)
+
+(* Valid compiler states *)
+type valid_circ_state (cs:circState) (init:state) =
+  (forall l l'. not (l = l') ==> not (lookup cs.subs l = lookup cs.subs l')) /\
+  disjoint (vals cs.subs) (elts cs.ah) /\
+  zeroHeap init cs.ah /\
+  zeroHeap (evalCirc cs.gates init) cs.ah /\
+  (forall bit. Set.mem bit (vals cs.subs) ==>
+    (lookup cs.zero bit = true ==> lookup (evalCirc cs.gates init) bit = false))
+
+val alloc_pres_valid : cs:circState -> init:state ->
+  Lemma (requires (valid_circ_state cs init))
+	(ensures  (valid_circ_state (snd (circAlloc cs)) init))
+let alloc_pres_valid cs init =
+  let (ah', bit) = popMin cs.ah in
+  let cs' = 
+    { top = cs.top + 1; 
+      ah = ah'; 
+      gates = cs.gates; 
+      subs = update cs.subs cs.top bit;
+      zero = update cs.zero bit true }
+  in
+  pop_proper_subset cs.ah;
+  pop_is_zero init cs.ah;
+  pop_is_zero (evalCirc cs.gates init) cs.ah;
+  lookup_subset cs.subs cs.top bit;
+  lookup_converse cs.subs (lookup cs'.subs cs.top)
+
+val assign_pres_valid : cs:circState -> l:int -> bexp:boolExp -> init:state ->
+  Lemma (requires (valid_circ_state cs init))
+	(ensures  (valid_circ_state (circAssign cs l bexp) init))
+let assign_pres_valid cs l bexp init =
+  let cs' = circAssign cs l bexp in
+  assign_partition_lemma cs l bexp cs';
+  assign_zeroHeap_lemma cs l bexp init cs';
+  assign_value_lemma cs l bexp init cs';
+  let bit = lookup cs.subs l in
+  let bexp' = substVar bexp cs.subs in
+  match (lookup cs.zero bit, factorAs bexp' bit) with
+    | (true, _)            -> ()
+    | (false, Some bexp'') -> ()
+    | (false, None)        ->
+      let (ah', bit') = popMin cs.ah in
+      let (ah'', _, _, circ') = compileBexp ah' bit' bexp' in
+        pop_proper_subset cs.ah;
+	pop_elt cs.ah;
+        lookup_subset cs.subs l bit';
+        lookup_converse cs.subs bit'
+
+(* Correctness of circuit compilation *)
+type equiv_state (cs:circState) (bs:boolState) (init:state) =
+  cs.top = fst bs /\ (forall i. circEval cs init i = boolEval bs init i)
+
+val alloc_pres_equiv : cs:circState -> bs:boolState -> init:state ->
+  Lemma (requires (valid_circ_state cs init /\ equiv_state cs bs init))
+	(ensures  (valid_circ_state (snd (circAlloc cs)) init /\
+	           equiv_state (snd (circAlloc cs)) (snd (boolAlloc bs)) init))
+let alloc_pres_equiv cs bs init =
+  let (l, cs') = circAlloc cs in
+  let (k, bs') = boolAlloc bs in
+  pop_proper_subset cs.ah;
+  pop_is_zero init cs.ah;
+  pop_is_zero (evalCirc cs.gates init) cs.ah;
+  alloc_pres_valid cs init;
+  lookup_is_valF cs.subs
+
+val assign_pres_equiv : cs:circState -> bs:boolState -> l:int -> bexp:boolExp -> init:state ->
+  Lemma (requires (valid_circ_state cs init /\ equiv_state cs bs init))
+	(ensures  (valid_circ_state (circAssign cs l bexp) init /\
+	           equiv_state (circAssign cs l bexp) (boolAssign bs l bexp) init))
+let assign_pres_equiv cs bs l bexp init =
+  let cs' = circAssign cs l bexp in
+  assign_value_lemma cs l bexp init cs';
+  assign_pres_valid cs l bexp init;
+  lookup_is_valF cs.subs;
+  substVar_value_pres bexp cs.subs (snd bs) (evalCirc cs.gates init)
 
