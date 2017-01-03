@@ -44,6 +44,12 @@ val subset_ins : #a:eqtype -> x:a -> s:set a ->
   Lemma (subset s (ins x s))
 let subset_ins #a x s = ()
 
+val mem_ins_equal : #a:eqtype -> x:a -> s:set a ->
+  Lemma (requires (mem x s))
+        (ensures  (ins x s == s))
+let mem_ins_equal #a x s =
+  lemma_equal_intro (ins x s) s
+
 val ins_rem_equal : #a:eqtype -> x:a -> s:set a ->
   Lemma (requires True)
 	(ensures (ins x (rem x s) == (ins x s)))
@@ -55,6 +61,11 @@ val ins_subset_pres : #a:eqtype -> x:a -> s:set a -> s':set a ->
   Lemma (requires (subset s s'))
         (ensures  (subset (ins x s) (ins x s')))
 let ins_subset_pres #a x s s' = ()
+
+val ins_destruct : #a:eqtype -> x:a -> y:a -> s:set a ->
+  Lemma (requires True)
+        (ensures (mem y (ins x s) <==> y = x \/ mem y s))
+let ins_destruct #a x y s = ()
 
 val disjoint_subset : #a:eqtype -> s:set a -> s':set a -> s'':set a ->
   Lemma (requires (subset s s' /\ disjoint s' s''))

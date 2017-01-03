@@ -412,7 +412,8 @@ let rec occursInBexp_not_var i exp = match exp with
   | BXor (x, y) -> occursInBexp_not_var i x; occursInBexp_not_var i y
 
 val factorAs_vars : exp:boolExp -> targ:int ->
-  Lemma (forall exp'. factorAs exp targ = Some exp' ==> subset (vars exp') (rem targ (vars exp)))
+  Lemma (forall exp'. factorAs exp targ = Some exp' ==> 
+    Set.mem targ (vars exp) /\ subset (vars exp') (rem targ (vars exp)))
 let rec factorAs_vars exp targ = match exp with
   | BFalse -> ()
   | BVar x -> ()

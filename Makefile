@@ -5,7 +5,7 @@ FSHARP = fsharpc
 
 FILES = SetExtra.fst Total.fst Partial.fst Utils.fst PairHeap.fst AncillaHeap.fst \
 				Circuit.fst BoolExp.fst ExprTypes.fst TypeCheck.fst Interpreter.fst \
-				Crush.fst Compiler.fst #GC.fst
+				Crush.fst Compiler.fst GC.fst
 #FILES = Util.fst Maps.fst PairHeap.fst AncillaHeap.fst Circuit.fst BoolExp.fst ExprTypes.fst Interpreter.fst
 REVS  = GenOp.fs buddy.fs Equiv.fs Cmd.fs Examples.fs Program.fs
 SUPPORT = FStar.Set FStar.Heap FStar.ST FStar.All FStar.List FStar.String FStar.IO
@@ -22,10 +22,10 @@ DLLS = $(FSTAR_HOME)/lib/fs/fstarlib.dll $(FSTAR_HOME)/bin/FSharp.PowerPack.dll 
 FSOPS = $(addprefix -r , $(DLLS))
 
 verify: $(FSTSRC)
-	$(FSTAR) --z3rlimit 300 $^
+	$(FSTAR) --z3rlimit 300 --use_hints $^
 
 hints: $(FSTSRC)
-	$(FSTAR) --z3rlimit 300 --record_hints --use_hints $^
+	$(FSTAR) --z3rlimit 300 --record_hints  --use_hints $^ --verify_module GC
 
 fs: $(FSTSRC)
 	$(FSTAR) --admit_smt_queries true --codegen FSharp $(EXCL) $^

@@ -78,7 +78,7 @@ let rec lookup_map #k #v #val' f m k = match m.elts with
     let m' = { elts = xs; dval = m.dval } in
       lookup_map f m' k
 
-(* Relating lookups to values -- don't have time for this trivial but tedious lemma right now *)
+(* Obvious axioms related to the codomain of a total map *)
 val lookup_is_val : #key:eqtype -> #value:eqtype -> m:t key value -> k:key ->
   Lemma (requires true)
 	(ensures (Set.mem (lookup m k) (vals m)))
@@ -103,6 +103,16 @@ val lookup_subset : #key:eqtype -> #value:eqtype -> m:t key value -> k:key -> v:
   Lemma (requires True)
         (ensures (subset (vals (update m k v)) (ins v (vals m))))
 let lookup_subset #k #v m k v = admit()
+
+val destruct_vals : #key:eqtype -> #value:eqtype -> x:(key * value) -> m:t key value -> m':t key value ->
+  Lemma (requires (m.elts = x::m'.elts /\ m.dval = m'.dval))
+        (ensures  (Set.equal (vals m) (ins (snd x) (vals m'))))
+let destruct_vals #k #v x m m' = admit()
+
+val destruct_val : #key:eqtype -> #value:eqtype -> x:(key * value) -> m:t key value ->
+  Lemma (requires (exists xs. m.elts = x::xs))
+        (ensures  (Set.mem (snd x) (vals m)))
+let destruct_val #k #v x m = admit()
 
 (* Type of maps that agree on a subset of keys *)
 type agree_on (#key:eqtype) (#value:eqtype) (m:t key value) (m':t key value) (s:set key) =
