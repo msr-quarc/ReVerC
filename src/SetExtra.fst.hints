@@ -1,5 +1,5 @@
 [
-  "ª\u007f\u0000\u0013ˇçJd\t›™Å\u0019⁄&Ê",
+  "«}ü\u00040N¬Ì5ˇ\u0006Uª¨LË",
   [
     [ "SetExtra.full", 1, 2, 1, [ "@query" ], 0 ],
     [ "SetExtra.diff", 1, 2, 1, [ "@query" ], 0 ],
@@ -105,6 +105,25 @@
       ],
       0
     ],
+    [ "SetExtra.mem_ins_equal", 1, 2, 1, [ "@query" ], 0 ],
+    [ "SetExtra.mem_ins_equal", 2, 2, 1, [ "@query" ], 0 ],
+    [ "SetExtra.mem_ins_equal", 3, 2, 1, [ "@query" ], 0 ],
+    [
+      "SetExtra.mem_ins_equal",
+      4,
+      2,
+      1,
+      [
+        "@query", "bool_inversion", "equation_FStar.Set.eqtype",
+        "equation_Prims.eqtype", "equation_SetExtra.ins",
+        "lemma_FStar.Set.lemma_equal_elim", "lemma_FStar.Set.mem_singleton",
+        "lemma_FStar.Set.mem_union", "primitive_Prims.op_BarBar",
+        "primitive_Prims.op_Equality", "projection_inverse_BoxBool_proj_0",
+        "typing_FStar.Set.mem", "typing_FStar.Set.singleton"
+      ],
+      0
+    ],
+    [ "SetExtra.mem_ins_equal", 5, 2, 1, [ "@query" ], 0 ],
     [ "SetExtra.ins_rem_equal", 1, 2, 1, [ "@query" ], 0 ],
     [
       "SetExtra.ins_rem_equal",
@@ -168,6 +187,34 @@
         "lemma_FStar.Set.mem_union", "primitive_Prims.op_BarBar",
         "projection_inverse_BoxBool_proj_0", "typing_FStar.Set.singleton",
         "unit_typing"
+      ],
+      0
+    ],
+    [ "SetExtra.ins_destruct", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "SetExtra.ins_destruct",
+      2,
+      2,
+      1,
+      [
+        "@query", "equation_FStar.Set.eqtype",
+        "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
+      ],
+      0
+    ],
+    [ "SetExtra.ins_destruct", 3, 2, 1, [ "@query" ], 0 ],
+    [ "SetExtra.ins_destruct", 4, 2, 1, [ "@query" ], 0 ],
+    [
+      "SetExtra.ins_destruct",
+      5,
+      2,
+      1,
+      [
+        "@query", "equation_FStar.Set.eqtype", "equation_Prims.eqtype",
+        "equation_SetExtra.ins", "lemma_FStar.Set.mem_singleton",
+        "lemma_FStar.Set.mem_union", "primitive_Prims.op_BarBar",
+        "primitive_Prims.op_Equality", "projection_inverse_BoxBool_proj_0",
+        "typing_FStar.Set.singleton", "unit_typing"
       ],
       0
     ],

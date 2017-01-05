@@ -1,5 +1,5 @@
 [
-  "÷„®ØŠ„¿V@Ÿ’ð³÷R7",
+  "\u0011\u000e\u0003W7/)@\u001d¯˜B¥ÓÂr",
   [
     [
       "Total.t",
@@ -320,6 +320,46 @@
     ],
     [ "Total.lookup_converse2", 2, 2, 1, [ "@query" ], 0 ],
     [ "Total.lookup_subset", 1, 2, 1, [ "@query" ], 0 ],
+    [ "Total.update_subset", 1, 2, 1, [ "@query" ], 0 ],
+    [
+      "Total.destruct_vals",
+      1,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.list_haseq",
+        "assumption_Prims.tuple2_haseq", "equation_FStar.Set.eqtype",
+        "kinding_Prims.tuple2@tok",
+        "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
+      ],
+      0
+    ],
+    [
+      "Total.destruct_vals",
+      2,
+      2,
+      1,
+      [
+        "@query", "equation_FStar.Set.eqtype",
+        "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
+      ],
+      0
+    ],
+    [ "Total.destruct_vals", 3, 2, 1, [ "@query" ], 0 ],
+    [
+      "Total.destruct_val",
+      1,
+      2,
+      1,
+      [
+        "@query", "assumption_Prims.list_haseq",
+        "assumption_Prims.tuple2_haseq", "equation_FStar.Set.eqtype",
+        "kinding_Prims.tuple2@tok",
+        "refinement_interpretation_Tm_refine_414d0a9f578ab0048252f8c8f552b99f"
+      ],
+      0
+    ],
+    [ "Total.destruct_val", 2, 2, 1, [ "@query" ], 0 ],
     [ "Total.agree_on", 1, 2, 1, [ "@query" ], 0 ],
     [
       "Total.agree_on",

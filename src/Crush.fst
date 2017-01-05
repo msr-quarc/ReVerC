@@ -162,3 +162,69 @@ val state_equiv_assign : st:boolState -> st':bExpState -> init:state -> l:int ->
   Lemma (requires (state_equiv st st' init))
         (ensures  (state_equiv (boolAssign st l bexp) (bexpAssign st' l bexp) init))
 let state_equiv_assign st st' init l bexp = eval_bexp_swap st st' bexp init
+
+val step_pres_state_equiv : st:boolState -> st':bExpState -> gexp:gExpr -> init:state ->
+  Lemma (requires (state_equiv st st' init))
+        (ensures  ((is_Err (step (gexp, st) boolInterp) /\ is_Err (step (gexp, st') bexpInterp)) \/
+                   (is_Val (step (gexp, st) boolInterp) /\ is_Val (step (gexp, st') bexpInterp) /\
+		    state_equiv (snd (getVal (step (gexp, st) boolInterp))) 
+		                (snd (getVal (step (gexp, st') bexpInterp)))
+			        init)))
+  (decreases %[gexp;1])
+val step_lst_pres_state_equiv : st:boolState -> st':bExpState -> lst:list gExpr -> init:state ->
+  Lemma (requires (state_equiv st st' init))
+        (ensures  ((is_Err (step_lst (lst, st) boolInterp) /\ is_Err (step_lst (lst, st') bexpInterp)) \/
+                   (is_Val (step_lst (lst, st) boolInterp) /\ is_Val (step_lst (lst, st') bexpInterp) /\
+		    state_equiv (snd (getVal (step_lst (lst, st) boolInterp))) 
+		                (snd (getVal (step_lst (lst, st') bexpInterp)))
+			        init)))
+  (decreases %[lst;0])
+let rec step_pres_state_equiv st st' gexp init = match gexp with
+  | LET (x, t1, t2) -> step_pres_state_equiv st st' t1 init
+  | APPLY (t1, t2) ->
+    step_pres_state_equiv st st' t1 init;
+    step_pres_state_equiv st st' t2 init
+  | SEQUENCE (t1, t2) ->
+    step_pres_state_equiv st st' t1 init;
+    step_pres_state_equiv st st' t2 init
+  | ASSIGN (t1, t2) ->
+    step_pres_state_equiv st st' t1 init;
+    step_pres_state_equiv st st' t2 init;
+    if (isVal t1 && isBexp t2) then
+      begin match t1 with
+        | LOC l -> 
+	  state_equiv_assign st st' init l (get_bexp t2)
+        | _ -> ()
+      end 
+  | XOR (t1, t2) ->
+    step_pres_state_equiv st st' t1 init;
+    step_pres_state_equiv st st' t2 init
+  | AND (t1, t2) ->
+    step_pres_state_equiv st st' t1 init;
+    step_pres_state_equiv st st' t2 init
+  | BOOL b -> ()
+  | APPEND (t1, t2) ->
+    step_pres_state_equiv st st' t1 init;
+    step_pres_state_equiv st st' t2 init
+  | ROT (i, t) ->
+    step_pres_state_equiv st st' t init
+  | SLICE (t, i, j) ->
+    step_pres_state_equiv st st' t init
+  | ARRAY lst -> 
+    admit() // See note in Interpreter.fst, mutual recursion here no longer works due to new equality types
+    //step_lst_pres_equiv cs bs lst init
+  | GET_ARRAY (t, i) ->
+    step_pres_state_equiv st st' t init
+  | ASSERT t ->
+    step_pres_state_equiv st st' t init
+  | BEXP bexp ->
+    let (l, st'') = boolAlloc st in
+    let (l', st''') = bexpAlloc st' in
+      state_equiv_alloc st st' init;
+      state_equiv_assign st'' st''' init l (BXor (BVar l, bexp))
+  | _ -> ()
+and step_lst_pres_state_equiv st st' lst init = match lst with
+  | [] -> ()
+  | x::xs -> admit() // Mutual recursion again
+    //step_pres_state_equiv st st' x init
+    //step_lst_pres_state_equiv st st' xs init

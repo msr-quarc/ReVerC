@@ -353,6 +353,13 @@ type assign_preservation
   (p:s1 -> s2 -> Total.t int bool -> Type) =
     forall st1 st2 i bexp init. p st1 st2 init ==> p (i1.assign st1 i bexp) (i2.assign st2 i bexp) init
 
+(* DISCLAIMER: In theory this is trivial, but the lack of an equivalence between universal quantifiers
+   and function types in F* makes this difficult. The use of predicates here also seems to be causing
+   a strange problem with proving totality that I can't get around. 
+   For the time being we'll have separate proofs for each interpretation, but it should be noted that
+   each proof follows identically to the generic version, modulo these technical issues with F* *)
+
+(*
 val step_preservation : 
   #s1:eqtype -> #s2:eqtype -> i1:interpretation s1 -> i2:interpretation s2 ->
   p:(s1 -> s2 -> Total.t int bool -> Type) ->
@@ -378,7 +385,7 @@ val step_preservation_lst :
 	    p (snd (getVal (step_lst (lst, st1) i1))) (snd (getVal (step_lst (lst, st2) i2))) init))
   (decreases %[lst;0])
 
-(* F* compiler complains this is not total, no idea what's happening *)
+(* F* compiler complains this is not total, no idea what's happening
 let rec step_preservation #s1 #s2 i1 i2 p h1 h2 gexp st1 st2 init = match gexp with
   | LET (x, t1, t2) -> step_preservation i1 i2 p h1 h2 t1 st1 st2 init
   | LAMBDA (x, ty, t) -> ()
@@ -393,7 +400,7 @@ let rec step_preservation #s1 #s2 i1 i2 p h1 h2 gexp st1 st2 init = match gexp w
     step_preservation i1 i2 p h1 h2 t2 st1 st2 init;
     if (isVal t1 && isBexp t2) then
       begin match t1 with
-        | LOC l -> admit() //h2 something stopped working with the hypothesis
+        | LOC l -> () //h2 something stopped working with the hypothesis
         | _ -> ()
       end 
   | XOR (t1, t2) ->
@@ -410,15 +417,16 @@ let rec step_preservation #s1 #s2 i1 i2 p h1 h2 gexp st1 st2 init = match gexp w
     step_preservation i1 i2 p h1 h2 t st1 st2 init
   | SLICE (t, i, j) ->
     step_preservation i1 i2 p h1 h2 t st1 st2 init
-  | ARRAY lst -> admit() // Until the mutual recursion can be solved
+  | ARRAY lst -> () // Until the mutual recursion can be solved
   | GET_ARRAY (t, i) ->
     step_preservation i1 i2 p h1 h2 t st1 st2 init
   | ASSERT t ->
     step_preservation i1 i2 p h1 h2 t st1 st2 init
-  | BEXP bexp -> admit() //h1; h2
+  | BEXP bexp -> () //h1; h2
   | _ -> ()
 and step_preservation_lst #s1 #s2 i1 i2 p h1 h2 lst st1 st2 init = match lst with
   | [] -> ()
-  | x::xs -> admit() // Again, mutual recursion issue
+  | x::xs -> () // Again, mutual recursion issue
     //step_preservation i1 i2 p h1 h2 x st1 st2 init;
     //step_preservation_lst i1 i2 p h1 h2 xs st1 st2 init
+*)

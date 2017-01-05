@@ -367,3 +367,86 @@ let assign_pres_equiv cs bs l bexp init =
   lookup_is_valF cs.subs;
   substVar_value_pres bexp cs.subs (snd bs) (evalCirc cs.gates init)
 
+// Huge impact on verification
+irreducible type p_circ (cs:circState) (bs:boolState) (init:state) = 
+  valid_circ_state cs init /\ equiv_state cs bs init
+
+(* NOTE: p_circ needs to be irreducible for step_pres_equiv to be provable (given reasonable
+   resource limitations), but then assign_pres_equiv is unprovable. How can we solve this
+   mess? Can't seem to find any sort of local type checker commands so for now the only
+   solution is to assume the existence of this lemma. *)
+val expand_p : cs:circState -> bs:boolState -> init:state ->
+  Lemma (requires True)
+        (ensures (p_circ cs bs init <==> valid_circ_state cs init /\ equiv_state cs bs init))
+  //[SMTPat (p_circ cs bs init)]
+let expand_p cs bs init = admit()
+
+val step_pres_equiv : cs:circState -> bs:boolState -> gexp:gExpr -> init:state ->
+  Lemma (requires (p_circ cs bs init))
+        (ensures  ((is_Err (step (gexp, cs) circInterp) /\ is_Err (step (gexp, bs) boolInterp)) \/
+                   (is_Val (step (gexp, cs) circInterp) /\ is_Val (step (gexp, bs) boolInterp) /\
+		    p_circ (snd (getVal (step (gexp, cs) circInterp))) 
+		           (snd (getVal (step (gexp, bs) boolInterp)))
+			   init)))
+  (decreases %[gexp;1])
+val step_lst_pres_equiv : cs:circState -> bs:boolState -> lst:list gExpr -> init:state ->
+  Lemma (requires (p_circ cs bs init))
+        (ensures  ((is_Err (step_lst (lst, cs) circInterp) /\ is_Err (step_lst (lst, bs) boolInterp)) \/
+                   (is_Val (step_lst (lst, cs) circInterp) /\ is_Val (step_lst (lst, bs) boolInterp) /\
+		    p_circ (snd (getVal (step_lst (lst, cs) circInterp))) 
+		           (snd (getVal (step_lst (lst, bs) boolInterp)))
+			   init)))
+  (decreases %[lst;0])
+let rec step_pres_equiv cs bs gexp init = match gexp with
+  | LET (x, t1, t2) -> step_pres_equiv cs bs t1 init
+  | APPLY (t1, t2) ->
+    step_pres_equiv cs bs t1 init;
+    step_pres_equiv cs bs t2 init
+  | SEQUENCE (t1, t2) ->
+    step_pres_equiv cs bs t1 init;
+    step_pres_equiv cs bs t2 init
+  | ASSIGN (t1, t2) ->
+    step_pres_equiv cs bs t1 init;
+    step_pres_equiv cs bs t2 init;
+    if (isVal t1 && isBexp t2) then
+      begin match t1 with
+        | LOC l -> 
+	  expand_p cs bs init;
+	  assign_pres_equiv cs bs l (get_bexp t2) init;
+	  expand_p (snd (getVal (step (gexp, cs) circInterp))) (snd (getVal (step (gexp, bs) boolInterp))) init
+        | _ -> ()
+      end 
+  | XOR (t1, t2) ->
+    step_pres_equiv cs bs t1 init;
+    step_pres_equiv cs bs t2 init
+  | AND (t1, t2) ->
+    step_pres_equiv cs bs t1 init;
+    step_pres_equiv cs bs t2 init
+  | BOOL b -> ()
+  | APPEND (t1, t2) ->
+    step_pres_equiv cs bs t1 init;
+    step_pres_equiv cs bs t2 init
+  | ROT (i, t) ->
+    step_pres_equiv cs bs t init
+  | SLICE (t, i, j) ->
+    step_pres_equiv cs bs t init
+  | ARRAY lst -> 
+    admit() // See note in Interpreter.fst, mutual recursion here no longer works due to new equality types
+    //step_lst_pres_equiv cs bs lst init
+  | GET_ARRAY (t, i) ->
+    step_pres_equiv cs bs t init
+  | ASSERT t ->
+    step_pres_equiv cs bs t init
+  | BEXP bexp ->
+    let (l, cs') = circAlloc cs in
+    let (l', bs') = boolAlloc bs in
+      expand_p cs bs init;
+      alloc_pres_equiv cs bs init;
+      assign_pres_equiv cs' bs' l (BXor (BVar l, bexp)) init;
+      expand_p (snd (getVal (step (gexp, cs) circInterp))) (snd (getVal (step (gexp, bs) boolInterp))) init
+  | _ -> ()
+and step_lst_pres_equiv cs bs lst init = match lst with
+  | [] -> ()
+  | x::xs -> admit() // Mutual recursion again
+    //step_pres_equiv cs bs x init
+    //step_lst_pres_equiv cs bs xs init
