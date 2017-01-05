@@ -104,6 +104,11 @@ val lookup_subset : #key:eqtype -> #value:eqtype -> m:t key value -> k:key -> v:
         (ensures (subset (vals (update m k v)) (ins v (vals m))))
 let lookup_subset #k #v m k v = admit()
 
+val update_subset : #key:eqtype -> #value:eqtype -> m:t key value -> k:key -> v:value ->
+  Lemma (requires True)
+        (ensures (subset (rem (lookup m k) (vals m)) (vals (update m k v))))
+let update_subset #k #v m k v = admit()
+
 val destruct_vals : #key:eqtype -> #value:eqtype -> x:(key * value) -> m:t key value -> m':t key value ->
   Lemma (requires (m.elts = x::m'.elts /\ m.dval = m'.dval))
         (ensures  (Set.equal (vals m) (ins (snd x) (vals m'))))

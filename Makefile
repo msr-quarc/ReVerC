@@ -22,7 +22,7 @@ DLLS = $(FSTAR_HOME)/lib/fs/fstarlib.dll $(FSTAR_HOME)/bin/FSharp.PowerPack.dll 
 FSOPS = $(addprefix -r , $(DLLS))
 
 verify: $(FSTSRC)
-	$(FSTAR) --z3rlimit 300 --use_hints $^
+	$(FSTAR) --z3rlimit 300 --use_hints $^ --verify_module GC
 
 hints: $(FSTSRC)
 	$(FSTAR) --z3rlimit 300 --record_hints  --use_hints $^ --verify_module GC

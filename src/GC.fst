@@ -1,6 +1,5 @@
 (** Garbage collection *)
 module GC
-#set-options "--lax"
 
 open Utils
 open FStar.Set
@@ -460,6 +459,31 @@ let cvals_lemma symtab cvals bit exp st circ =
   cvals_agree_lemma symtab cvals bit exp st circ;
   cvals_update_lemma symtab cvals bit exp st (evalCirc circ st)
 
+val cvals_pres_lemma : symtab:Total.t int int -> cvals:Total.t int boolExp -> 
+		  bit:int -> st:state -> circ:circuit ->
+  Lemma (requires (forall bit'. Set.mem bit' (vals symtab) ==> 
+		     disjoint (vars (lookup cvals bit')) (mods circ)))
+	(ensures  (forall bit'. Set.mem bit' (vals symtab) ==> 
+	             evalBexp (lookup cvals bit') st = evalBexp (lookup cvals bit') (evalCirc circ st)))
+  (decreases (symtab.elts))
+let rec cvals_pres_lemma symtab cvals bit st circ = match symtab.elts with
+  | [] ->
+    let bit' = symtab.dval in
+      disjoint_is_subset_compl (vars (lookup cvals bit')) (mods circ);
+      eval_mod st circ;
+      agree_on_subset st (evalCirc circ st) (complement (mods circ)) (vars (lookup cvals bit'));
+      eval_state_swap (lookup cvals bit') st (evalCirc circ st)
+  | x::xs ->
+    let bit' = snd x in
+    let symtab' = { elts = xs; dval = symtab.dval } in
+      destruct_val x symtab;
+      destruct_vals x symtab symtab';
+      disjoint_is_subset_compl (vars (lookup cvals bit')) (mods circ);
+      eval_mod st circ;
+      agree_on_subset st (evalCirc circ st) (complement (mods circ)) (vars (lookup cvals bit'));
+      eval_state_swap (lookup cvals bit') st (evalCirc circ st);
+      cvals_pres_lemma symtab' cvals bit st circ
+
 val xor_inverse : b:bool -> Lemma (b <> b = false)
 val xor_assoc   : b1:bool -> b2:bool -> b3:bool -> Lemma (b1 <> (b2 <> b3) = (b1 <> b2) <> b3)
 
@@ -519,6 +543,7 @@ let garbage_value_lemma cs bit init cs'=
 type precond3 (cs:circGCState) (l:int) (bexp:boolExp) (init:state) =
   (forall l'. not (l' = l) ==> not (lookup cs.symtab l = lookup cs.symtab l')) /\
   (disjoint (vals cs.symtab) (elts cs.ah)) /\
+  (zeroHeap init cs.ah) /\
   (zeroHeap (evalCirc cs.gates init) cs.ah) /\
   (forall bit. Set.mem bit (vals cs.symtab) ==>
     (disjoint (vars (lookup cs.cvals bit)) (elts cs.ah))) /\
@@ -526,8 +551,6 @@ type precond3 (cs:circGCState) (l:int) (bexp:boolExp) (init:state) =
      (b2t(lookup cs.isanc bit) ==> lookup init bit = false)) /\
   (forall bit. Set.mem bit (vals cs.symtab) ==>
      (evalBexp (BXor (BVar bit, (lookup cs.cvals bit))) (evalCirc cs.gates init) = lookup init bit))
-  
-#reset-options
 
 val assign_value_lemma : cs:circGCState -> l:int -> bexp:boolExp -> init:state -> cs':circGCState ->
   Lemma (requires (cs' = circGCAssign cs l bexp /\
@@ -545,7 +568,7 @@ let assign_value_lemma cs l bexp init cs' =
   let bit = lookup cs.symtab l in
   let bexp' = substVar bexp cs.symtab in
   match (lookup cs.cvals bit, factorAs bexp' bit, lookup cs.isanc bit) with
-    | (BFalse, _, true)      -> admit() (*
+    | (BFalse, _, true)      ->
       let bexp'' = substOneVar bexp' bit BFalse in
       let f bexp = substOneVar bexp bit BFalse in
       let (ah', _, _, circ') = compileBexp cs.ah bit bexp'' in
@@ -586,8 +609,8 @@ let assign_value_lemma cs l bexp init cs' =
 	assert(forall bit'. Set.mem bit' (vals cs'.symtab) ==>
 	         evalBexp (BXor (BVar bit', lookup cs'.cvals bit')) (evalCirc cs'.gates init) = 
 		   lookup init bit');
-        () *)
-    | (_, Some bexp'', _) -> admit() (*
+        ()
+    | (_, Some bexp'', _) ->
       let (ah', _, _, circ') = compileBexp cs.ah bit bexp'' in
       let f bexp = substOneVar bexp bit (BXor (BVar bit, bexp'')) in
         // Correctness of output
@@ -628,7 +651,7 @@ let assign_value_lemma cs l bexp init cs' =
 	assert(forall bit'. Set.mem bit' (vals cs'.symtab) ==>
 	         evalBexp (BXor (BVar bit', lookup cs'.cvals bit')) (evalCirc cs'.gates init) = 
 		   lookup init bit');
-	()*)
+	()
     | _                ->
       let (ah', bit') = popMin cs.ah in
       let (ah'', _, _, circ') = compileBexp ah' bit' bexp' in
@@ -659,39 +682,27 @@ let assign_value_lemma cs l bexp init cs' =
       eval_state_swap (BXor (BVar bit, (lookup cs.cvals bit))) 
                       (evalCirc cs.gates init) 
 		      (evalCirc cs''.gates init);
-      admitP(precond1 cs'' bit init);
+      assert(precond1 cs'' bit init);
       garbage_value_lemma cs'' bit init cs';
       // Correctness of output
-      admitP(b2t(lookup (evalCirc cs''.gates init) bit' = 
-	evalBexp (substVar bexp cs.symtab) (evalCirc cs.gates init)));
+	lookup_is_valF cs''.symtab;
+	assert(b2t(lookup (evalCirc cs'.gates init) bit' = 
+	    evalBexp (substVar bexp cs.symtab) (evalCirc cs.gates init)));
       // Preservation of other values
-      admitP(forall bit. (not (bit = lookup cs.symtab l) /\ Set.mem bit (vals cs.symtab)) ==>
-        lookup (evalCirc cs''.gates init) bit = lookup (evalCirc cs.gates init) bit);
+	update_subset cs.symtab l bit';
+	assert(forall bit. (not (bit = lookup cs.symtab l) /\ Set.mem bit (vals cs.symtab)) ==>
+	    lookup (evalCirc cs'.gates init) bit = lookup (evalCirc cs.gates init) bit);
       // Correctness of isanc
-      admitP(forall bit. Set.mem bit (vals cs''.symtab) ==>
-	b2t(lookup cs''.isanc bit) ==> lookup init bit = false);
+        pop_is_zero init cs.ah;
+	assert(forall bit. Set.mem bit (vals cs'.symtab) ==>
+	    b2t(lookup cs'.isanc bit) ==> lookup init bit = false);
       // Correctness of cvals
-      admitP(forall bit'. Set.mem bit' (vals cs''.symtab) ==>
-	         evalBexp (BXor (BVar bit', lookup cs''.cvals bit')) (evalCirc cs''.gates init) = 
-		   lookup init bit');
-      // Correctness of output
-      admitP(Set.mem bit' (vals cs''.symtab));
-      assert(b2t(lookup (evalCirc cs'.gates init) bit' = 
-	evalBexp (substVar bexp cs.symtab) (evalCirc cs.gates init)));
-      // Preservation of other values
-      assert(forall bit. (not (bit = lookup cs.symtab l) /\ Set.mem bit (vals cs''.symtab)) ==>
-        lookup (evalCirc cs'.gates init) bit = lookup (evalCirc cs''.gates init) bit);
-      assert(forall bit. Set.mem bit (vals cs''.symtab) ==> Set.mem bit (vals cs.symtab)
-      admit();
-      assert(forall bit. (not (bit = lookup cs.symtab l) /\ Set.mem bit (vals cs.symtab)) ==>
-        lookup (evalCirc cs'.gates init) bit = lookup (evalCirc cs.gates init) bit);
-      // Correctness of isanc
-      assert(forall bit. Set.mem bit (vals cs'.symtab) ==>
-	b2t(lookup cs'.isanc bit) ==> lookup init bit = false);
-      // Correctness of cvals
-      assert(forall bit'. Set.mem bit' (vals cs'.symtab) ==>
-	         evalBexp (BXor (BVar bit', lookup cs'.cvals bit')) (evalCirc cs'.gates init) = 
-		   lookup init bit');
+        xor_inverse (evalBexp bexp' (evalCirc cs.gates init));
+	eval_state_swap bexp' (evalCirc cs.gates init) (evalCirc cs''.gates init);
+	cvals_pres_lemma cs.symtab cs.cvals bit' (evalCirc cs.gates init) circ';
+	assert(forall bit'. Set.mem bit' (vals cs'.symtab) ==>
+		    evalBexp (BXor (BVar bit', lookup cs'.cvals bit')) (evalCirc cs'.gates init) = 
+		    lookup init bit');
       ()
 
 (* Fixpoint of the above preconditions w.r.t. garbagecollection, alloc and assign *)
@@ -809,13 +820,15 @@ let assign_pres_equiv cs bs l bexp init =
   let bs' = boolAssign bs l bexp in
   let bit = lookup cs.symtab l in
   let bexp' = substVar bexp cs.symtab in
-  assign_value_lemma cs l bexp init cs';
-  assign_pres_valid cs l bexp init;
   match (lookup cs.cvals bit, factorAs bexp' bit, lookup cs.isanc bit) with
-    | (BFalse, _, true)   -> admit();
+    | (BFalse, _, true)   ->
+	assign_value_lemma cs l bexp init cs';
+	assign_pres_valid cs l bexp init;
 	lookup_is_valF cs.symtab;
 	substVar_value_pres bexp cs.symtab (snd bs) (evalCirc cs.gates init)
-    | (_, Some bexp'', _) -> admit();
+    | (_, Some bexp'', _) ->
+	assign_value_lemma cs l bexp init cs';
+	assign_pres_valid cs l bexp init;
 	lookup_is_valF cs.symtab;
 	substVar_value_pres bexp cs.symtab (snd bs) (evalCirc cs.gates init)
     | _ ->
@@ -829,6 +842,7 @@ let assign_pres_equiv cs bs l bexp init =
 	  isanc  = update cs.isanc bit' true; 
 	  cvals  = update cs.cvals bit' bexp' } 
       in
+	assign_pres_valid cs l bexp init;
 	lookup_is_val cs.symtab l;
 	substVar_elems bexp cs.symtab;
 	pop_proper_subset cs.ah;
@@ -848,14 +862,8 @@ let assign_pres_equiv cs bs l bexp init =
 	eval_state_swap (BXor (BVar bit, (lookup cs.cvals bit))) 
 			(evalCirc cs.gates init) 
 			(evalCirc cs''.gates init);
-	//assert(precond1 cs'' bit init);
-		      (*
-        lookup_is_val cs.symtab l;
-        substVar_elems bexp cs.symtab;
-        pop_proper_subset cs.ah;
-	pop_elt cs.ah;
-        compile_bexp_correct ah' bit' bexp' (evalCirc cs.gates init);
-        lookup_converse2 cs''.symtab bit;*)
+	assert(precond1 cs'' bit init);
+	lookup_is_valF cs.symtab;
+	substVar_value_pres bexp cs.symtab (snd bs) (evalCirc cs.gates init);
         assert(equiv_state cs'' bs' init);
-	admit();
         garbageCollect_pres_equiv cs'' bs' bit init
