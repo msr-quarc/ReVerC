@@ -1,3 +1,3 @@
 [submodule ".fstar"]
 	path = .fstar
-	url = git@github.com:FStarLang/FStar.git
+	url = https://github.com/FStarLang/FStar.git
