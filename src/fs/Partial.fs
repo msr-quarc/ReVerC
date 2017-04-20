@@ -1,6 +1,8 @@
 (** Partial maps, implemented as assoc lists *)
 module Partial
 
+open SetExtra
+
 type t<'key,'value> = list<'key * 'value>
 
 let defined m k = List.exists (fun (k', _) -> k = k') m
@@ -9,10 +11,10 @@ let empty = []
 
 let rec keys m = match m with
   | [] -> Set.empty
-  | (k, _)::xs -> Set.ins k (keys xs)
+  | (k, _)::xs -> ins k (keys xs)
 let rec vals m = match m with
   | [] -> Set.empty
-  | (_, v)::xs -> Set.ins v (vals xs)
+  | (_, v)::xs -> ins v (vals xs)
 
 let rec find m k = match (List.tryFind (fun (k', v') -> k = k') m) with
   | None -> None

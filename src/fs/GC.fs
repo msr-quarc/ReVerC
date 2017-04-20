@@ -8,6 +8,7 @@ open BoolExp
 open Circuit
 open ExprTypes
 open Interpreter
+open SetExtra
 
 (* Garbage-collected reversible circuit compilation -- experimental *)
 
@@ -25,7 +26,7 @@ type circGCState =
      -update the current value of all other bits by substituting q.id with ival + cval *)
 let garbageCollect cs bit = 
   let cval = lookup cs.cvals bit in
-  if Set.mem bit (vars cval) then cs else
+  if mem bit (vars cval) then cs else
   let (ah', res, ancs, circ) = compileBexpPebbled cs.ah bit cval in
   match lookup cs.isanc bit with
     | true ->
@@ -166,7 +167,7 @@ let rec lookup_Lst_gc symtab lst = match lst with
   | (LOC l)::xs -> ((lookup symtab l))::(lookup_Lst_gc symtab xs)
 
   (* Scrubs the state with respect to the remainder of the program *)
-let findGarbage gexp cs = Set.diff (keys cs.symtab) (locs gexp)
+let findGarbage gexp cs = diff (keys cs.symtab) (locs gexp)
 let garbageCollector gexp cs = 
   let garbage = findGarbage gexp cs in
   let f cs l = 

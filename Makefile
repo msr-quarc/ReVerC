@@ -18,7 +18,7 @@ LIB 	 = $(addprefix $(FSTAR_HOME)/lib/, $(STDLIB) $(EX))
 
 EXCL   = $(addprefix --no_extract , $(SUPPORT))
 
-DLLS = $(FSTAR_HOME)/lib/fs/fstarlib.dll $(FSTAR_HOME)/bin/FSharp.PowerPack.dll $(FSTAR_HOME)/bin/FSharp.PowerPack.Compatibility.dll
+DLLS = fstarlib.dll $(FSTAR_HOME)/bin/FSharp.PowerPack.dll $(FSTAR_HOME)/bin/FSharp.PowerPack.Compatibility.dll
 FSOPS = $(addprefix -r , $(DLLS))
 
 verify: $(FSTSRC)

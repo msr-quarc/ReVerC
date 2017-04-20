@@ -1,5 +1,5 @@
 (** Functional sets *)
-module Set
+module SetExtra
 
 type set<'a when 'a:comparison>  = Set<'a>
 

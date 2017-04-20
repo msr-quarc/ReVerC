@@ -6,6 +6,7 @@ module ExprTypes
 
 open Util
 open BoolExp
+open SetExtra
 
 type GType =
   | GUnit
@@ -83,7 +84,7 @@ let rec locsAcc lset tm = match tm with
   | SLICE (t, i, j) -> locsAcc lset t
   | CLEAN (t, _) -> locsAcc lset t
   | ASSERT (t, _) -> locsAcc lset t
-  | LOC i -> Set.ins i lset
+  | LOC i -> ins i lset
   | BEXP bexp -> Set.union (vars bexp) lset
   | _ -> lset
 and locsAcc_lst lset lst = match lst with
