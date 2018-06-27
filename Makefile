@@ -18,18 +18,18 @@ LIB 	 = $(addprefix $(FSTAR_HOME)/lib/, $(STDLIB) $(EX))
 
 EXCL   = $(addprefix --no_extract , $(SUPPORT))
 
-DLLS = fstarlib.dll $(FSTAR_HOME)/bin/FSharp.PowerPack.dll $(FSTAR_HOME)/bin/FSharp.PowerPack.Compatibility.dll
+DLLS = fstarlib.dll
 FSOPS = $(addprefix -r , $(DLLS))
 
 verify: $(FSTSRC)
 	$(FSTAR) --z3rlimit 300 --use_hints $^ 
 
 hints: $(FSTSRC)
-	$(FSTAR) --z3rlimit 300 --record_hints  --use_hints $^
+	$(FSTAR) --z3rlimit 300 --record_hints --use_hints $^
 
 fs: $(FSTSRC)
 	$(FSTAR) --admit_smt_queries true --codegen FSharp $(EXCL) $^
 #	mv *.fs src/fs/
 
 revs: $(FSSRC)
-	$(FSHARP) --mlcompatibility $(FSOPS) -o reverc.exe $^
+	$(FSHARP) $(FSOPS) -o reverc.exe $^

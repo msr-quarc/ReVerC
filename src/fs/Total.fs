@@ -8,7 +8,7 @@ type t<'key,'value> =
 (* type synonym for Boolean-valued states *)
 type state = t<int,bool>
 
-let keys m = List.fold_left (fun s x -> Set.add (fst x) s) Set.empty m.elts
+let keys m = List.fold (fun s x -> Set.add (fst x) s) Set.empty m.elts
 
 let lookup m k = match (List.tryFind (fun (k', v') -> k = k') m.elts) with
   | None   -> m.dval
