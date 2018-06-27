@@ -37,22 +37,26 @@
     <DocumentationFile>bin\Release\rever.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="mscorlib" />
-    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
-  </ItemGroup>
+  <PropertyGroup>
+    <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)' == '11.0'">
+      <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')">
+        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets')">
+        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+  <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <None Include="App.config" />
-    <Compile Include="..\src\fs\FStar.FunctionalExtensionality.fs">
-      <Link>FStar.FunctionalExtensionality.fs</Link>
-    </Compile>
-    <Compile Include="..\src\fs\Set.fs">
-      <Link>Set.fs</Link>
+    <Compile Include="..\src\fs\SetExtra.fs">
+      <Link>SetExtra.fs</Link>
     </Compile>
     <Compile Include="..\src\fs\Total.fs">
       <Link>Total.fs</Link>
@@ -60,8 +64,8 @@
     <Compile Include="..\src\fs\Partial.fs">
       <Link>Partial.fs</Link>
     </Compile>
-    <Compile Include="..\src\fs\Util.fs">
-      <Link>Util.fs</Link>
+    <Compile Include="..\src\fs\Utils.fs">
+      <Link>Utils.fs</Link>
     </Compile>
     <Compile Include="..\src\fs\PairHeap.fs">
       <Link>PairHeap.fs</Link>
@@ -84,6 +88,15 @@
     <Compile Include="..\src\fs\Interpreter.fs">
       <Link>Interpreter.fs</Link>
     </Compile>
+    <Compile Include="..\src\fs\Crush.fs">
+      <Link>Crush.fs</Link>
+    </Compile>
+    <Compile Include="..\src\fs\Compiler.fs">
+      <Link>Compiler.fs</Link>
+    </Compile>
+    <Compile Include="..\src\fs\GC.fs">
+      <Link>GC.fs</Link>
+    </Compile>
     <Compile Include="..\src\fs\GenOp.fs">
       <Link>GenOp.fs</Link>
     </Compile>
@@ -102,33 +115,26 @@
     <Compile Include="..\src\fs\Program.fs">
       <Link>Program.fs</Link>
     </Compile>
+    <Content Include="packages.config" />
     <None Include="..\BuDDy.dll">
       <Link>BuDDy.dll</Link>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\fstarlib\fstarlib.fsproj">
-      <Name>fstarlib</Name>
-      <Project>{f115e440-d261-4cba-9229-f70da8e0bef7}</Project>
+    <Reference Include="FSharp.Core">
+      <HintPath>packages\FSharp.Core.4.5.0\lib\net45\FSharp.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="fstarlib">
+      <HintPath>..\fstarlib.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>True</Private>
-    </ProjectReference>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
   </ItemGroup>
-  <PropertyGroup>
-    <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
-  </PropertyGroup>
-  <Choose>
-    <When Condition="'$(VisualStudioVersion)' == '11.0'">
-      <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')">
-        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
-      </PropertyGroup>
-    </When>
-    <Otherwise>
-      <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets')">
-        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
-      </PropertyGroup>
-    </Otherwise>
-  </Choose>
-  <Import Project="$(FSharpTargetsPath)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
