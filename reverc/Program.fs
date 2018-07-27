@@ -131,6 +131,9 @@ let compGC (top, gexp) =
               let qcv = printQCV circ (Set.toList (uses circ))
               File.WriteAllText("output.qc", qcv)
               printf "%s" qcv
+              let qsv = printQSharp circ
+              File.WriteAllText("output.qs", qsv)
+              printf "%s" qsv
 registerCmd "compileGC" "Compile the program with garbage collection" compGC
 
 let compGCStats (top, gexp) = 

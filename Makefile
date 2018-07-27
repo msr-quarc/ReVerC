@@ -12,7 +12,7 @@ SUPPORT = FStar.Set FStar.Heap FStar.ST FStar.All FStar.List FStar.String FStar.
 
 FSTSRC = $(addprefix src/, $(FILES))
 FSSRC  = $(addprefix src/fs/, $(FILES:.fst=.fs) $(REVLIB))
-REVSRC = $(addprefix frontend/, $(REVS))
+REVSRC = $(addprefix reverc/, $(REVS))
 
 EXCL   = $(addprefix --no_extract , $(SUPPORT))
 
