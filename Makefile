@@ -6,20 +6,22 @@ FSHARP = fsharpc
 FILES = SetExtra.fst Total.fst Partial.fst Utils.fst PairHeap.fst AncillaHeap.fst \
 				Circuit.fst BoolExp.fst ExprTypes.fst TypeCheck.fst Interpreter.fst \
 				Crush.fst Compiler.fst GC.fst
-#FILES = Util.fst Maps.fst PairHeap.fst AncillaHeap.fst Circuit.fst BoolExp.fst ExprTypes.fst Interpreter.fst
-REVS  = GenOp.fs buddy.fs Equiv.fs Cmd.fs Examples.fs Program.fs
+REVLIB  = GenOp.fs buddy.fs Equiv.fs  
+REVS    = Cmd.fs Examples.fs Program.fs
 SUPPORT = FStar.Set FStar.Heap FStar.ST FStar.All FStar.List FStar.String FStar.IO
 
-FSFILES = #FStar.FunctionalExtensionality.fs # FStar.Heap.fs FStar.ListProperties.fs FStar.Map.fs FStar.Util.fs
-
 FSTSRC = $(addprefix src/, $(FILES))
-FSSRC  = $(addprefix src/fs/, $(STDLIB:.fst=.fs) $(EX:.fst=.fs)  $(FSFILES) $(FILES:.fst=.fs) $(REVS))
-LIB 	 = $(addprefix $(FSTAR_HOME)/lib/, $(STDLIB) $(EX))
+FSSRC  = $(addprefix src/fs/, $(FILES:.fst=.fs) $(REVLIB))
+REVSRC = $(addprefix frontend/, $(REVS))
 
 EXCL   = $(addprefix --no_extract , $(SUPPORT))
 
-DLLS = fstarlib.dll
-FSOPS = $(addprefix -r , $(DLLS))
+FSOPS = --nowarn:58,62 -r fstarlib.dll
+
+LIBRARY    = reverlib.dll
+EXECUTABLE = reverc.exe
+
+all: $(EXECUTABLE)
 
 verify: $(FSTSRC)
 	$(FSTAR) --z3rlimit 300 --use_hints $^ 
@@ -31,5 +33,8 @@ fs: $(FSTSRC)
 	$(FSTAR) --admit_smt_queries true --codegen FSharp $(EXCL) $^
 #	mv *.fs src/fs/
 
-revs: $(FSSRC)
-	$(FSHARP) $(FSOPS) -o reverc.exe $^
+$(LIBRARY): $(FSSRC)
+	$(FSHARP) --nowarn:25 $(FSOPS) --target:library -o $(LIBRARY) $^
+
+$(EXECUTABLE): $(REVSRC) $(LIBRARY)
+	$(FSHARP) $(FSOPS) -r $(LIBRARY) -o $(EXECUTABLE) $(REVSRC)
