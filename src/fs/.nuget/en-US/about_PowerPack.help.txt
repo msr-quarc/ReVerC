@@ -1,0 +1,113 @@
+.SYNOPSIS
+Functions for cleaning, building, packaging and pushing .Net projects.
+
+.DESCRIPTION
+The PowerPack module is designed for people who need to create NuGet packages but don't have a
+full-blown continuous integration environment available to do it for them. A set of PowerShell
+functions is exported which allows most activities to be automated with a simple script.
+
+The functions are conceptually split into two groups: fundamental functions and functions which
+deal with Project objects. The fundamental functions are generally lower-level helpers, while
+the Project-oriented functions can only be used after you have called Get-Project to construct
+a Project object.
+
+In the following table, "PF" means that the function is "pipeline friendly".
+
+    # Fundamental functions.
+    Find-File                    # PF  Like Get-ChildItem, but searches the solution dir too.
+    Find-MSBuild                 #     Locates MSBuild.exe.
+    Find-NuGet                   #     Locates NuGet.exe (and can download it if needed).
+    Get-AssemblyVersion          #     Gets the version number from a built assembly.
+    Get-MSBuildArguments         #     Helper to construct arguments for running MSBuild.exe.
+    Invoke-DeepCleanPackages     #     Removes directories from the solution's packages folder.
+    Invoke-NuGetDownload         #     Downloads NuGet.exe from the web.
+    Remove-Directory             #     Safe-to-use recursive directory delete.
+    Test-CommandExists           #     Check to see whether a command exists without throwing.
+
+    # Project-related functions.
+    Find-Project                 # PF  Find a project by name, e.g. Find-Project "BassUtils".
+    Get-Project                  # PF  Creates a Project object from a project file.
+    Invoke-DeepClean             # PF  Removes the bin and obj folders under a project.
+    Invoke-MSBuild               # PF  Invokes MSBuild.exe to do a build.
+    Invoke-MSClean               # PF  Invokes MSBuild.exe to do a clean.
+    Invoke-NuGetPack             # PF  Runs "NuGet.exe pack".
+    Invoke-NuGetPush             # PF  Runs "NuGet.exe push".
+    Invoke-NuGetRestore          # PF  Runs "NuGet.exe restore".
+    Update-NuSpecDependencies    # PF  Updates the <dependencies> in a nuspec file.
+
+    In addition to the above list, once you have a Project object you can get or set the version
+    number in AssemblyInfo.cs by using the .VersionNumber property.
+
+Get-Project is the key function. Given a project file such as Foo.csproj, it creates an instance
+of a type called [Project] which contains many useful properties and methods used by the other
+functions. The [Project] class is defined within the module's source code. Typically you can use
+a pipeline to clean, build, pack and push one or more projects. The functions are designed to be
+tolerant of missing data, so you can try and pack projects that don't have a nuspec file and all
+that should happen is an error should be printed, but the pipeline will continue.
+
+The Find-File, Find-Project and Invoke-DeepCleanPackages functions assume that PowerPack is
+installed in the usual place - a folder called .nuget in the root of your solution. This
+expectation allows them to find files by convention, for example 'Find-Project "Foo"' or even
+'Find-Project "*"' should just work. If your solution is structured differently you can override
+this behaviour by passing in a directory to start searching from, or even by explicitly passing
+.csproj filenames into Get-Project.
+
+
+.NOTES
+While writing PowerPack I came across the StudioShell project, which wraps the solution in a
+PowerShell provider. You can do "cd DTE:" and use New-Item to create code files etc. It looks
+like a very cool way of automating Visual Studio, but PowerPack does not take a dependency
+on it because I wanted PowerPack to be usable without Visual Studio (just MSBuild is needed).
+See http://www.beefycode.com/category/studioshell.aspx
+
+
+.EXAMPLE
+This example first runs NuGet Restore (a solution level action) then locates all projects in the
+soltuion, creates Project objects for them, ensures that their nuspec files have updated
+<dependencies> tags, deep-cleans the projects, builds them (Release configuration only), invokes
+NuGet Pack and then NuGetPush (to push to the default feed "LocalNuGetFeed").
+
+# Get latest version of NuGet into this folder: nuget restore requires at least v2.7.
+if (!(Test-Path "NuGet.exe"))
+{
+	Invoke-NuGetDownload
+}
+Find-File "*.sln" | Invoke-NuGetRestore
+
+Find-Project "*" | Get-Project | Update-NuSpecDependencies | Invoke-DeepClean |
+    Invoke-MSBuild | Invoke-NuGetPack | Invoke-NuGetPush
+
+
+.EXAMPLE
+This is the pipeline used to pack PowerPack itself. There is no MSBuild step involved because
+PowerPack consists of just a PowerShell script and documentation.
+
+Find-Project "SelfPacking" | Get-Project | Invoke-NuGetPack -Version "2.0.0" |
+  Invoke-NuGetPush -NuGetFeed "LocalNuGetFeed"
+
+
+.EXAMPLE
+This is the script I use to build my BassUtils project, also available on NuGet. BassUtils has
+several different build configurations, pre-created using the Configuration Manager in Visual
+Studio. We want to build all those configurations, then pack the project once into a single
+nupkg file that contains a DLL for each configuration. This script also updates AssemblyInfo.cs
+with an explicit version number. The assignment to $project is needed to ensure the correct
+object - the [Project] object - flows down the pipeline.
+
+# Get latest version of NuGet into this folder: nuget restore requires at least v2.7.
+if (!(Test-Path "NuGet.exe"))
+{
+	Invoke-NuGetDownload
+}
+
+Find-File "*.sln" | Invoke-NuGetRestore
+
+
+$version = "2.2.0.0"
+$configs = "Release40", "Release45"
+
+Find-Project "BassUtils" | Get-Project | % { $_.VersionNumber = $version; $_ } |
+	Update-NuSpecDependencies | Invoke-DeepClean |
+	% { $project = $_ ; $configs | % { Invoke-MSBuild $project -Configuration $_ } } |
+	Sort -Unique | Invoke-NuGetPack -Version $version |
+    Invoke-NuGetPush -NuGetFeed "LocalNuGetFeed"

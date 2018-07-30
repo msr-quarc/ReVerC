@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "rever", "rever.fsproj", "{E7DCFDCF-4F6C-4662-8406-92AA0221931B}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "reverlib", "src\fs\reverlib.fsproj", "{E7DCFDCF-4F6C-4662-8406-92AA0221931B}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "reverc", "reverc\reverc.fsproj", "{81E62A2F-51A2-4788-BFCD-7FB08AC8B19E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{E7DCFDCF-4F6C-4662-8406-92AA0221931B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7DCFDCF-4F6C-4662-8406-92AA0221931B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7DCFDCF-4F6C-4662-8406-92AA0221931B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81E62A2F-51A2-4788-BFCD-7FB08AC8B19E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81E62A2F-51A2-4788-BFCD-7FB08AC8B19E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81E62A2F-51A2-4788-BFCD-7FB08AC8B19E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81E62A2F-51A2-4788-BFCD-7FB08AC8B19E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
