@@ -67,13 +67,14 @@ let foldBennett (ah, outs, anc, circ, ucirc) bexp =
    corresponding to the inputs of the function, then evaluates the function
    body. Note also that this wrapper is not verified currently. Eventually this
    should be done. *)
-let rec compile (gexp, st) strategy =
+// MODIFIED INDEPENDENTLY OF F* SRC
+let rec compile par (gexp, st) strategy =
   if isVal gexp then match gexp with
-    | UNIT -> Val ([], [])
+    | UNIT -> Val (par, [], [])
     | LAMBDA (x, ty, t) ->
       begin match allocTy ty st with
         | Err s -> Err s
-        | Val (v, st') -> compile (substGExpr t x v, st') strategy
+        | Val (v, st') -> compile ((x, v)::par) (substGExpr t x v, st') strategy
       end
     | LOC l ->
       let bexp = lookup (snd st) l in
@@ -83,7 +84,7 @@ let rec compile (gexp, st) strategy =
         | Boundaries -> compileBexpClean_oop (above (max+1)) (simps bexp)
         | Bennett -> compileBexpClean_oop (above (max+1)) (simps bexp)
       in
-      Val ([res], circ)
+      Val (par, [res], circ)
     | ARRAY lst ->
       let cmp x y = 
         let xd = andDepth x in
@@ -109,7 +110,7 @@ let rec compile (gexp, st) strategy =
           in
           (ah, FStar.List.rev outs, FStar.List.rev anc, circ@ucirc)
       in
-      Val (outs, circ)
+      Val (par, outs, circ)
   else match (step (gexp, st) bexpInterp) with
     | Err s -> Err s
-    | Val c' -> compile c' strategy
+    | Val c' -> compile par c' strategy

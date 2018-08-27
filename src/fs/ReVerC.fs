@@ -11,8 +11,6 @@ open TypeCheck
 open Interpreter
 open Equiv
 
-// Master methods
-
 type compileMode =
   | Basic
   | Eager
@@ -21,6 +19,45 @@ type compileMode =
 type outputType =
   | DotQC
   | QSharp
+
+// Printing methods
+
+let printQCV circ varlist = 
+    let printPrim = 
+        function 
+        | RCNOT(x, y) -> sprintf "tof %d %d\n" x y
+        | RTOFF(x, y, z) -> sprintf "tof %d %d %d\n" x y z
+        | RNOT x-> sprintf "not %d\n" x
+    let varstr = FStar.String.concat " " (List.map (fun i -> i.ToString()) varlist)
+    let header = ".v " + varstr + "\n.i " + varstr + "\n.o " + varstr
+    let gsStrs = List.map printPrim circ
+    let mutable gateStr = String.concat "" gsStrs
+    header + "\nBEGIN\n" + gateStr + "\nEND\n"
+
+let printQSharpSimple circ =
+    let printPrim =
+        function
+        | RCNOT(x, y)    -> sprintf "CNOT(qubits[%d], qubits[%d]);\n" x y
+        | RTOFF(x, y, z) -> sprintf "CCNOT(qubits[%d], qubits[%d], qubits[%d]);\n" x y z
+        | RNOT x         -> sprintf "X(qubits[%d])\n" x
+    let body = String.concat "" <| List.map (fun gate -> "\t\t\t" + printPrim gate) circ
+    "namespace Quantum.ReVerC\n{\n" +
+    "\topen Microsoft.Quantum.Primitive;\n" +
+    "\topen Microsoft.Quantum.Canon;\n\n" +
+    "\toperation revCircuit(qubits : Qubit[]) : ()\n\t{\n" +
+    "\t\tbody\n\t\t{\n" +
+    body +
+    "\t\t}\n\t}\n}"
+
+let printStats circ = 
+  let isToff = function
+    | RTOFF _ -> true
+    | _       -> false
+  printf "Bits used: %d\n" (Set.count (uses circ))
+  printf "Gates: %d\n" (List.length circ)
+  printf "Toffolis: %d\n" (List.length (List.filter isToff circ))
+
+// Main utilities
 
 let typeCheck top gexp = 
   let (top', eqs, bnds, typ) = inferTypes top [] gexp
@@ -35,13 +72,13 @@ let typeCheck top gexp =
 
 let verify gexp = ignore <| compileBDD (gexp, bddInit)
 
-let printStats circ = 
-  let isToff = function
-    | RTOFF _ -> true
-    | _       -> false
-  printf "Bits used: %d\n" (Set.count (uses circ))
-  printf "Gates: %d\n" (List.length circ)
-  printf "Toffolis: %d\n" (List.length (List.filter isToff circ))
+let copyOut res = match res with
+  | Err s -> Err s
+  | Val (par, [], circ) -> Val (par, [], circ)
+  | Val (par, output, circ) ->
+      let top = 1 + (Seq.max (Set.toList (uses circ)))
+      let copy = List.mapi (fun i x -> RCNOT(x, top+i)) output
+      Val (par, [top .. top + (List.length output)], circ @ copy @ (List.rev circ))
 
 type compile (quote, ?verif0, ?mode0, ?otype0, ?ofile0) =
   // Defaults
@@ -61,13 +98,13 @@ type compile (quote, ?verif0, ?mode0, ?otype0, ?ofile0) =
         if verif then verify gexp'
         // Compilation
         let res = match mode with 
-          | Basic -> Compiler.compileCirc (gexp', Compiler.circInit)
-          | Eager -> GC.compileGCCirc (gexp', GC.circGCInit)
-          | Crush -> Crush.compile (gexp', Crush.bexpInit) Crush.Pebbled
+          | Basic -> copyOut <| Compiler.compileCirc [] (gexp', Compiler.circInit)
+          | Eager -> copyOut <| GC.compileGCCirc [] (gexp', GC.circGCInit)
+          | Crush -> Crush.compile [] (gexp', Crush.bexpInit) Crush.Pebbled
         match res with
           | Err s -> printf "%s\n" s
-          | Val (_, circ) ->
+          | Val (par, res, circ) ->
               let src = match otype with
                 | DotQC -> printQCV circ (Set.toList (uses circ))
-                | QSharp -> printQSharp circ
+                | QSharp -> printQSharpSimple circ
               File.WriteAllText(ofile, src)

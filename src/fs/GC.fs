@@ -182,21 +182,22 @@ let garbageCollector gexp cs =
   in
   Set.fold f cs garbage
 
-let rec compileGCCirc (gexp, cs) =
+// MODIFIED INDEPENDENTLY OF F* SRC
+let rec compileGCCirc par (gexp, cs) =
   //let cs = garbageCollector gexp cs in
   if isVal gexp then match gexp with
-    | UNIT -> Val ([], cs.gates)
+    | UNIT -> Val (par, [], cs.gates)
     | LAMBDA (x, ty, t) ->
       begin match allocTycircGC ty cs with
         | Err s -> Err s
-        | Val (v, cs') -> compileGCCirc (substGExpr t x v, cs')
+        | Val (v, cs') -> compileGCCirc ((x, v)::par) (substGExpr t x v, cs')
       end
     | LOC l ->
       let bit = lookup cs.symtab l in
-      Val ([bit], cs.gates)
+      Val (par, [bit], cs.gates)
     | ARRAY lst ->
       let bits = lookup_Lst_gc cs.symtab lst in
-      Val (bits, cs.gates)
+      Val (par, bits, cs.gates)
   else match (step (gexp, cs) circGCInterp) with
     | Err s -> Err s
-    | Val c' -> compileGCCirc c'
+    | Val c' -> compileGCCirc par c'

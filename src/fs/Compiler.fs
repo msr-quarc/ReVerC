@@ -105,20 +105,21 @@ let rec lookup_Lst st lst = match lst with
   | [] -> []
   | (LOC l)::xs -> (lookup st l)::(lookup_Lst st xs)
 
-let rec compileCirc (gexp, cs) =
+// MODIFIED INDEPENDENTLY OF F* SRC
+let rec compileCirc par (gexp, cs) =
   if isVal gexp then match gexp with
-    | UNIT -> Val ([], cs.gates)
+    | UNIT -> Val (par, [], cs.gates)
     | LAMBDA (x, ty, t) ->
       begin match allocTycirc ty cs with
         | Err s -> Err s
-        | Val (v, cs') -> compileCirc (substGExpr t x v, cs')
+        | Val (v, cs') -> compileCirc ((x, v)::par) (substGExpr t x v, cs')
       end
     | LOC l ->
       let res = lookup cs.subs l in
-      Val ([res], cs.gates)
+      Val (par, [res], cs.gates)
     | ARRAY lst ->
       let res = lookup_Lst cs.subs lst in
-      Val (res, cs.gates)
+      Val (par, res, cs.gates)
   else match (step (gexp, cs) circInterp) with
     | Err s -> Err s
-    | Val c' -> compileCirc c'
+    | Val c' -> compileCirc par c'

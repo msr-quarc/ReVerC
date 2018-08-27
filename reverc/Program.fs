@@ -78,11 +78,11 @@ let comp (top, gexp) =
     | Some subs -> 
         let gexp' = applySubs subs gexp
         // Compilation
-        let res = Compiler.compileCirc (gexp', Compiler.circInit)
+        let res = Compiler.compileCirc [] (gexp', Compiler.circInit)
         match res with
           | Err s -> printf "%s\n" s
-          | Val (_, circ) -> 
-              let qcv = printQCV circ (Set.toList (uses circ))
+          | Val (_, _, circ) -> 
+              let qcv = ReVerC.printQCV circ (Set.toList (uses circ))
               File.WriteAllText("output.qc", qcv)
               printf "%s" qcv
 registerCmd "compile" "Compile the program in default mode" comp
@@ -101,10 +101,10 @@ let compStats (top, gexp) =
     | Some subs -> 
         let gexp' = applySubs subs gexp
         // Compilation
-        let res = Compiler.compileCirc (gexp', Compiler.circInit)
+        let res = Compiler.compileCirc [] (gexp', Compiler.circInit)
         match res with
           | Err s -> printf "%s\n" s
-          | Val (_, circ) -> 
+          | Val (_, _, circ) -> 
               printf "Bits used: %d\n" (Set.count (uses circ))
               printf "Gates: %d\n" (List.length circ)
               printf "Toffolis: %d\n" (List.length (List.filter isToff circ))
@@ -124,14 +124,14 @@ let compGC (top, gexp) =
     | Some subs -> 
         let gexp' = applySubs subs gexp
         // Compilation
-        let res = GC.compileGCCirc (gexp', GC.circGCInit)
+        let res = GC.compileGCCirc [] (gexp', GC.circGCInit)
         match res with
           | Err s -> printf "%s\n" s
-          | Val (_, circ) -> 
-              let qcv = printQCV circ (Set.toList (uses circ))
+          | Val (_, _, circ) -> 
+              let qcv = ReVerC.printQCV circ (Set.toList (uses circ))
               File.WriteAllText("output.qc", qcv)
               printf "%s" qcv
-              let qsv = printQSharp circ
+              let qsv = ReVerC.printQSharpSimple circ
               File.WriteAllText("output.qs", qsv)
               printf "%s" qsv
 registerCmd "compileGC" "Compile the program with garbage collection" compGC
@@ -150,10 +150,10 @@ let compGCStats (top, gexp) =
     | Some subs -> 
         let gexp' = applySubs subs gexp
         // Compilation
-        let res = GC.compileGCCirc (gexp', GC.circGCInit)
+        let res = GC.compileGCCirc [] (gexp', GC.circGCInit)
         match res with
           | Err s -> printf "%s\n" s
-          | Val (_, circ) -> 
+          | Val (_, _, circ) -> 
               printf "Bits used: %d\n" (Set.count (uses circ))
               printf "Gates: %d\n" (List.length circ)
               printf "Toffolis: %d\n" (List.length (List.filter isToff circ))
@@ -173,11 +173,11 @@ let crush (top, gexp) =
     | Some subs -> 
         let gexp' = applySubs subs gexp
         // Compilation
-        let res = Crush.compile (gexp', Crush.bexpInit) Crush.Pebbled
+        let res = Crush.compile [] (gexp', Crush.bexpInit) Crush.Pebbled
         match res with
           | Err s -> printf "%s\n" s
-          | Val (_, circ) -> 
-              let qcv = printQCV circ (Set.toList (uses circ))
+          | Val (_, _, circ) -> 
+              let qcv = ReVerC.printQCV circ (Set.toList (uses circ))
               File.WriteAllText("output.qc", qcv)
               printf "%s" qcv
 registerCmd "crush" "Compile the program in space saving mode" crush
@@ -196,10 +196,10 @@ let crushStats (top, gexp) =
     | Some subs -> 
         let gexp' = applySubs subs gexp
         // Compilation
-        let res = Crush.compile (gexp', Crush.bexpInit) Crush.Pebbled
+        let res = Crush.compile [] (gexp', Crush.bexpInit) Crush.Pebbled
         match res with
           | Err s -> printf "%s\n" s
-          | Val (_, circ) -> 
+          | Val (_, _, circ) -> 
               printf "Bits used: %d\n" (Set.count (uses circ))
               printf "Gates: %d\n" (List.length circ)
               printf "Toffolis: %d\n" (List.length (List.filter isToff circ))
@@ -228,16 +228,16 @@ let run program mode cleanupStrategy =
         if ver then ignore <| compileBDD (gexp', bddInit)
         // Compilation
         let res = match mode with 
-          | Default   -> Compiler.compileCirc (gexp', Compiler.circInit)
-          | SpaceSave -> Crush.compile     (gexp', Crush.bexpInit) cleanupStrategy
+          | Default   -> Compiler.compileCirc [] (gexp', Compiler.circInit)
+          | SpaceSave -> Crush.compile [] (gexp', Crush.bexpInit) cleanupStrategy
         match res with
           | Err s -> printf "%s\n" s
-          | Val (_, circ) -> 
+          | Val (_, _, circ) -> 
               if info then 
                 printf "Bits used: %d\n" (Set.count (uses circ))
                 printf "Gates: %d\n" (List.length circ)
                 printf "Toffolis: %d\n" (List.length (List.filter isToff circ))
-              printf "%s" (printQCV circ (Set.toList (uses circ)))
+              printf "%s" (ReVerC.printQCV circ (Set.toList (uses circ)))
 
 let runHack program mode cleanupStrategy = 
   // Parsing
@@ -256,10 +256,9 @@ let runHack program mode cleanupStrategy =
         let gexp' = applySubs subs gexp
         // Compilation
         let res = match mode with 
-          | Default   -> Compiler.compileCirc (gexp', Compiler.circInit)
-          | SpaceSave -> Crush.compile     (gexp', Crush.bexpInit) cleanupStrategy
+          | Default   -> Compiler.compileCirc [] (gexp', Compiler.circInit)
+          | SpaceSave -> Crush.compile [] (gexp', Crush.bexpInit) cleanupStrategy
         ()
-
 
 [<EntryPoint>]
 let __main _ = 
