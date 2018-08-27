@@ -185,7 +185,7 @@ let garbageCollector gexp cs =
 let rec compileGCCirc (gexp, cs) =
   //let cs = garbageCollector gexp cs in
   if isVal gexp then match gexp with
-    | UNIT -> Val ([], [])
+    | UNIT -> Val ([], cs.gates)
     | LAMBDA (x, ty, t) ->
       begin match allocTycircGC ty cs with
         | Err s -> Err s

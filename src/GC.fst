@@ -178,7 +178,7 @@ val compileGCCirc : config circGCState -> Dv (result (list int * list gate))
 let rec compileGCCirc (gexp, cs) =
   let cs = cs in //garbageCollector gexp cs in
   if isVal gexp then match gexp with
-    | UNIT -> Val ([], [])
+    | UNIT -> Val ([], cs.gates)
     | LAMBDA (x, ty, t) ->
       begin match allocTycircGC ty cs with
         | Err s -> Err s

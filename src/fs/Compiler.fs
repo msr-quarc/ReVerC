@@ -41,7 +41,7 @@ let circAssign cs l bexp =
         gates = cs.gates@circ';
         subs  = update cs.subs l res;
         zero  = update cs.zero l' false }
-    | None -> 
+    | None ->
       if (lookup cs.zero l' = true) then
         let (ah', res, ancs, circ') = compileBexpPebbled cs.ah l' (simplify bexp') in
         { top   = cs.top;
@@ -107,7 +107,7 @@ let rec lookup_Lst st lst = match lst with
 
 let rec compileCirc (gexp, cs) =
   if isVal gexp then match gexp with
-    | UNIT -> Val ([], [])
+    | UNIT -> Val ([], cs.gates)
     | LAMBDA (x, ty, t) ->
       begin match allocTycirc ty cs with
         | Err s -> Err s

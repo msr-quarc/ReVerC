@@ -111,7 +111,7 @@ let rec lookup_Lst st lst = match lst with
 val compileCirc : config circState -> Dv (result (list int * list gate))
 let rec compileCirc (gexp, cs) =
   if isVal gexp then match gexp with
-    | UNIT -> Val ([], [])
+    | UNIT -> Val ([], cs.gates)
     | LAMBDA (x, ty, t) ->
       begin match allocTycirc ty cs with
         | Err s -> Err s
