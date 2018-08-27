@@ -16,6 +16,6 @@ let carryRippleAdder n =
 [<EntryPoint>]
 let __main argv = 
   match argv with
-    | [||] -> ReVerC.compile(carryRippleAdder 32,mode0=ReVerC.Basic,ofile0="adder.qs")
-    | _    -> ReVerC.compile(carryRippleAdder (int argv.[0]),mode0=ReVerC.Basic,ofile0="adder.qs")
+    | [||] -> ReVerC.compile(carryRippleAdder 32,name0="adder",mode0=ReVerC.Basic,ofile0="adder.qs")
+    | _    -> ReVerC.compile(carryRippleAdder (int argv.[0]),name0="adder",mode0=ReVerC.Basic,ofile0="adder.qs")
   0

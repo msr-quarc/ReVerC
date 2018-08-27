@@ -49,6 +49,50 @@ let printQSharpSimple circ =
     body +
     "\t\t}\n\t}\n}"
 
+let printQSharp name par out circ =
+    // Process parameters
+    let (paramList, symtab) =
+        let getLocs xs =
+            let getLoc gexp = match gexp with
+                | LOC i -> i
+                | _     -> failwith "Impossible"
+            List.map getLoc xs 
+        let addParam (pList, stab) (x, v) = match v with
+            | LOC l    -> ((sprintf "%s : Qubit" x)::pList, Map.add l x stab)
+            | ARRAY xs ->
+                let locs = List.mapi (fun i l -> (l, i)) <| getLocs xs
+                let f stab (l, i) = Map.add l (sprintf "%s[%d]" x i) stab
+                ((sprintf "%s : Qubit[]" x)::pList, List.fold f stab locs)
+        addParam (List.fold addParam ([], Map.empty) par) ("output", ARRAY (List.map LOC out))
+
+    // Process gates
+    let (num, _, body) =
+        let f (n, stab, body) gate =
+            let args = match gate with
+                | RNOT x         -> [x]
+                | RCNOT(x, y)    -> [x;y]
+                | RTOFF(x, y, z) -> [x;y;z]
+            let processArg (n, stab) x = match Map.tryFind x stab with
+                | Some x -> (n, stab)
+                | None   -> (n+1, Map.add x (sprintf "anc[%d]" n) stab)
+            let (n, stab) = List.fold processArg (n, stab) args
+            let gstr = match gate with
+                | RNOT x         -> sprintf "X(%s)\n" (Map.find x stab)
+                | RCNOT(x, y)    -> sprintf "CNOT(%s, %s);\n" (Map.find x stab) (Map.find y stab)
+                | RTOFF(x, y, z) ->
+                    sprintf "CCNOT(%s, %s, %s);\n" (Map.find x stab) (Map.find y stab) (Map.find z stab)
+            (n, stab, gstr::body)
+        List.fold f (0, symtab, []) circ
+
+    "namespace Quantum.ReVerC\n{\n" +
+    "\topen Microsoft.Quantum.Primitive;\n" +
+    "\topen Microsoft.Quantum.Canon;\n\n" +
+    "\toperation " + name + "(" + String.concat ", " (List.rev paramList) + ") : ()\n\t{\n" +
+    "\t\tbody\n\t\t{\n" +
+    sprintf "\t\t\tusing (anc = Qubit[%d])\n\t\t\t{\n" num +
+    String.concat "" (List.map (fun gate -> "\t\t\t\t" + gate) (List.rev body)) +
+    "\t\t\t}\n\t\t}\n\t}\n}"
+
 let printStats circ = 
   let isToff = function
     | RTOFF _ -> true
@@ -80,8 +124,9 @@ let copyOut res = match res with
       let copy = List.mapi (fun i x -> RCNOT(x, top+i)) output
       Val (par, [top .. top + (List.length output)], circ @ copy @ (List.rev circ))
 
-type compile (quote, ?verif0, ?mode0, ?otype0, ?ofile0) =
+type compile (quote, ?name0, ?verif0, ?mode0, ?otype0, ?ofile0) =
   // Defaults
+  let name  = defaultArg name0 "revCircuit"
   let verif = defaultArg verif0 false
   let mode  = defaultArg mode0  Eager
   let otype = defaultArg otype0 QSharp
@@ -106,5 +151,5 @@ type compile (quote, ?verif0, ?mode0, ?otype0, ?ofile0) =
           | Val (par, res, circ) ->
               let src = match otype with
                 | DotQC -> printQCV circ (Set.toList (uses circ))
-                | QSharp -> printQSharpSimple circ
+                | QSharp -> printQSharp name (List.rev par) res circ
               File.WriteAllText(ofile, src)
