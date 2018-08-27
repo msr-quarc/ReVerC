@@ -6,7 +6,7 @@ FSHARP = fsharpc
 FILES = SetExtra.fst Total.fst Partial.fst Utils.fst PairHeap.fst AncillaHeap.fst \
 				Circuit.fst BoolExp.fst ExprTypes.fst TypeCheck.fst Interpreter.fst \
 				Crush.fst Compiler.fst GC.fst
-REVLIB  = GenOp.fs buddy.fs Equiv.fs  
+REVLIB  = GenOp.fs buddy.fs Equiv.fs ReVerC.fs
 REVS    = Cmd.fs Examples.fs Program.fs
 SUPPORT = FStar.Set FStar.Heap FStar.ST FStar.All FStar.List FStar.String FStar.IO
 
