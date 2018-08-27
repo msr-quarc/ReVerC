@@ -20,8 +20,11 @@ FSOPS = --nowarn:58,62 -r fstarlib.dll
 
 LIBRARY    = reverlib.dll
 EXECUTABLE = reverc.exe
+ADDERGEN   = adderGen.exe
 
 all: $(EXECUTABLE)
+
+example: $(ADDERGEN)
 
 verify: $(FSTSRC)
 	$(FSTAR) --z3rlimit 300 --use_hints $^ 
@@ -38,3 +41,6 @@ $(LIBRARY): $(FSSRC)
 
 $(EXECUTABLE): $(REVSRC) $(LIBRARY)
 	$(FSHARP) $(FSOPS) -r $(LIBRARY) -o $(EXECUTABLE) $(REVSRC)
+
+$(ADDERGEN): examples/AdderGen.fs $(LIBRARY)
+	$(FSHARP) $(FSOPS) -r $(LIBRARY) -o $(ADDERGEN) examples/AdderGen.fs
