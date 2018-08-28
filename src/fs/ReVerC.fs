@@ -16,19 +16,15 @@ type compileMode =
   | Eager
   | Crush
 
-type outputType =
-  | DotQC
-  | QSharp
-
 // Printing methods
 
-let printQCV circ varlist = 
+let printQCV (par, out, circ) = 
     let printPrim = 
         function 
         | RCNOT(x, y) -> sprintf "tof %d %d\n" x y
         | RTOFF(x, y, z) -> sprintf "tof %d %d %d\n" x y z
         | RNOT x-> sprintf "not %d\n" x
-    let varstr = FStar.String.concat " " (List.map (fun i -> i.ToString()) varlist)
+    let varstr = FStar.String.concat " " (List.map (fun i -> i.ToString()) (Set.toList (uses circ)))
     let header = ".v " + varstr + "\n.i " + varstr + "\n.o " + varstr
     let gsStrs = List.map printPrim circ
     let mutable gateStr = String.concat "" gsStrs
@@ -49,7 +45,7 @@ let printQSharpSimple circ =
     body +
     "\t\t}\n\t}\n}"
 
-let printQSharp name par out circ =
+let toQSharp name (par, out, circ) =
     // Process parameters
     let (paramList, symtab) =
         let getLocs xs =
@@ -63,7 +59,10 @@ let printQSharp name par out circ =
                 let locs = List.mapi (fun i l -> (l, i)) <| getLocs xs
                 let f stab (l, i) = Map.add l (sprintf "%s[%d]" x i) stab
                 ((sprintf "%s : Qubit[]" x)::pList, List.fold f stab locs)
-        addParam (List.fold addParam ([], Map.empty) par) ("output", ARRAY (List.map LOC out))
+        let (paramList, symtab) = List.fold addParam ([], Map.empty) par
+        match out with
+            | [] -> (paramList, symtab)
+            | _  -> addParam (paramList, symtab) ("output", ARRAY (List.map LOC out))
 
     // Process gates
     let (num, _, body) =
@@ -77,21 +76,33 @@ let printQSharp name par out circ =
                 | None   -> (n+1, Map.add x (sprintf "anc[%d]" n) stab)
             let (n, stab) = List.fold processArg (n, stab) args
             let gstr = match gate with
-                | RNOT x         -> sprintf "X(%s)\n" (Map.find x stab)
-                | RCNOT(x, y)    -> sprintf "CNOT(%s, %s);\n" (Map.find x stab) (Map.find y stab)
+                | RNOT x         -> sprintf "X(%s);" (Map.find x stab)
+                | RCNOT(x, y)    -> sprintf "CNOT(%s, %s);" (Map.find x stab) (Map.find y stab)
                 | RTOFF(x, y, z) ->
-                    sprintf "CCNOT(%s, %s, %s);\n" (Map.find x stab) (Map.find y stab) (Map.find z stab)
+                    sprintf "CCNOT(%s, %s, %s);" (Map.find x stab) (Map.find y stab) (Map.find z stab)
             (n, stab, gstr::body)
         List.fold f (0, symtab, []) circ
+    ["operation " + name + "(" + String.concat ", " (List.rev paramList) + ") : ()";
+     "{";
+     "\tbody";
+     "\t{";
+     sprintf "\t\tusing (anc = Qubit[%d])" num;
+     "\t\t{"] @
+    List.map (fun gate -> "\t\t\t" + gate) (List.rev body) @
+    ["\t\t}";
+     "\t}";
+     "}"]
 
+let qSharpHeader =
     "namespace Quantum.ReVerC\n{\n" +
     "\topen Microsoft.Quantum.Primitive;\n" +
-    "\topen Microsoft.Quantum.Canon;\n\n" +
-    "\toperation " + name + "(" + String.concat ", " (List.rev paramList) + ") : ()\n\t{\n" +
-    "\t\tbody\n\t\t{\n" +
-    sprintf "\t\t\tusing (anc = Qubit[%d])\n\t\t\t{\n" num +
-    String.concat "" (List.map (fun gate -> "\t\t\t\t" + gate) (List.rev body)) +
-    "\t\t\t}\n\t\t}\n\t}\n}"
+    "\topen Microsoft.Quantum.Canon;\n\n"
+
+let printQSharpBody name res =
+    let op = toQSharp name res
+    String.concat "\n" (List.map (fun line -> "\t" + line) op)
+
+let printQSharp name res = qSharpHeader + printQSharpBody name res + "\n}"
 
 let printStats circ = 
   let isToff = function
@@ -124,20 +135,14 @@ let copyOut res = match res with
       let copy = List.mapi (fun i x -> RCNOT(x, top+i)) output
       Val (par, [top .. top + (List.length output)], circ @ copy @ (List.rev circ))
 
-type compile (quote, ?name0, ?verif0, ?mode0, ?otype0, ?ofile0) =
-  // Defaults
-  let name  = defaultArg name0 "revCircuit"
-  let verif = defaultArg verif0 false
-  let mode  = defaultArg mode0  Eager
-  let otype = defaultArg otype0 QSharp
-  let ofile = match otype with
-    | DotQC  -> defaultArg ofile0 "output.qc"
-    | QSharp -> defaultArg ofile0 "output.qs"
+let compile quote verif mode =
   // Parsing
   let (top, gexp) = parseAST quote
   // Type inference
-  do match typeCheck top gexp with
-    | None -> printf "Error: could not infer types\n"
+  match typeCheck top gexp with
+    | None ->
+        printf "Error: could not infer types\n"
+        ([], [], [])
     | Some gexp' ->
         // Verification
         if verif then verify gexp'
@@ -147,9 +152,7 @@ type compile (quote, ?name0, ?verif0, ?mode0, ?otype0, ?ofile0) =
           | Eager -> copyOut <| GC.compileGCCirc [] (gexp', GC.circGCInit)
           | Crush -> Crush.compile [] (gexp', Crush.bexpInit) Crush.Pebbled
         match res with
-          | Err s -> printf "%s\n" s
-          | Val (par, res, circ) ->
-              let src = match otype with
-                | DotQC -> printQCV circ (Set.toList (uses circ))
-                | QSharp -> printQSharp name (List.rev par) res circ
-              File.WriteAllText(ofile, src)
+          | Err s ->
+              printf "%s\n" s
+              ([], [], [])
+          | Val (par, out, circ) -> (List.rev par, out, circ)

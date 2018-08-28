@@ -21,10 +21,11 @@ FSOPS = --nowarn:58,62 -r fstarlib.dll
 LIBRARY    = reverlib.dll
 EXECUTABLE = reverc.exe
 ADDERGEN   = adderGen.exe
+ARITHGEN   = arithGen.exe
 
 all: $(EXECUTABLE)
 
-example: $(ADDERGEN)
+examples: $(ADDERGEN) $(ARITHGEN)
 
 verify: $(FSTSRC)
 	$(FSTAR) --z3rlimit 300 --use_hints $^ 
@@ -44,3 +45,6 @@ $(EXECUTABLE): $(REVSRC) $(LIBRARY)
 
 $(ADDERGEN): examples/AdderGen.fs $(LIBRARY)
 	$(FSHARP) $(FSOPS) -r $(LIBRARY) -o $(ADDERGEN) examples/AdderGen.fs
+
+$(ARITHGEN): examples/Arith.fs $(LIBRARY)
+	$(FSHARP) $(FSOPS) -r $(LIBRARY) -o $(ARITHGEN) examples/Arith.fs

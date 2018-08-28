@@ -1,3 +1,7 @@
+open System.IO
+open System
+open ReVerC
+
 let carryRippleAdder n =
     <@
     fun (a : bool array) (b : bool array) ->
@@ -14,8 +18,9 @@ let carryRippleAdder n =
     @>
 
 [<EntryPoint>]
-let __main argv = 
-  match argv with
-    | [||] -> ignore <| ReVerC.compile(carryRippleAdder 32,name0="adder",mode0=ReVerC.Basic,ofile0="adder.qs")
-    | _    -> ignore <| ReVerC.compile(carryRippleAdder (int argv.[0]),name0="adder",mode0=ReVerC.Basic,ofile0="adder.qs")
+let __main argv =
+  let res = match argv with
+      | [||] -> compile (carryRippleAdder 32) false Eager
+      | _    -> compile (carryRippleAdder <| int argv.[0]) false Eager
+  File.WriteAllText("adder.qs", printQSharp "adder" res)
   0
