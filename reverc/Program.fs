@@ -81,8 +81,8 @@ let comp (top, gexp) =
         let res = Compiler.compileCirc [] (gexp', Compiler.circInit)
         match res with
           | Err s -> printf "%s\n" s
-          | Val (_, _, circ) -> 
-              let qcv = ReVerC.printQCV circ (Set.toList (uses circ))
+          | Val v -> 
+              let qcv = ReVerC.printQCV v
               File.WriteAllText("output.qc", qcv)
               printf "%s" qcv
 registerCmd "compile" "Compile the program in default mode" comp
@@ -127,8 +127,8 @@ let compGC (top, gexp) =
         let res = GC.compileGCCirc [] (gexp', GC.circGCInit)
         match res with
           | Err s -> printf "%s\n" s
-          | Val (_, _, circ) -> 
-              let qcv = ReVerC.printQCV circ (Set.toList (uses circ))
+          | Val (par, out, circ) -> 
+              let qcv = ReVerC.printQCV (par, out, circ)
               File.WriteAllText("output.qc", qcv)
               printf "%s" qcv
               let qsv = ReVerC.printQSharpSimple circ
@@ -176,8 +176,8 @@ let crush (top, gexp) =
         let res = Crush.compile [] (gexp', Crush.bexpInit) Crush.Pebbled
         match res with
           | Err s -> printf "%s\n" s
-          | Val (_, _, circ) -> 
-              let qcv = ReVerC.printQCV circ (Set.toList (uses circ))
+          | Val v -> 
+              let qcv = ReVerC.printQCV v
               File.WriteAllText("output.qc", qcv)
               printf "%s" qcv
 registerCmd "crush" "Compile the program in space saving mode" crush
@@ -232,12 +232,12 @@ let run program mode cleanupStrategy =
           | SpaceSave -> Crush.compile [] (gexp', Crush.bexpInit) cleanupStrategy
         match res with
           | Err s -> printf "%s\n" s
-          | Val (_, _, circ) -> 
+          | Val (par, out, circ) -> 
               if info then 
                 printf "Bits used: %d\n" (Set.count (uses circ))
                 printf "Gates: %d\n" (List.length circ)
                 printf "Toffolis: %d\n" (List.length (List.filter isToff circ))
-              printf "%s" (ReVerC.printQCV circ (Set.toList (uses circ)))
+              printf "%s" (ReVerC.printQCV (par, out, circ))
 
 let runHack program mode cleanupStrategy = 
   // Parsing

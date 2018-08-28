@@ -43,8 +43,8 @@ $(LIBRARY): $(FSSRC)
 $(EXECUTABLE): $(REVSRC) $(LIBRARY)
 	$(FSHARP) $(FSOPS) -r $(LIBRARY) -o $(EXECUTABLE) $(REVSRC)
 
-$(ADDERGEN): examples/AdderGen.fs $(LIBRARY)
-	$(FSHARP) $(FSOPS) -r $(LIBRARY) -o $(ADDERGEN) examples/AdderGen.fs
+$(ADDERGEN): examples/adderGen/AdderGen.fs $(LIBRARY)
+	$(FSHARP) $(FSOPS) -r $(LIBRARY) -o $(ADDERGEN) examples/adderGen/AdderGen.fs
 
-$(ARITHGEN): examples/Arith.fs $(LIBRARY)
-	$(FSHARP) $(FSOPS) -r $(LIBRARY) -o $(ARITHGEN) examples/Arith.fs
+$(ARITHGEN): examples/arithGen/ArithGen.fs $(LIBRARY)
+	$(FSHARP) $(FSOPS) -r $(LIBRARY) -o $(ARITHGEN) examples/arithGen/ArithGen.fs

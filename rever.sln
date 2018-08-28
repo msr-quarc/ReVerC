@@ -7,6 +7,10 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "reverlib", "src\fs\reverlib
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "reverc", "reverc\reverc.fsproj", "{81E62A2F-51A2-4788-BFCD-7FB08AC8B19E}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "adderGen", "examples\adderGen\adderGen.fsproj", "{9C33336D-3F11-4614-8A3A-2884094890CE}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "arithGen", "examples\arithGen\arithGen.fsproj", "{E9E69CE3-7DA6-4260-97C1-1B3A3F4C31BE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{81E62A2F-51A2-4788-BFCD-7FB08AC8B19E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81E62A2F-51A2-4788-BFCD-7FB08AC8B19E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81E62A2F-51A2-4788-BFCD-7FB08AC8B19E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C33336D-3F11-4614-8A3A-2884094890CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C33336D-3F11-4614-8A3A-2884094890CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C33336D-3F11-4614-8A3A-2884094890CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C33336D-3F11-4614-8A3A-2884094890CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9E69CE3-7DA6-4260-97C1-1B3A3F4C31BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9E69CE3-7DA6-4260-97C1-1B3A3F4C31BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9E69CE3-7DA6-4260-97C1-1B3A3F4C31BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9E69CE3-7DA6-4260-97C1-1B3A3F4C31BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
