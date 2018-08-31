@@ -21,6 +21,7 @@ can be imported into F# projects, and provides functions to (among other things)
 + Count bits and gates used
 + Infer the size of registers
 + Verify assertions in F# quotations
+
 The 
 [examples](https://github.com/msr-quarc/ReVerC/tree/master/examples)
 folder contains examples of the usage reverlib and the relevant
@@ -99,10 +100,11 @@ The ReVerC library does not currently have a documented API, but examples of
 its usage are include in the 
 [examples](https://github.com/msr-quarc/ReVerC/tree/master/examples)
 folder. As ReVerC compiles F# code quotations, the typical workflow is to
-1. Write the program to be compiled as an F# quotation
-2. Import ReVerC
-3. Compile the quotation to a circuit
+1. Import ReVerC
+2. Write the program to be compiled as an F# quotation
+3. Use ReVerC functions to compile the quotation to a circuit
 4. Output the circuit in Q# or .qc format
+
 Executing the F# code, either by compiling then running or interpreting
 via an F# compiler, will then produce the desired Q# or .qc code, which can
 be used in other projects. Alternatively, ReVerC provides the ability to
