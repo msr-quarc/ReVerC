@@ -15,7 +15,7 @@ open Interpreter
 open GC
 open System
 
-let rot n x : bool array = x
+let rot n (x:bool array) = List.toArray <| rotate (List.ofArray x) n
 let clean x = ()
 let allege x = if x then () else failwith "Assertion failed"
 let not x = if x then false else true
