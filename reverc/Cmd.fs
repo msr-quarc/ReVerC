@@ -37,7 +37,7 @@ let parseCmd x =
   let (name, descr, f) = List.find (fun (s, _, _) -> s = x) !cmds
   f
 
-let parseParam xs = match xs with
+let parseParam (xs : string list) = match xs with
   | [] -> None
   | x::xs -> 
       let mutable n = 0
