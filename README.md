@@ -80,6 +80,10 @@ Run ReVerC with
 ```
 reverc.exe
 ```
+or on Unix-based systems
+```
+mono reverc.exe
+```
 
 The user interfaces with ReVerC through a read-evaluate-print loop, which
 receives a command and program (possibly with an integer parameter), then
